@@ -4,16 +4,58 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    font-family: "Inter", sans-serif;
+body {
+  font-family: 'Inter', sans-serif;
   font-optical-sizing: auto;
 }
 
 .no-scroll {
-    scrollbar-width: none !important; /* Hides scrollbar in Firefox */
-    -ms-overflow-style: none !important; /* Hides scrollbar in IE & Edge */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 .no-scroll::-webkit-scrollbar {
-    display: none !important; /* Hides scrollbar in Chrome, Safari, and Edge */
+  display: none !important;
+}
+
+/* Sidebar Navlinks CSS */
+.sidebar-btn {
+  align-items: center;
+  appearance: none;
+  background-clip: padding-box;
+  background-color: initial;
+  border-style: none;
+  box-sizing: border-box;
+  color: black;
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  font-family: Eina01, sans-serif;
+  font-size: 16px;
+  font-weight: 100;
+  justify-content: flex-start;
+  line-height: 1;
+  padding: 10px 18px;
+  position: relative;
+  text-decoration: none;
+  user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  min-width: 160px;
+  width: max-content;
+  border-radius: 10px;
+  background: #e5e7eb;
+  z-index: 0;
+  transition: background 0.2s ease-in-out;
+}
+
+.width-maker {
+  width: 100%;
+}
+
+@media screen and (min-width: 1024px) {
+  .width-maker {
+    width: calc(100% - 256px);
+  }
 }
