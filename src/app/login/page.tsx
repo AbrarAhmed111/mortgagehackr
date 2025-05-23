@@ -1,10 +1,10 @@
-import BlogsManagement from '@/Pages/AdminSite/Blogs'
+import AdminLogin from '@/Pages/AdminSite/AdminLogin'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <BlogsManagement />
+      <AdminLogin />
     </div>
   )
 }

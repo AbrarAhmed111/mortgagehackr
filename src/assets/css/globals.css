@@ -45,7 +45,7 @@ body {
   min-width: 160px;
   width: max-content;
   border-radius: 10px;
-  background: #e5e7eb;
+  background: #79a3f6;
   z-index: 0;
   transition: background 0.2s ease-in-out;
 }

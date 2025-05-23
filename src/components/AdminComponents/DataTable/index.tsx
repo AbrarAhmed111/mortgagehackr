@@ -41,8 +41,6 @@ export function DataTable<T>({
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentItems = data.slice(startIndex, endIndex)
-
-  // Handle selection
   const toggleSelect = (item: T) => {
     const newSelectedItems = selectedItems.includes(item)
       ? selectedItems.filter(selected => selected !== item)
@@ -64,7 +62,7 @@ export function DataTable<T>({
 
   return (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
-      <table className="w-full min-w-[1000px] divide-y divide-gray-200">
+      <table className="w-full min-w-[800px] divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
             {onSelect && (

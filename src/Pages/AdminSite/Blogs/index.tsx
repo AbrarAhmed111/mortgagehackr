@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
-import { Blog, Column } from '@/utils/types'
+import { Blog, BlogsColumn } from '@/utils/types'
 import { blogsData } from '@/constants'
 import { FiPlus } from 'react-icons/fi'
 import ProfileIcon from '@/assets/Images/image.png'
@@ -9,14 +9,14 @@ import { AddBlogModal } from '@/components/AdminComponents/Modals/AddBlogModal'
 import { UpdateBlogModal } from '@/components/AdminComponents/Modals/UpdateBlogModal'
 import { DeleteBlogModal } from '@/components/AdminComponents/Modals/DeleteBlogModal'
 
-export function BlogsManagement() {
+const BlogsManagement: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>(blogsData)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null)
 
-  const columns: Column<Blog>[] = [
+  const columns: BlogsColumn<Blog>[] = [
     {
       header: 'Image',
       accessor: 'image',
@@ -121,3 +121,4 @@ export function BlogsManagement() {
     </div>
   )
 }
+export default BlogsManagement

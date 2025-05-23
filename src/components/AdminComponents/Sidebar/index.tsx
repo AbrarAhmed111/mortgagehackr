@@ -63,16 +63,18 @@ const Sidebar: React.FC<ISidebarProps> = ({
   if (!mounted) return null
 
   return (
-    <div className="size-screen">
+    <>
       <aside
         ref={sidebar}
         data-sidebar="true"
-        className={`fixed left-0 top-0 z-[999] flex h-screen flex-col border-r bg-gray-100 overflow-hidden transition-all duration-300 ${getSidebarClasses()}`}
+        className={`fixed left-0 top-0 flex h-screen flex-col border-r bg-gray-100 overflow-hidden transition-all duration-300 ${getSidebarClasses()}`}
       >
-        <div className="flex items-center gap-2 px-8 py-8">
+        <div className="flex items-center gap-2 px-8 py-3 border-b">
           <NavLink to="/" onClick={() => handleSidebarItemClick('/')}>
             <div className="flex items-center">
-              <span className="text-2xl font-semibold text-gray-700">WEB</span>
+              <span className="text-2xl font-semibold text-primary">
+                Dashboard
+              </span>
             </div>
           </NavLink>
         </div>
@@ -88,8 +90,8 @@ const Sidebar: React.FC<ISidebarProps> = ({
                       onClick={() => handleSidebarItemClick(link.to)}
                       className={`${
                         pathname === link.to
-                          ? 'sidebar-btn flex items-center gap-3 ml-4'
-                          : 'text-gray-700 hover:text-gray-500 px-4 py-2.5 rounded-full flex items-center gap-3 ml-4'
+                          ? 'bg-primary/50 w-[80%] rounded-lg px-3 py-1 flex items-center gap-3 ml-4 font-semibold'
+                          : 'text-gray-700 hover:text-primary px-3 py-2.5 rounded-full flex items-center gap-3 ml-4 font-medium'
                       }`}
                     >
                       <span className="w-5 h-5">{link.icon}</span>
@@ -102,7 +104,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
           </nav>
         </div>
       </aside>
-    </div>
+    </>
   )
 }
 

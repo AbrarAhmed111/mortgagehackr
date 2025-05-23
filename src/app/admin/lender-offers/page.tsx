@@ -1,10 +1,10 @@
-import BlogsManagement from '@/Pages/AdminSite/Blogs'
+import LendersOfferManagement from '@/Pages/AdminSite/LendersOffer'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <BlogsManagement />
+      <LendersOfferManagement />
     </div>
   )
 }
