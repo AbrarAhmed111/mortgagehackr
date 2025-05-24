@@ -1,6 +1,7 @@
 import React from 'react'
-import { IoTimeOutline } from 'react-icons/io5'
-import { IoAppsOutline } from 'react-icons/io5'
+import { FaUser } from 'react-icons/fa'
+// import { IoTimeOutline } from 'react-icons/io5'
+// import { IoAppsOutline } from 'react-icons/io5'
 import { IoMenuSharp } from 'react-icons/io5'
 
 interface IHeaderProps {
@@ -24,24 +25,15 @@ const Header: React.FC<IHeaderProps> = ({
             <IoMenuSharp size={24} />
           </button>
         </div>
-
         <div></div>
         <div className="hidden lg:block"></div>
-
-        <div className="flex-grow max-w-md">
-          <input
-            type="search"
-            className="block w-full py-2 px-4 pr-3  border-border-outline border-[1px]  rounded-xl text-sm text-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-600"
-            placeholder="Search"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="text-gray-400 hover:text-gray-300">
+        <div className="flex items-center gap-4 py-1">
+          {/* <button className="text-gray-400 hover:text-gray-300">
             <IoTimeOutline size={20} />
-          </button>
+          </button> */}
 
-          <button className="text-gray-400 hover:text-gray-300">
-            <IoAppsOutline size={20} />
+          <button className="text-gray-400 hover:text-gray-300 border rounded-full p-1">
+            <FaUser size={20} />
           </button>
         </div>
       </div>

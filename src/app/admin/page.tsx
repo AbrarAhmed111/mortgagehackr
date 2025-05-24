@@ -1,3 +1,9 @@
+import Dashboard from '@/Pages/AdminSite/Dashboard'
+
 export default function Home() {
-  return <div>Hello World</div>
+  return (
+    <div>
+      <Dashboard />
+    </div>
+  )
 }

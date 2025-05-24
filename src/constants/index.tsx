@@ -9,7 +9,7 @@ import ProfileIcon from '@/assets/Images/image.png'
 export const navLinks: SidebarNavLinkType[] = [
   {
     name: 'Dashboard',
-    to: '/admin/dashboard',
+    to: '/admin',
     icon: <MdDashboard size={20} />,
   },
   {
