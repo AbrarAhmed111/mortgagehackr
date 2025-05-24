@@ -1,13 +1,25 @@
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
 import "../assets/css/globals.css"; // CSS is now included here
 import { Toaster } from "react-hot-toast";
 import { ReactNode } from "react";
-import Providers from "@/store/Providers";
+import Providers from "../store/Providers";
 
-type RootLayoutProps = {
-  children: ReactNode;
-};
+const inter = Inter({ subsets: ["latin"] })
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export const metadata: Metadata = {
+  title: "MortgageHackr Pro - Smart Loan Analysis & Comparison",
+  description:
+    "Get personalized loan insights, compare rates, and make informed financial decisions with our AI-powered analysis tools.",
+    generator: 'v0.dev'
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <Providers>
       <html lang="en">
@@ -18,5 +30,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </body>
       </html>
     </Providers>
-  );
+  )
 }
