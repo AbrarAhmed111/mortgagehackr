@@ -1,0 +1,124 @@
+'use server'
+
+import { createClient } from '../supabase/server'
+
+export async function createOffer(offerData: {
+  lenderName: string
+  interestRate: number
+  apr: number
+  loanTerm: number
+  eligibilityCriteria?: string
+  ctaLink: string
+  expirationDate: string
+  status: 'active' | 'inactive'
+}) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('offers')
+    .insert([offerData])
+
+  if (error) {
+    console.error(error)
+    return { error: error.message }
+  }
+
+  return data?.[0]
+}
+
+export async function getOffers(filters?: {
+  interestRateMin?: number
+  interestRateMax?: number
+  lenderName?: string
+  loanTerm?: number
+  status?: 'active' | 'inactive'
+}) {
+  const supabase = await createClient()
+  let query = supabase.from('offers').select('*')
+
+  if (filters) {
+    if (filters.interestRateMin !== undefined)
+      query = query.gte('interestRate', filters.interestRateMin)
+    if (filters.interestRateMax !== undefined)
+      query = query.lte('interestRate', filters.interestRateMax)
+    if (filters.lenderName)
+      query = query.ilike('lenderName', `%${filters.lenderName}%`)
+    if (filters.loanTerm)
+      query = query.eq('loanTerm', filters.loanTerm)
+    if (filters.status)
+      query = query.eq('status', filters.status)
+  }
+
+  const { data, error } = await query.order('interestRate', { ascending: true })
+
+  if (error) {
+    console.error(error)
+    return []
+  }
+
+  return data
+}
+
+export async function getOfferById(offerId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('offers')
+    .select('*')
+    .eq('id', offerId)
+    .single()
+
+  if (error) {
+    console.error(error)
+    return null
+  }
+
+  return data
+}
+
+export async function updateOffer(offerId: string, updateData: Partial<{
+  lenderName: string
+  interestRate: number
+  apr: number
+  loanTerm: number
+  eligibilityCriteria?: string
+  ctaLink: string
+  expirationDate: string
+  status: 'active' | 'inactive'
+}>) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('offers')
+    .update(updateData)
+    .eq('id', offerId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error(error)
+    return { error: error.message }
+  }
+
+  return data
+}
+
+export async function toggleOfferStatus(offerId: string, newStatus: 'active' | 'inactive') {
+  return updateOffer(offerId, { status: newStatus })
+}
+
+export async function deleteOffer(offerId: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('offers')
+    .delete()
+    .eq('id', offerId)
+
+  if (error) {
+    console.error(error)
+    return { error: error.message }
+  }
+
+  return { success: 'Offer deleted successfully' }
+}
