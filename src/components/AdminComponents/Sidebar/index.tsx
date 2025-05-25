@@ -1,6 +1,7 @@
 'use client'
 import React, { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { navLinks } from '@/constants'
 import { ISidebarProps, NavLinkProps } from '@/utils/types'
 
@@ -9,18 +10,16 @@ const Sidebar: React.FC<ISidebarProps> = ({
   sidebarMobileOpen,
   setSidebarMobileOpen,
 }) => {
-  const [mounted, setMounted] = useState(false)
-  const [pathname, setPathname] = useState('')
+  const pathname = usePathname()
+  const [isClient, setIsClient] = useState(false)
   const sidebar = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setMounted(true)
-    setPathname(window.location.pathname)
+    setIsClient(true)
   }, [])
 
   const handleSidebarItemClick = (path: string): void => {
-    setPathname(path)
-    if (window.innerWidth < 1024) {
+    if (isClient && window.innerWidth < 1024) {
       setSidebarMobileOpen(false)
     }
   }
@@ -38,10 +37,9 @@ const Sidebar: React.FC<ISidebarProps> = ({
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
       if (to === '#') {
         e.preventDefault()
-      } else {
-        setPathname(to)
-        onClick && onClick()
+        return
       }
+      onClick && onClick()
     }
 
     return (
@@ -51,23 +49,15 @@ const Sidebar: React.FC<ISidebarProps> = ({
     )
   }
 
-  const getSidebarClasses = () => {
-    if (!mounted) return ''
-    if (window.innerWidth >= 1024) {
-      return sidebarDesktopOpen ? 'w-64' : 'w-0'
-    } else {
-      return sidebarMobileOpen ? 'w-64 translate-x-0' : '-translate-x-full w-64'
-    }
-  }
-
-  if (!mounted) return null
-
   return (
     <>
       <aside
         ref={sidebar}
         data-sidebar="true"
-        className={`fixed left-0 top-0 flex h-screen flex-col border-r bg-gray-100 overflow-hidden transition-all duration-300 ${getSidebarClasses()}`}
+        className={`fixed left-0 top-0 flex h-screen flex-col border-r bg-gray-100 overflow-hidden transition-all duration-300 z-40
+          ${sidebarDesktopOpen ? 'lg:w-64' : 'lg:w-0'}
+          ${sidebarMobileOpen ? 'w-64 translate-x-0' : '-translate-x-full w-64'}
+          lg:translate-x-0`}
       >
         <div className="flex items-center gap-2 px-8 py-3 border-b">
           <NavLink to="/" onClick={() => handleSidebarItemClick('/')}>
@@ -79,12 +69,12 @@ const Sidebar: React.FC<ISidebarProps> = ({
           </NavLink>
         </div>
 
-        <div className="no-scrollbar flex flex-col overflow-y-auto">
+        <div className="flex flex-col overflow-y-auto">
           <nav className="mt-2">
             <div>
               <ul className="flex flex-col gap-1">
                 {navLinks.map((link, index) => (
-                  <li key={index}>
+                  <li key={link.to || index}>
                     <NavLink
                       to={link.to}
                       onClick={() => handleSidebarItemClick(link.to)}

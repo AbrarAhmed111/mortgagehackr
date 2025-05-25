@@ -36,7 +36,6 @@ export function DataTable<T>({
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedItems, setSelectedItems] = useState<T[]>([])
 
-  // Calculate pagination
   const totalPages = Math.ceil(data.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
@@ -61,9 +60,9 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="w-fit xl:max-w-[1270px] 2xl:max-w-auto">
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
-        <table className="w-full divide-y divide-gray-200">
+    <div className="w-full bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="overflow-x-auto min-h-[40vh]">
+        <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
               {onSelect && (

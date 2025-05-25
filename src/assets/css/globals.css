@@ -16,48 +16,7 @@ body {
   display: none !important;
 }
 
-/* Sidebar Navlinks CSS */
-.sidebar-btn {
-  align-items: center;
-  appearance: none;
-  background-clip: padding-box;
-  background-color: initial;
-  border-style: none;
-  box-sizing: border-box;
-  color: black;
-  cursor: pointer;
-  display: inline-flex;
-  flex-direction: row;
-  flex-shrink: 0;
-  font-family: Eina01, sans-serif;
-  font-size: 16px;
-  font-weight: 100;
-  justify-content: flex-start;
-  line-height: 1;
-  padding: 10px 18px;
-  position: relative;
-  text-decoration: none;
-  user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  min-width: 160px;
-  width: max-content;
-  border-radius: 10px;
-  background: #79a3f6;
-  z-index: 0;
-  transition: background 0.2s ease-in-out;
-}
-
-.width-maker {
-  width: 100%;
-}
-
 @media screen and (min-width: 1024px) {
-  .width-maker {
-    width: calc(100% - 256px);
-    font-family: Arial, Helvetica, sans-serif;
-  }
-
   @layer utilities {
     .text-balance {
       text-wrap: balance;
