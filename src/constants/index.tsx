@@ -9,32 +9,32 @@ import ProfileIcon from '@/assets/Images/image.png'
 export const navLinks: SidebarNavLinkType[] = [
   {
     name: 'Dashboard',
-    to: '/admin',
+    to: '/dashboard',
     icon: <MdDashboard size={20} />,
   },
   {
     name: 'Blogs',
-    to: '/admin/blogs',
+    to: '/blogs',
     icon: <FaMicroblog size={20} />,
   },
   {
     name: 'Lender Offers',
-    to: '/admin/lender-offers',
+    to: '/lender-offers',
     icon: <BiSolidOffer size={20} />,
   },
   {
     name: 'Leads',
-    to: '/admin/leads-managment',
+    to: '/leads-managment',
     icon: <SiGoogleadsense size={20} />,
   },
   {
     name: 'Leads Reporting ',
-    to: '/admin/leads-reporting',
+    to: '/leads-reporting',
     icon: <BiSolidReport size={20} />,
   },
   {
     name: 'HELOC Leads',
-    to: '/admin/heloc-leads',
+    to: '/heloc-leads',
     icon: <SiGoogleads size={20} />,
   },
 ]
@@ -229,7 +229,7 @@ export const leadAttributionData: LeadAttribution[] = [
     id: '1',
     lenderName: 'QuickCash Lending',
     lenderOfferId: 'QCL-001',
-    clickDate: '2024-01-20',
+    clickDate: '2025-05-20',
     clickTime: '14:30:25',
     userIp: '192.168.1.100',
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -247,7 +247,7 @@ export const leadAttributionData: LeadAttribution[] = [
     id: '2',
     lenderName: 'FastTrack Finance',
     lenderOfferId: 'FTF-002',
-    clickDate: '2024-01-20',
+    clickDate: '2025-05-20',
     clickTime: '16:45:12',
     userIp: '192.168.1.101',
     userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X)',

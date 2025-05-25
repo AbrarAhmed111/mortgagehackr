@@ -18,7 +18,6 @@ interface Lead {
   lastContact?: string
 }
 
-// Column type for DataTable
 interface LeadsColumn<T> {
   header: string
   accessor: keyof T
@@ -399,12 +398,6 @@ const LeadsManagement: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Results Summary */}
-      <div className="mb-4 text-sm text-gray-600">
-        Showing {filteredLeads.length} of {leads.length} leads
-      </div>
-
       {/* Data Table */}
       <DataTable
         data={filteredLeads}

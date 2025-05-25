@@ -16,7 +16,7 @@ const Header: React.FC<IHeaderProps> = ({
 }) => {
   return (
     <header className="sticky top-0 flex w-full z-50">
-      <div className="flex flex-grow items-center px-4 md:px-6 py-1 2xl:px-11 justify-between backdrop-blur-md  border-b">
+      <div className="flex flex-grow items-center px-4 md:px-6 py-2 2xl:px-11 justify-between backdrop-blur-md  border-b">
         <div className="lg:hidden">
           <button
             onClick={() => setSidebarMobileOpen(!sidebarMobileOpen)}
