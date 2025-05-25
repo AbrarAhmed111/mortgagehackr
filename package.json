@@ -34,7 +34,8 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.0",
@@ -43,6 +44,7 @@
     "@types/node": "^22.13.17",
     "@types/react": "^18.2.25",
     "@types/react-dom": "^18.2.9",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.0.1",
     "commitlint": "^19.8.0",
     "eslint": "^8.57.1",
