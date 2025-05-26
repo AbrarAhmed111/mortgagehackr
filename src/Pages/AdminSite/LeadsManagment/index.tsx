@@ -1,7 +1,7 @@
 'use client'
 import { useState, JSX, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
-import { FiDownload, FiFilter, FiSearch, FiX } from 'react-icons/fi'
+import { FiDownload, FiFilter, FiX } from 'react-icons/fi'
 
 // Lead type definition
 interface Lead {
@@ -18,7 +18,6 @@ interface Lead {
   lastContact?: string
 }
 
-// Column type for DataTable
 interface LeadsColumn<T> {
   header: string
   accessor: keyof T
@@ -42,16 +41,6 @@ const leadsData: Lead[] = [
   },
   {
     id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah.j@gmail.com',
-    phone: '+1 (555) 234-5678',
-    source: 'Website Contact',
-    status: 'Contacted',
-    createdAt: '2024-01-14T09:15:00Z',
-    lastContact: '2024-01-15T11:45:00Z',
-  },
-  {
-    id: '3',
     name: 'Mike Wilson',
     email: 'mike.wilson@yahoo.com',
     phone: '+1 (555) 345-6789',
@@ -64,15 +53,7 @@ const leadsData: Lead[] = [
     lastContact: '2024-01-17T10:30:00Z',
   },
   {
-    id: '4',
-    name: 'Emily Davis',
-    phone: '+1 (555) 456-7890',
-    source: 'Referral',
-    status: 'New',
-    createdAt: '2024-01-12T14:20:00Z',
-  },
-  {
-    id: '5',
+    id: '3',
     name: 'Robert Brown',
     email: 'r.brown@hotmail.com',
     phone: '+1 (555) 567-8901',
@@ -85,17 +66,7 @@ const leadsData: Lead[] = [
     lastContact: '2024-01-12T15:15:00Z',
   },
   {
-    id: '6',
-    name: 'Lisa Anderson',
-    email: 'lisa.anderson@email.com',
-    phone: '+1 (555) 678-9012',
-    source: 'Social Media',
-    status: 'Converted',
-    createdAt: '2024-01-10T12:00:00Z',
-    lastContact: '2024-01-15T09:30:00Z',
-  },
-  {
-    id: '7',
+    id: '4',
     name: 'David Martinez',
     email: 'david.m@gmail.com',
     phone: '+1 (555) 789-0123',
@@ -106,15 +77,6 @@ const leadsData: Lead[] = [
     status: 'Qualified',
     createdAt: '2024-01-09T11:15:00Z',
     lastContact: '2024-01-16T16:45:00Z',
-  },
-  {
-    id: '8',
-    name: 'Jennifer Taylor',
-    phone: '+1 (555) 890-1234',
-    source: 'Phone Inquiry',
-    status: 'Contacted',
-    createdAt: '2024-01-08T13:45:00Z',
-    lastContact: '2024-01-10T14:20:00Z',
   },
 ]
 
@@ -342,7 +304,7 @@ const LeadsManagement: React.FC = () => {
   }
 
   return (
-    <div className="w-full px-4 py-8">
+    <div className="px-4 py-8">
       <div className="flex flex-row justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Leads Management</h1>
         <div className="flex items-center gap-3">
@@ -365,18 +327,6 @@ const LeadsManagement: React.FC = () => {
 
       {/* Search and Filters */}
       <div className="mb-6 space-y-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search leads by name, email, phone, or property address..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
         {/* Filters Panel */}
         {showFilters && (
           <div className="bg-gray-50 p-4 rounded-lg border">
@@ -448,12 +398,6 @@ const LeadsManagement: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Results Summary */}
-      <div className="mb-4 text-sm text-gray-600">
-        Showing {filteredLeads.length} of {leads.length} leads
-      </div>
-
       {/* Data Table */}
       <DataTable
         data={filteredLeads}

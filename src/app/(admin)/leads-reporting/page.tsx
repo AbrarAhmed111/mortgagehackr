@@ -1,10 +1,10 @@
-import Dashboard from '@/Pages/AdminSite/Dashboard'
+import LeadsReporting from '@/Pages/AdminSite/LeadsReporting'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <Dashboard />
+      <LeadsReporting />
     </div>
   )
 }
