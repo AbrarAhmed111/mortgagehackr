@@ -3,7 +3,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '../supabase/server'
 
-
 export async function adminSignin(formData: FormData, returnUrl?: string) {
   const supabase = await createClient()
   const email = formData.get('email') as string
@@ -41,9 +40,8 @@ export async function adminSignin(formData: FormData, returnUrl?: string) {
   }
 
   // ✅ Default redirect to admin panel
-  redirect('/admin-panel')
+  redirect('/admin-panel/dashboard')
 }
-
 
 export async function signout() {
   const supabase = await createClient()
@@ -55,7 +53,6 @@ export async function signout() {
   //
   redirect('/')
 }
-
 
 export async function forgotPassword(email: string) {
   const supabase = await createClient()

@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FiEye, FiEyeOff, FiMail, FiLock, FiUser } from 'react-icons/fi'
+import { toast } from 'react-hot-toast'
+import { adminSignin } from '@/lib/actions/auth'
 
 const AdminLogin: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +13,6 @@ const AdminLogin: React.FC = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,31 +21,33 @@ const AdminLogin: React.FC = () => {
       ...prev,
       [name]: value,
     }))
-    // Clear error when user starts typing
-    if (error) setError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError('')
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const formDataObj = new FormData()
+      formDataObj.append('email', formData.email)
+      formDataObj.append('password', formData.password)
 
-      // Add your login logic here
-      console.log('Login attempt:', formData)
+      const result = await adminSignin(formDataObj)
+      console.log('RESULT', result)
 
-      // Redirect to admin dashboard on success
-      router.push('/dashboard')
-    } catch (err) {
-      setError('Invalid email or password. Please try again.')
+      if (result?.error) {
+        toast.error(result.error)
+      } else {
+        toast.success('Successfully signed in!')
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      toast.error('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
@@ -63,13 +66,6 @@ const AdminLogin: React.FC = () => {
               Sign in to access the admin panel
             </p>
           </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -139,7 +135,7 @@ const AdminLogin: React.FC = () => {
             {/* Forgot Password Link */}
             <div className="text-right">
               <Link
-                href="/forgot-password"
+                href="/admin/forgot-password"
                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Forgot your password?
