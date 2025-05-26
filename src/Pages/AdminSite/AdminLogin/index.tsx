@@ -37,7 +37,7 @@ const AdminLogin: React.FC = () => {
       console.log('Login attempt:', formData)
 
       // Redirect to admin dashboard on success
-      router.push('/admin/dashboard')
+      router.push('/dashboard')
     } catch (err) {
       setError('Invalid email or password. Please try again.')
     } finally {
@@ -139,7 +139,7 @@ const AdminLogin: React.FC = () => {
             {/* Forgot Password Link */}
             <div className="text-right">
               <Link
-                href="/admin/forgot-password"
+                href="/forgot-password"
                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Forgot your password?

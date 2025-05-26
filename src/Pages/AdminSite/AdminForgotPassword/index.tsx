@@ -78,7 +78,7 @@ const AdminForgotPassword: React.FC = () => {
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push('/admin/login')
+        router.push('/login')
       }, 3000)
     } catch (err) {
       setError('Failed to reset password. Please try again.')
@@ -103,7 +103,7 @@ const AdminForgotPassword: React.FC = () => {
               login page shortly.
             </p>
             <Link
-              href="/admin/login"
+              href="/login"
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
             >
               Go to Login
