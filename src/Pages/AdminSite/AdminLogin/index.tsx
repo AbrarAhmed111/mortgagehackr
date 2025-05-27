@@ -39,7 +39,7 @@ const AdminLogin: React.FC = () => {
         toast.error(result.error)
       } else {
         toast.success('Successfully signed in!')
-        router.push('/dashboard')
+        router.push('/admin-panel/dashboard')
       }
     } catch (error) {
       console.error('Login error:', error)
@@ -135,7 +135,7 @@ const AdminLogin: React.FC = () => {
             {/* Forgot Password Link */}
             <div className="text-right">
               <Link
-                href="/admin/forgot-password"
+                href="/forgot-password"
                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Forgot your password?

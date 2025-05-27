@@ -9,32 +9,32 @@ import ProfileIcon from '@/assets/Images/image.png'
 export const navLinks: SidebarNavLinkType[] = [
   {
     name: 'Dashboard',
-    to: '/dashboard',
+    to: '/admin-panel/dashboard',
     icon: <MdDashboard size={20} />,
   },
   {
     name: 'Blogs',
-    to: '/blogs',
+    to: '/admin-panel/blogs',
     icon: <FaMicroblog size={20} />,
   },
   {
     name: 'Lender Offers',
-    to: '/lender-offers',
+    to: '/admin-panel/lender-offers',
     icon: <BiSolidOffer size={20} />,
   },
   {
     name: 'Leads',
-    to: '/leads-managment',
+    to: '/admin-panel/leads-managment',
     icon: <SiGoogleadsense size={20} />,
   },
   {
     name: 'Leads Reporting ',
-    to: '/leads-reporting',
+    to: '/admin-panel/leads-reporting',
     icon: <BiSolidReport size={20} />,
   },
   {
     name: 'HELOC Leads',
-    to: '/heloc-leads',
+    to: '/admin-panel/heloc-leads',
     icon: <SiGoogleads size={20} />,
   },
 ]

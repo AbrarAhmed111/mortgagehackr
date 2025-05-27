@@ -136,7 +136,7 @@ const AdminForgotPassword: React.FC = () => {
           {/* Back to Login Link */}
           <div className="mb-6">
             <Link
-              href="/admin/login"
+              href="/signin"
               className="inline-flex items-center text-sm text-primary hover:text-primary/80 font-medium transition-colors"
             >
               <FiArrowLeft className="h-4 w-4 mr-1" />
