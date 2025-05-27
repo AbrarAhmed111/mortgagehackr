@@ -93,7 +93,7 @@ export default function AboutPage() {
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Eye className="h-6 w-6 text-blue-600" />
+                        <Eye className="h-6 w-6 text-green-600" />
                       </div>
                       <CardTitle className="text-2xl text-blue-900">Our Vision</CardTitle>
                     </div>
@@ -147,7 +147,7 @@ export default function AboutPage() {
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Calculator className="h-6 w-6 text-blue-600" />
+                        <Calculator className="h-6 w-6 text-green-600" />
                       </div>
                       <CardTitle className="text-2xl">Mortgage Deal Analyzer</CardTitle>
                     </div>
@@ -268,7 +268,7 @@ export default function AboutPage() {
 
                 <div className="text-center space-y-3">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                    <Shield className="h-8 w-8 text-blue-600" />
+                    <Shield className="h-8 w-8 text-green-600" />
                   </div>
                   <h3 className="text-lg font-semibold">Negotiate with Confidence</h3>
                   <p className="text-gray-600">Armed with data and community insights for better outcomes</p>
@@ -299,7 +299,7 @@ export default function AboutPage() {
                 <Card className="p-6">
                   <CardHeader className="pb-4">
                     <div className="flex items-center space-x-3">
-                      <Award className="h-6 w-6 text-blue-600" />
+                      <Award className="h-6 w-6 text-green-600" />
                       <CardTitle className="text-lg">Automotive Expertise</CardTitle>
                     </div>
                   </CardHeader>

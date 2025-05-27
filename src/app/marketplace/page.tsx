@@ -408,7 +408,7 @@ export default function MarketplacePage() {
                           <div className="text-sm text-gray-600">Interest Rate</div>
                         </div>
                         <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">{offer.apr}%</div>
+                          <div className="text-2xl font-bold text-green-600">{offer.apr}%</div>
                           <div className="text-sm text-gray-600">APR</div>
                         </div>
                       </div>
@@ -507,7 +507,7 @@ export default function MarketplacePage() {
 
               <div className="text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Clock className="h-8 w-8 text-blue-600" />
+                  <Clock className="h-8 w-8 text-green-600" />
                 </div>
                 <h3 className="text-xl font-semibold">Real-Time Rates</h3>
                 <p className="text-gray-600">

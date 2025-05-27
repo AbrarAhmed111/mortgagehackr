@@ -151,7 +151,7 @@ export default function HomePage() {
               <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-4">
                   <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <Home className="h-8 w-8 text-blue-600" />
+                    <Home className="h-8 w-8 text-green-600" />
                   </div>
                   <CardTitle className="text-lg">Mortgages</CardTitle>
                 </CardHeader>
@@ -288,7 +288,7 @@ export default function HomePage() {
             <div className="grid gap-8 md:grid-cols-3">
               <div className="text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Shield className="h-8 w-8 text-blue-600" />
+                  <Shield className="h-8 w-8 text-green-600" />
                 </div>
                 <h3 className="text-xl font-semibold">Bank-Level Security</h3>
                 <p className="text-gray-600">

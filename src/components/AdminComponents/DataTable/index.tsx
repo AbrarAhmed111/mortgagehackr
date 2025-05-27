@@ -77,7 +77,7 @@ export function DataTable<T>({
                       currentItems.length > 0
                     }
                     onChange={toggleSelectAll}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-green-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                 </th>
               )}
@@ -112,7 +112,7 @@ export function DataTable<T>({
                       type="checkbox"
                       checked={selectedItems.includes(item)}
                       onChange={() => toggleSelect(item)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-green-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                   </td>
                 )}
@@ -143,7 +143,7 @@ export function DataTable<T>({
                       {onEdit && (
                         <button
                           onClick={() => onEdit(item)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-green-600 hover:text-blue-900"
                           title="Edit"
                         >
                           <FiEdit2 />
@@ -200,7 +200,7 @@ export function DataTable<T>({
                         onClick={() => goToPage(page)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === page
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                            ? 'z-10 bg-blue-50 border-blue-500 text-green-600'
                             : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                         }`}
                       >

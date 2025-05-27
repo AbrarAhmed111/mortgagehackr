@@ -20,7 +20,7 @@ export default function Footer() {
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                <Clock className="h-6 w-6 text-blue-600" />
+                <Clock className="h-6 w-6 text-green-600" />
               </div>
               <h3 className="font-semibold text-slate-900">Instant Results</h3>
               <p className="text-sm text-slate-600">Get your loan analysis in seconds, not hours</p>
@@ -65,13 +65,13 @@ export default function Footer() {
               </div>
             </div>
             <div className="flex space-x-4">
-              <Link href="#" className="text-slate-400 hover:text-blue-600">
+              <Link href="#" className="text-slate-400 hover:text-green-600">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-blue-600">
+              <Link href="#" className="text-slate-400 hover:text-green-600">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-blue-600">
+              <Link href="#" className="text-slate-400 hover:text-green-600">
                 <Linkedin className="h-5 w-5" />
               </Link>
             </div>
@@ -82,22 +82,22 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Tools & Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-slate-600 hover:text-blue-600">
+                <Link href="/" className="text-slate-600 hover:text-green-600">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/marketplace" className="text-slate-600 hover:text-blue-600">
+                <Link href="/marketplace" className="text-slate-600 hover:text-green-600">
                   Marketplace
                 </Link>
               </li>
               <li>
-                <Link href="/calculators" className="text-slate-600 hover:text-blue-600">
+                <Link href="/calculators" className="text-slate-600 hover:text-green-600">
                   Calculators
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-slate-600 hover:text-blue-600">
+                <Link href="/about" className="text-slate-600 hover:text-green-600">
                   About
                 </Link>
               </li>
@@ -109,12 +109,12 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Resources</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/faq" className="text-slate-600 hover:text-blue-600">
+                <Link href="/faq" className="text-slate-600 hover:text-green-600">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-slate-600 hover:text-blue-600">
+                <Link href="/contact" className="text-slate-600 hover:text-green-600">
                   Contact
                 </Link>
               </li>
@@ -149,16 +149,16 @@ export default function Footer() {
             © 2024 MortgageHackr Pro. All rights reserved. | Licensed Financial Services Provider
           </p>
           <div className="flex space-x-4 text-xs text-slate-500 mt-4 sm:mt-0">
-            <Link href="/#" className="hover:text-blue-600">
+            <Link href="/#" className="hover:text-green-600">
               Privacy Policy
             </Link>
-            <Link href="/#" className="hover:text-blue-600">
+            <Link href="/#" className="hover:text-green-600">
               Terms of Service
             </Link>
-            <Link href="/#" className="hover:text-blue-600">
+            <Link href="/#" className="hover:text-green-600">
               Security
             </Link>
-            <Link href="/#" className="hover:text-blue-600">
+            <Link href="/#" className="hover:text-green-600">
               Disclaimer
             </Link>
           </div>

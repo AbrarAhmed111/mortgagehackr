@@ -62,7 +62,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
         <div className="flex items-center gap-2 px-8 py-3 border-b">
           <NavLink to="/" onClick={() => handleSidebarItemClick('/')}>
             <div className="flex items-center">
-              <span className="text-2xl font-semibold text-blue-600">
+              <span className="text-2xl font-semibold text-green-600">
                 Dashboard
               </span>
             </div>
@@ -81,7 +81,7 @@ const Sidebar: React.FC<ISidebarProps> = ({
                       className={`${
                         pathname === link.to
                           ? 'bg-blue-600/50 w-[80%] rounded-lg px-3 py-1 flex items-center gap-3 ml-4 font-medium'
-                          : 'text-gray-700 hover:text-blue-600  px-3 py-2.5 rounded-full flex items-center gap-3 ml-4 font-medium'
+                          : 'text-gray-700 hover:text-green-600  px-3 py-2.5 rounded-full flex items-center gap-3 ml-4 font-medium'
                       }`}
                     >
                       <span className="w-5 h-5">{link.icon}</span>

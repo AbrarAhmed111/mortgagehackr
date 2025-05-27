@@ -22,7 +22,7 @@ export default function Header() {
             {["Home", "Marketplace", "Calculators", "About", "Contact"].map((label, idx) => {
               const path = label.toLowerCase() === "home" ? "/" : `/${label.toLowerCase()}`
               return (
-                <Link key={idx} href={path} className="text-sm font-medium hover:text-blue-600 transition-colors">
+                <Link key={idx} href={path} className="text-sm font-medium hover:text-green-600 transition-colors">
                   {label}
                 </Link>
               )
@@ -73,7 +73,7 @@ export default function Header() {
             <Link
               key={idx}
               href={path}
-              className="text-base font-medium text-gray-700 hover:text-blue-600"
+              className="text-base font-medium text-gray-700 hover:text-green-600"
               onClick={() => setSidebarOpen(false)}
             >
               {label}

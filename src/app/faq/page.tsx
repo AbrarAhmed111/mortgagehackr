@@ -179,7 +179,7 @@ export default function FAQPage() {
                                 <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                                     <CardHeader>
                                         <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                                            <Phone className="h-8 w-8 text-blue-600" />
+                                            <Phone className="h-8 w-8 text-green-600" />
                                         </div>
                                         <CardTitle className="text-lg">Phone Support</CardTitle>
                                     </CardHeader>
@@ -243,7 +243,7 @@ export default function FAQPage() {
                                 <Card className="p-6 hover:shadow-lg transition-shadow">
                                     <CardHeader className="pb-4">
                                         <div className="flex items-center space-x-3">
-                                            <Calculator className="h-6 w-6 text-blue-600" />
+                                            <Calculator className="h-6 w-6 text-green-600" />
                                             <CardTitle className="text-lg">Mortgage Calculator</CardTitle>
                                         </div>
                                     </CardHeader>
