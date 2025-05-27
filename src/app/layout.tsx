@@ -14,7 +14,7 @@ import "../assets/css/globals.css"; // CSS is now included here
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "MortgageHackr Pro - Smart Loan Analysis & Comparison",
+  title: "MortgageHackr - Smart Loan Analysis & Comparison",
   description:
     "Get personalized loan insights, compare rates, and make informed financial decisions with our AI-powered analysis tools.",
     generator: 'v0.dev'
