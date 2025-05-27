@@ -93,7 +93,7 @@ export default function AboutPage() {
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Eye className="h-6 w-6 text-green-600" />
+                        <Eye className="h-6 w-6 text-[#8cc63f]" />
                       </div>
                       <CardTitle className="text-2xl text-blue-900">Our Vision</CardTitle>
                     </div>
@@ -112,7 +112,7 @@ export default function AboutPage() {
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Compass className="h-6 w-6 text-green-600" />
+                        <Compass className="h-6 w-6 text-[#8cc63f]" />
                       </div>
                       <CardTitle className="text-2xl text-green-900">Our Mission</CardTitle>
                     </div>
@@ -147,7 +147,7 @@ export default function AboutPage() {
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Calculator className="h-6 w-6 text-green-600" />
+                        <Calculator className="h-6 w-6 text-[#8cc63f]" />
                       </div>
                       <CardTitle className="text-2xl">Mortgage Deal Analyzer</CardTitle>
                     </div>
@@ -155,7 +155,7 @@ export default function AboutPage() {
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div className="flex items-start space-x-3">
-                        <Database className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                        <Database className="h-5 w-5 text-[#8cc63f] mt-1 flex-shrink-0" />
                         <div>
                           <h4 className="font-semibold">50+ Years of Rate Data</h4>
                           <p className="text-gray-600">Pulls daily rate data going back to 1971</p>
@@ -196,7 +196,7 @@ export default function AboutPage() {
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <MessageSquare className="h-6 w-6 text-green-600" />
+                        <MessageSquare className="h-6 w-6 text-[#8cc63f]" />
                       </div>
                       <CardTitle className="text-2xl">Independent Consumer Forum</CardTitle>
                     </div>
@@ -204,7 +204,7 @@ export default function AboutPage() {
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div className="flex items-start space-x-3">
-                        <Shield className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                        <Shield className="h-5 w-5 text-[#8cc63f] mt-1 flex-shrink-0" />
                         <div>
                           <h4 className="font-semibold">Bias-Free Community</h4>
                           <p className="text-gray-600">No ads, no sponsored content—just honest discussions</p>
@@ -268,7 +268,7 @@ export default function AboutPage() {
 
                 <div className="text-center space-y-3">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                    <Shield className="h-8 w-8 text-green-600" />
+                    <Shield className="h-8 w-8 text-[#8cc63f]" />
                   </div>
                   <h3 className="text-lg font-semibold">Negotiate with Confidence</h3>
                   <p className="text-gray-600">Armed with data and community insights for better outcomes</p>
@@ -276,7 +276,7 @@ export default function AboutPage() {
 
                 <div className="text-center space-y-3">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <DollarSign className="h-8 w-8 text-green-600" />
+                    <DollarSign className="h-8 w-8 text-[#8cc63f]" />
                   </div>
                   <h3 className="text-lg font-semibold">Save Thousands</h3>
                   <p className="text-gray-600">Small rate improvements compound to massive long-term savings</p>
@@ -299,7 +299,7 @@ export default function AboutPage() {
                 <Card className="p-6">
                   <CardHeader className="pb-4">
                     <div className="flex items-center space-x-3">
-                      <Award className="h-6 w-6 text-green-600" />
+                      <Award className="h-6 w-6 text-[#8cc63f]" />
                       <CardTitle className="text-lg">Automotive Expertise</CardTitle>
                     </div>
                   </CardHeader>
@@ -314,7 +314,7 @@ export default function AboutPage() {
                 <Card className="p-6">
                   <CardHeader className="pb-4">
                     <div className="flex items-center space-x-3">
-                      <Target className="h-6 w-6 text-green-600" />
+                      <Target className="h-6 w-6 text-[#8cc63f]" />
                       <CardTitle className="text-lg">Consumer Advocacy</CardTitle>
                     </div>
                   </CardHeader>

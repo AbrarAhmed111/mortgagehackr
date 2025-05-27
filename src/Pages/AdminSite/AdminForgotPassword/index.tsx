@@ -93,7 +93,7 @@ const AdminForgotPassword: React.FC = () => {
         <div className="max-w-md w-full">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <FiCheck className="h-8 w-8 text-green-600" />
+              <FiCheck className="h-8 w-8 text-[#8cc63f]" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Password Reset Successfully!

@@ -13,14 +13,14 @@ export default function Footer() {
           <div className="grid gap-6 md:grid-cols-3 text-center">
             <div className="flex flex-col items-center space-y-2">
               <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
-                <Shield className="h-6 w-6 text-green-600" />
+                <Shield className="h-6 w-6 text-[#8cc63f]" />
               </div>
               <h3 className="font-semibold text-slate-900">Secure & Private</h3>
               <p className="text-sm text-slate-600">Your financial data is encrypted and never shared</p>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                <Clock className="h-6 w-6 text-green-600" />
+                <Clock className="h-6 w-6 text-[#8cc63f]" />
               </div>
               <h3 className="font-semibold text-slate-900">Instant Results</h3>
               <p className="text-sm text-slate-600">Get your loan analysis in seconds, not hours</p>
@@ -65,13 +65,13 @@ export default function Footer() {
               </div>
             </div>
             <div className="flex space-x-4">
-              <Link href="#" className="text-slate-400 hover:text-green-600">
+              <Link href="#" className="text-slate-400 hover:text-[#73a334]">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-green-600">
+              <Link href="#" className="text-slate-400 hover:text-[#73a334]">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-green-600">
+              <Link href="#" className="text-slate-400 hover:text-[#73a334]">
                 <Linkedin className="h-5 w-5" />
               </Link>
             </div>
@@ -82,22 +82,22 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Tools & Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-slate-600 hover:text-green-600">
+                <Link href="/" className="text-slate-600 hover:text-[#73a334]">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/marketplace" className="text-slate-600 hover:text-green-600">
+                <Link href="/marketplace" className="text-slate-600 hover:text-[#73a334]">
                   Marketplace
                 </Link>
               </li>
               <li>
-                <Link href="/calculators" className="text-slate-600 hover:text-green-600">
+                <Link href="/calculators" className="text-slate-600 hover:text-[#73a334]">
                   Calculators
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-slate-600 hover:text-green-600">
+                <Link href="/about" className="text-slate-600 hover:text-[#73a334]">
                   About
                 </Link>
               </li>
@@ -109,12 +109,12 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Resources</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/faq" className="text-slate-600 hover:text-green-600">
+                <Link href="/faq" className="text-slate-600 hover:text-[#73a334]">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-slate-600 hover:text-green-600">
+                <Link href="/contact" className="text-slate-600 hover:text-[#73a334]">
                   Contact
                 </Link>
               </li>
@@ -149,16 +149,16 @@ export default function Footer() {
             © 2024 MortgageHackr Pro. All rights reserved. | Licensed Financial Services Provider
           </p>
           <div className="flex space-x-4 text-xs text-slate-500 mt-4 sm:mt-0">
-            <Link href="/#" className="hover:text-green-600">
+            <Link href="/#" className="hover:text-[#73a334]">
               Privacy Policy
             </Link>
-            <Link href="/#" className="hover:text-green-600">
+            <Link href="/#" className="hover:text-[#73a334]">
               Terms of Service
             </Link>
-            <Link href="/#" className="hover:text-green-600">
+            <Link href="/#" className="hover:text-[#73a334]">
               Security
             </Link>
-            <Link href="/#" className="hover:text-green-600">
+            <Link href="/#" className="hover:text-[#73a334]">
               Disclaimer
             </Link>
           </div>

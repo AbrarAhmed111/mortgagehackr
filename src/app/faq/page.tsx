@@ -179,7 +179,7 @@ export default function FAQPage() {
                                 <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                                     <CardHeader>
                                         <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                                            <Phone className="h-8 w-8 text-green-600" />
+                                            <Phone className="h-8 w-8 text-[#8cc63f]" />
                                         </div>
                                         <CardTitle className="text-lg">Phone Support</CardTitle>
                                     </CardHeader>
@@ -195,7 +195,7 @@ export default function FAQPage() {
                                 <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                                     <CardHeader>
                                         <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                            <Mail className="h-8 w-8 text-green-600" />
+                                            <Mail className="h-8 w-8 text-[#8cc63f]" />
                                         </div>
                                         <CardTitle className="text-lg">Email Support</CardTitle>
                                     </CardHeader>
@@ -243,7 +243,7 @@ export default function FAQPage() {
                                 <Card className="p-6 hover:shadow-lg transition-shadow">
                                     <CardHeader className="pb-4">
                                         <div className="flex items-center space-x-3">
-                                            <Calculator className="h-6 w-6 text-green-600" />
+                                            <Calculator className="h-6 w-6 text-[#8cc63f]" />
                                             <CardTitle className="text-lg">Mortgage Calculator</CardTitle>
                                         </div>
                                     </CardHeader>
@@ -260,7 +260,7 @@ export default function FAQPage() {
                                 <Card className="p-6 hover:shadow-lg transition-shadow">
                                     <CardHeader className="pb-4">
                                         <div className="flex items-center space-x-3">
-                                            <Home className="h-6 w-6 text-green-600" />
+                                            <Home className="h-6 w-6 text-[#8cc63f]" />
                                             <CardTitle className="text-lg">Mortgage Marketplace</CardTitle>
                                         </div>
                                     </CardHeader>

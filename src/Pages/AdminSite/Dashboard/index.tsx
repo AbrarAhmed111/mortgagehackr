@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
                   <div
                     className={`flex items-center text-sm font-medium ${
                       card.changeType === 'increase'
-                        ? 'text-green-600'
+                        ? 'text-[#8cc63f]'
                         : 'text-red-600'
                     }`}
                   >

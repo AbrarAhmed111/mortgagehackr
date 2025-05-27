@@ -57,15 +57,15 @@ export default function CalculatorsPage() {
 
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                    <DollarSign className="h-5 w-5 text-green-500" />
+                    <DollarSign className="h-5 w-5 text-[#8cc63f]" />
                     <span>Monthly payment calculations</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <TrendingUp className="h-5 w-5 text-green-500" />
+                    <TrendingUp className="h-5 w-5 text-[#8cc63f]" />
                     <span>Total interest and cost analysis</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-5 w-5 text-green-500" />
+                    <Calendar className="h-5 w-5 text-[#8cc63f]" />
                     <span>Complete amortization schedule</span>
                   </div>
                 </div>
@@ -102,7 +102,7 @@ export default function CalculatorsPage() {
                     </div>
                     <Button className="w-full bg-green-500 hover:bg-green-600">Calculate Payment</Button>
                     <div className="text-center p-4 bg-gray-50 rounded-md">
-                      <div className="text-2xl font-bold text-green-600">$475.78</div>
+                      <div className="text-2xl font-bold text-[#8cc63f]">$475.78</div>
                       <div className="text-sm text-gray-600">Monthly Payment</div>
                     </div>
                   </CardContent>

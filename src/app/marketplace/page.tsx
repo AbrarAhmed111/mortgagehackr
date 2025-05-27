@@ -404,11 +404,11 @@ export default function MarketplacePage() {
                       {/* Rate Information */}
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="text-center p-3 bg-green-50 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">{offer.interestRate}%</div>
+                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.interestRate}%</div>
                           <div className="text-sm text-gray-600">Interest Rate</div>
                         </div>
                         <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">{offer.apr}%</div>
+                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.apr}%</div>
                           <div className="text-sm text-gray-600">APR</div>
                         </div>
                       </div>
@@ -448,7 +448,7 @@ export default function MarketplacePage() {
                         <div className="space-y-1">
                           {offer.features.map((feature, index) => (
                             <div key={index} className="flex items-center space-x-2 text-sm">
-                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <CheckCircle className="h-4 w-4 text-[#8cc63f]" />
                               <span>{feature}</span>
                             </div>
                           ))}
@@ -497,7 +497,7 @@ export default function MarketplacePage() {
             <div className="grid gap-8 md:grid-cols-3">
               <div className="text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                  <Shield className="h-8 w-8 text-green-600" />
+                  <Shield className="h-8 w-8 text-[#8cc63f]" />
                 </div>
                 <h3 className="text-xl font-semibold">Verified Lenders Only</h3>
                 <p className="text-gray-600">
@@ -507,7 +507,7 @@ export default function MarketplacePage() {
 
               <div className="text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Clock className="h-8 w-8 text-green-600" />
+                  <Clock className="h-8 w-8 text-[#8cc63f]" />
                 </div>
                 <h3 className="text-xl font-semibold">Real-Time Rates</h3>
                 <p className="text-gray-600">

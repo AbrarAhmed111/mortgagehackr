@@ -137,7 +137,7 @@ export default function HomePage() {
               <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-4">
                   <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <DollarSign className="h-8 w-8 text-green-600" />
+                    <DollarSign className="h-8 w-8 text-[#8cc63f]" />
                   </div>
                   <CardTitle className="text-lg">Personal Loans</CardTitle>
                 </CardHeader>
@@ -151,7 +151,7 @@ export default function HomePage() {
               <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-4">
                   <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <Home className="h-8 w-8 text-green-600" />
+                    <Home className="h-8 w-8 text-[#8cc63f]" />
                   </div>
                   <CardTitle className="text-lg">Mortgages</CardTitle>
                 </CardHeader>
@@ -216,15 +216,15 @@ export default function HomePage() {
 
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-[#8cc63f]" />
                     <span>Flexible input - provide what you know</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-[#8cc63f]" />
                     <span>Instant analysis and recommendations</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-[#8cc63f]" />
                     <span>No credit check required</span>
                   </div>
                 </div>
@@ -288,7 +288,7 @@ export default function HomePage() {
             <div className="grid gap-8 md:grid-cols-3">
               <div className="text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Shield className="h-8 w-8 text-green-600" />
+                  <Shield className="h-8 w-8 text-[#8cc63f]" />
                 </div>
                 <h3 className="text-xl font-semibold">Bank-Level Security</h3>
                 <p className="text-gray-600">
@@ -298,7 +298,7 @@ export default function HomePage() {
 
               <div className="text-center space-y-4">
                 <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                  <TrendingUp className="h-8 w-8 text-green-600" />
+                  <TrendingUp className="h-8 w-8 text-[#8cc63f]" />
                 </div>
                 <h3 className="text-xl font-semibold">AI-Powered Insights</h3>
                 <p className="text-gray-600">

@@ -125,7 +125,7 @@ export default function ContactPage() {
                   <Card className="p-4">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Phone className="h-6 w-6 text-green-600" />
+                        <Phone className="h-6 w-6 text-[#8cc63f]" />
                       </div>
                       <div>
                         <h3 className="font-semibold">Phone Support</h3>
@@ -138,7 +138,7 @@ export default function ContactPage() {
                   <Card className="p-4">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Mail className="h-6 w-6 text-green-600" />
+                        <Mail className="h-6 w-6 text-[#8cc63f]" />
                       </div>
                       <div>
                         <h3 className="font-semibold">Email Support</h3>
@@ -194,7 +194,7 @@ export default function ContactPage() {
               <Card className="p-6">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-green-600" />
+                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
                     <CardTitle className="text-lg">Is the loan analysis really free?</CardTitle>
                   </div>
                 </CardHeader>
@@ -209,7 +209,7 @@ export default function ContactPage() {
               <Card className="p-6">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-green-600" />
+                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
                     <CardTitle className="text-lg">Will checking rates affect my credit score?</CardTitle>
                   </div>
                 </CardHeader>
@@ -224,7 +224,7 @@ export default function ContactPage() {
               <Card className="p-6">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-green-600" />
+                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
                     <CardTitle className="text-lg">How accurate are your calculations?</CardTitle>
                   </div>
                 </CardHeader>
@@ -239,7 +239,7 @@ export default function ContactPage() {
               <Card className="p-6">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-green-600" />
+                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
                     <CardTitle className="text-lg">What if I don't have all the loan information?</CardTitle>
                   </div>
                 </CardHeader>
@@ -268,7 +268,7 @@ export default function ContactPage() {
               <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <MessageSquare className="h-8 w-8 text-green-600" />
+                    <MessageSquare className="h-8 w-8 text-[#8cc63f]" />
                   </div>
                   <CardTitle className="text-lg">Live Chat</CardTitle>
                 </CardHeader>
@@ -285,7 +285,7 @@ export default function ContactPage() {
               <Card className="text-center p-6 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <HelpCircle className="h-8 w-8 text-green-600" />
+                    <HelpCircle className="h-8 w-8 text-[#8cc63f]" />
                   </div>
                   <CardTitle className="text-lg">Help Center</CardTitle>
                 </CardHeader>
