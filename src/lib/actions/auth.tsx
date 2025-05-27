@@ -3,12 +3,17 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '../supabase/server'
 
-export async function adminSignin(formData: FormData, returnUrl?: string) {
+export async function adminSignin(formData: FormData) {
   const supabase = await createClient()
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+
   if (!email || !password) {
-    return { error: 'Email and password are required' }
+    return {
+      ok: false,
+      status: 400, // Bad Request
+      error: 'Email and password are required',
+    }
   }
 
   // Sign in user
@@ -18,29 +23,34 @@ export async function adminSignin(formData: FormData, returnUrl?: string) {
   })
 
   if (signInError) {
-    return { error: signInError.message }
+    return {
+      ok: false,
+      status: 401, // Unauthorized
+      error: signInError.message,
+    }
   }
 
-  // Optional: slight delay to ensure cookie is set
+  // Delay to ensure session cookie is set
   await new Promise(resolve => setTimeout(resolve, 100))
 
-  // Validate that session exists
   const {
     data: { session },
     error: sessionError,
   } = await supabase.auth.getSession()
 
   if (sessionError || !session) {
-    return { error: 'Failed to create session' }
+    return {
+      ok: false,
+      status: 500, // Server Error
+      error: 'Failed to create session',
+    }
   }
 
-  // ✅ Redirect based on returnUrl if exists
-  if (returnUrl) {
-    redirect(decodeURIComponent(returnUrl))
+  return {
+    ok: true,
+    status: 200, // OK
+    success: 'Signed in successfully',
   }
-
-  // ✅ Default redirect to admin panel
-  redirect('/admin-panel/dashboard')
 }
 
 export async function signout() {
