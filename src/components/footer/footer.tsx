@@ -1,6 +1,8 @@
 import { Button } from "../../components/ui/button"
 import { Calculator, Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Shield, Clock, Users } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+import logo from "../../assets/Images/mortgagehackr-2.png"
 
 export default function Footer() {
   return (
@@ -40,11 +42,10 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
-                <Calculator className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-blue-900">MortgageHackr</span>
-            </div>
+            <Link href="/" className="flex items-center">
+            <Image src={logo} alt="MortgageHackr Logo" className="w-60"/>
+            </Link>
+        </div>
             <p className="text-sm text-slate-600">
               Professional loan analysis tools to help you make smarter financial decisions. Get accurate calculations
               and expert insights in minutes.
@@ -100,11 +101,6 @@ export default function Footer() {
                   About
                 </Link>
               </li>
-              <li>
-                <Link href="/contact" className="text-slate-600 hover:text-blue-600">
-                  Contact
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -113,28 +109,13 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Resources</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/guides" className="text-slate-600 hover:text-blue-600">
-                  Loan Guides
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-slate-600 hover:text-blue-600">
-                  Financial Blog
-                </Link>
-              </li>
-              <li>
                 <Link href="/faq" className="text-slate-600 hover:text-blue-600">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/glossary" className="text-slate-600 hover:text-blue-600">
-                  Financial Glossary
-                </Link>
-              </li>
-              <li>
-                <Link href="/market-rates" className="text-slate-600 hover:text-blue-600">
-                  Current Market Rates
+                <Link href="/contact" className="text-slate-600 hover:text-blue-600">
+                  Contact
                 </Link>
               </li>
             </ul>

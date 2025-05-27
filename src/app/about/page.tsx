@@ -1,10 +1,37 @@
-import { Button } from "../../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
-import { Users, Target, Award, Shield, TrendingUp, Star, Linkedin, Mail } from "lucide-react"
-import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Users,
+  Target,
+  Award,
+  Shield,
+  TrendingUp,
+  Calculator,
+  Database,
+  BarChart3,
+  MessageSquare,
+  DollarSign,
+  ArrowRight,
+  Eye,
+  Compass,
+} from "lucide-react"
 import Header from "../../components/header/header"
 import Footer from "../../components/footer/footer"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "About MortgageHackr │ Our Mission & Story",
+  description:
+    "We turn complex mortgage math into simple, actionable insights—so every borrower negotiates with confidence.",
+  openGraph: {
+    title: "About MortgageHackr",
+  },
+  twitter: {
+    title: "About MortgageHackr",
+  },
+}
+
 
 export default function AboutPage() {
   return (
@@ -17,287 +44,288 @@ export default function AboutPage() {
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center space-y-6">
               <Badge variant="secondary" className="bg-green-500 text-white border-0">
-                About MortgageHackr Pro
+                About MortgageHackr.net
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                Empowering smart financial decisions since 2020
-              </h1>
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Unlock Better Deals</h1>
               <p className="text-xl text-blue-100">
-                We're on a mission to democratize access to financial insights and help millions of borrowers make
-                informed loan decisions with confidence.
+                We're former automotive executives who bring data-driven deal-making expertise to the mortgage industry,
+                helping homeowners get the agility that car shoppers enjoy.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Our Story */}
+        <section className="w-full py-16 md:py-24">
+          <div className="container px-4 md:px-6">
+            <div className="max-w-4xl mx-auto space-y-12">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">About Us</h2>
+              </div>
+
+              <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                <p className="text-xl mb-8">
+                  We're a group of former automotive executives who mastered data-driven deal-making and negotiations.
+                  When we looked at our own mortgages, we noticed home-buyers lack the agility car shoppers enjoy: you
+                  can walk out of one dealership and straight into another, but refinancing or switching lenders
+                  involves weeks of paperwork, credit pulls, and underwriting—so most people won't even try and simply
+                  settle for the rate they're handed.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Mission & Vision */}
-        <section className="w-full py-16 md:py-24">
+        <section className="w-full py-16 bg-gray-50">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-12 lg:grid-cols-2 items-center">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-bold tracking-tight">Our Mission</h2>
-                  <p className="text-lg text-gray-600">
-                    To provide transparent, accurate, and accessible loan analysis tools that empower borrowers to make
-                    informed financial decisions without the complexity and confusion of traditional lending processes.
-                  </p>
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-semibold">Our Vision</h3>
-                  <p className="text-lg text-gray-600">
-                    A world where every borrower has access to the insights and tools they need to secure the best
-                    possible loan terms, regardless of their financial background or experience.
-                  </p>
-                </div>
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Our Mission & Vision</h2>
+                <p className="text-xl text-gray-600">
+                  Driving our commitment to empowering borrowers with data and insights.
+                </p>
               </div>
-              <div className="flex justify-center">
-                <Image
-                  src="/placeholder.svg?height=400&width=500"
-                  width="500"
-                  height="400"
-                  alt="Our Mission"
-                  className="rounded-lg shadow-lg"
-                />
+
+              <div className="grid gap-8 lg:grid-cols-2">
+                {/* Vision */}
+                <Card className="p-8 hover:shadow-lg transition-shadow border-2 border-blue-100">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Eye className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <CardTitle className="text-2xl text-blue-900">Our Vision</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-lg text-gray-700 leading-relaxed">
+                      Empower every borrower with transparent data and peer-driven insights—so they navigate the
+                      mortgage decision with confidence and unlock tens of thousands of dollars in savings over the life
+                      of their loan.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Mission */}
+                <Card className="p-8 hover:shadow-lg transition-shadow border-2 border-green-100">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Compass className="h-6 w-6 text-green-600" />
+                      </div>
+                      <CardTitle className="text-2xl text-green-900">Our Mission</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-lg text-gray-700 leading-relaxed">
+                      Turn 50+ years of mortgage-rate data and peer insight into simple, actionable tools—empowering
+                      every borrower to explore offers, compare options, and confidently make the mortgage decision
+                      that's right for them.
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Core Values */}
-        <section className="w-full py-16 bg-gray-50">
+        {/* What We Built */}
+        <section className="w-full py-16">
           <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Our Core Values</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                These principles guide everything we do and shape how we serve our community of borrowers.
-              </p>
-            </div>
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">What We Built</h2>
+                <p className="text-xl text-gray-600">
+                  Powerful tools that give you the data and community support you need to get better mortgage deals.
+                </p>
+              </div>
 
-            <div className="grid gap-8 md:grid-cols-3">
-              <Card className="text-center p-6">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <div className="grid gap-8 lg:grid-cols-2">
+                {/* Mortgage Deal Analyzer */}
+                <Card className="p-8 hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Calculator className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <CardTitle className="text-2xl">Mortgage Deal Analyzer</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <Database className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold">50+ Years of Rate Data</h4>
+                          <p className="text-gray-600">Pulls daily rate data going back to 1971</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <BarChart3 className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold">Market Comparison</h4>
+                          <p className="text-gray-600">
+                            Compares any quote—or your closed loan from years ago—against the market on that exact date
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <DollarSign className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold">Savings Calculator</h4>
+                          <p className="text-gray-600">
+                            Calculates how much you overpaid or saved, and projects today's savings if you refinance or
+                            renegotiate
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                      Try Deal Analyzer
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Independent Consumer Forum */}
+                <Card className="p-8 hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <MessageSquare className="h-6 w-6 text-green-600" />
+                      </div>
+                      <CardTitle className="text-2xl">Independent Consumer Forum</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <Shield className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold">Bias-Free Community</h4>
+                          <p className="text-gray-600">No ads, no sponsored content—just honest discussions</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <Users className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold">Real Stories & Strategies</h4>
+                          <p className="text-gray-600">
+                            Homeowners share actual experiences and successful negotiation tactics
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <Target className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold">Success Tips</h4>
+                          <p className="text-gray-600">
+                            Learn from others who've successfully saved thousands on their mortgages
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button variant="outline" className="w-full">
+                      Join Community
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why It Matters */}
+        <section className="w-full py-16 md:py-24 bg-gray-50">
+          <div className="container px-4 md:px-6">
+            <div className="max-w-4xl mx-auto text-center space-y-8">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Why It Matters</h2>
+
+              <div className="bg-gradient-to-r from-red-50 to-green-50 p-8 rounded-lg border">
+                <div className="text-6xl font-bold text-gray-800 mb-4">0.25%</div>
+                <p className="text-xl text-gray-700 leading-relaxed">
+                  A <strong>0.25% rate gap</strong> can cost—or save—<strong>tens of thousands</strong> over 30 years.
+                  We give you the hard numbers and peer insight so you can approach your lender with confidence.
+                </p>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-3 mt-12">
+                <div className="text-center space-y-3">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                    <TrendingUp className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Know Your Position</h3>
+                  <p className="text-gray-600">Understand exactly where you stand compared to market rates</p>
+                </div>
+
+                <div className="text-center space-y-3">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                     <Shield className="h-8 w-8 text-blue-600" />
                   </div>
-                  <CardTitle>Transparency</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    We believe in complete transparency. No hidden fees, no confusing terms, just clear, honest
-                    information you can trust.
-                  </CardDescription>
-                </CardContent>
-              </Card>
+                  <h3 className="text-lg font-semibold">Negotiate with Confidence</h3>
+                  <p className="text-gray-600">Armed with data and community insights for better outcomes</p>
+                </div>
 
-              <Card className="text-center p-6">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <Users className="h-8 w-8 text-green-600" />
+                <div className="text-center space-y-3">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                    <DollarSign className="h-8 w-8 text-green-600" />
                   </div>
-                  <CardTitle>User-Centric</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    Every feature we build starts with our users' needs. We listen, learn, and continuously improve
-                    based on your feedback.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <TrendingUp className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <CardTitle>Innovation</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    We leverage cutting-edge technology and data science to provide insights that were previously only
-                    available to financial professionals.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Company Stats */}
-        <section className="w-full py-16 md:py-24">
-          <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Our Impact</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Since our founding, we've helped thousands of borrowers save money and make better financial decisions.
-              </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-4 text-center">
-              <div className="space-y-2">
-                <div className="text-4xl font-bold text-blue-600">100K+</div>
-                <div className="text-sm text-gray-600">Borrowers Served</div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-4xl font-bold text-green-600">$50M+</div>
-                <div className="text-sm text-gray-600">Total Savings Generated</div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-4xl font-bold text-purple-600">500K+</div>
-                <div className="text-sm text-gray-600">Loan Analyses Completed</div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-4xl font-bold text-orange-600">4.8/5</div>
-                <div className="text-sm text-gray-600">Average User Rating</div>
+                  <h3 className="text-lg font-semibold">Save Thousands</h3>
+                  <p className="text-gray-600">Small rate improvements compound to massive long-term savings</p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Team Section */}
-        <section className="w-full py-16 bg-gray-50">
+        {/* Our Background */}
+        <section className="w-full py-16">
           <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Meet Our Team</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Our diverse team of financial experts, data scientists, and engineers work together to build the best
-                loan analysis platform.
-              </p>
-            </div>
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Our Background</h2>
+                <p className="text-xl text-gray-600">Bringing automotive industry expertise to mortgage deal-making</p>
+              </div>
 
-            <div className="grid gap-8 md:grid-cols-3">
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                    JS
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold">John Smith</h3>
-                    <p className="text-gray-600">CEO & Co-Founder</p>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Former Goldman Sachs analyst with 15+ years in financial services. Passionate about democratizing
-                    financial insights.
-                  </p>
-                  <div className="flex justify-center space-x-2">
-                    <Button variant="ghost" size="sm">
-                      <Linkedin className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Mail className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="grid gap-8 md:grid-cols-2">
+                <Card className="p-6">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3">
+                      <Award className="h-6 w-6 text-blue-600" />
+                      <CardTitle className="text-lg">Automotive Expertise</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">
+                      Years of experience in automotive sales and negotiations taught us how data-driven approaches and
+                      competitive shopping create better outcomes for consumers.
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                    MJ
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold">Maria Johnson</h3>
-                    <p className="text-gray-600">CTO & Co-Founder</p>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Former Google engineer specializing in machine learning and financial algorithms. PhD in Computer
-                    Science from Stanford.
-                  </p>
-                  <div className="flex justify-center space-x-2">
-                    <Button variant="ghost" size="sm">
-                      <Linkedin className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Mail className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-24 h-24 bg-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                    DL
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold">David Lee</h3>
-                    <p className="text-gray-600">Head of Product</p>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Product leader with experience at fintech startups. Focused on creating intuitive user experiences
-                    for complex financial tools.
-                  </p>
-                  <div className="flex justify-center space-x-2">
-                    <Button variant="ghost" size="sm">
-                      <Linkedin className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Mail className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Awards & Recognition */}
-        <section className="w-full py-16 md:py-24">
-          <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Awards & Recognition</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                We're honored to be recognized by industry leaders and our community.
-              </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <Award className="h-8 w-8 text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Best Fintech Startup 2023</h3>
-                    <p className="text-sm text-gray-600">TechCrunch Disrupt</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Star className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Top Consumer Choice</h3>
-                    <p className="text-sm text-gray-600">Financial Planning Magazine</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                    <Target className="h-8 w-8 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Innovation Award</h3>
-                    <p className="text-sm text-gray-600">Lending Industry Summit</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6">
-                <CardContent className="space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Users className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Best User Experience</h3>
-                    <p className="text-sm text-gray-600">UX Design Awards</p>
-                  </div>
-                </CardContent>
-              </Card>
+                <Card className="p-6">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3">
+                      <Target className="h-6 w-6 text-green-600" />
+                      <CardTitle className="text-lg">Consumer Advocacy</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">
+                      We believe every homeowner deserves the same negotiating power and market transparency that savvy
+                      car buyers have enjoyed for decades.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
@@ -306,21 +334,22 @@ export default function AboutPage() {
         <section className="w-full py-16 md:py-24 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
           <div className="container px-4 md:px-6">
             <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Ready to join our community?</h2>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Welcome to MortgageHackr.net</h2>
               <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                Experience the difference that transparent, user-focused loan analysis can make for your financial
-                future.
+                Ready to unlock better deals? Start with our Deal Analyzer and join thousands of homeowners who've taken
+                control of their mortgage costs.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
-                  Start Your Free Analysis
+                  Analyze Your Deal
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
                   className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
                 >
-                  Contact Our Team
+                  Join Our Community
                 </Button>
               </div>
             </div>
