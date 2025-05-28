@@ -1,9 +1,7 @@
-import { Button } from "../../components/ui/button"
 import { Calculator, Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Shield, Clock, Users } from "lucide-react"
 import Link from "next/link"
+import logo from "@/assets/Images/mortgagehackr-2.png"
 import Image from "next/image"
-import logo from "../../assets/Images/mortgagehackr-2.png"
-
 export default function Footer() {
   return (
     <footer className="w-full border-t bg-slate-50">
@@ -13,14 +11,14 @@ export default function Footer() {
           <div className="grid gap-6 md:grid-cols-3 text-center">
             <div className="flex flex-col items-center space-y-2">
               <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
-                <Shield className="h-6 w-6 text-[#8cc63f]" />
+                <Shield className="h-6 w-6 text-green-600" />
               </div>
               <h3 className="font-semibold text-slate-900">Secure & Private</h3>
               <p className="text-sm text-slate-600">Your financial data is encrypted and never shared</p>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                <Clock className="h-6 w-6 text-[#8cc63f]" />
+                <Clock className="h-6 w-6 text-blue-600" />
               </div>
               <h3 className="font-semibold text-slate-900">Instant Results</h3>
               <p className="text-sm text-slate-600">Get your loan analysis in seconds, not hours</p>
@@ -37,11 +35,11 @@ export default function Footer() {
       </div>
 
       {/* Main Footer Content */}
-      <div className="container px-4 md:px-6 py-8">
+      <div className="container px-4 md:px-6 py-12">
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <Link href="/" className="flex items-center">
             <Image src={logo} alt="MortgageHackr Logo" className="w-60"/>
             </Link>
@@ -57,7 +55,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Mail className="h-4 w-4" />
-                <span>info@MortgageHackr.com</span>
+                <span>info@loananalyzer.com</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <MapPin className="h-4 w-4" />
@@ -65,13 +63,13 @@ export default function Footer() {
               </div>
             </div>
             <div className="flex space-x-4">
-              <Link href="#" className="text-slate-400 hover:text-[#73a334]">
+              <Link href="#" className="text-slate-400 hover:text-blue-600">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-[#73a334]">
+              <Link href="#" className="text-slate-400 hover:text-blue-600">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-[#73a334]">
+              <Link href="#" className="text-slate-400 hover:text-blue-600">
                 <Linkedin className="h-5 w-5" />
               </Link>
             </div>
@@ -82,22 +80,22 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Tools & Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-slate-600 hover:text-[#73a334]">
+                <Link href="/" className="text-slate-600 hover:text-blue-600">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/marketplace" className="text-slate-600 hover:text-[#73a334]">
+                <Link href="/marketplace" className="text-slate-600 hover:text-blue-600">
                   Marketplace
                 </Link>
               </li>
               <li>
-                <Link href="/calculators" className="text-slate-600 hover:text-[#73a334]">
+                <Link href="/calculators" className="text-slate-600 hover:text-blue-600">
                   Calculators
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-slate-600 hover:text-[#73a334]">
+                <Link href="/about" className="text-slate-600 hover:text-blue-600">
                   About
                 </Link>
               </li>
@@ -109,12 +107,17 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-900">Resources</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/faq" className="text-slate-600 hover:text-[#73a334]">
+                <Link href="/faq" className="text-slate-600 hover:text-blue-600">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-slate-600 hover:text-[#73a334]">
+                <Link href="/blog" className="text-slate-600 hover:text-blue-600">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-slate-600 hover:text-blue-600">
                   Contact
                 </Link>
               </li>
@@ -123,45 +126,32 @@ export default function Footer() {
 
           {/* Newsletter Signup */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-slate-900">Stay Updated</h4>
-            <p className="text-sm text-slate-600">
-              Get the latest market insights and financial tips delivered to your inbox.
-            </p>
-            <div className="space-y-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                Subscribe
-              </Button>
+            <h4 className="text-sm font-semibold text-slate-900">Contact Info</h4>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
+                <Phone className="h-4 w-4" />
+                <span>(555) 123-4567</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
+                <Mail className="h-4 w-4" />
+                <span>support@mortgagehackr.net</span>
+              </div>
+              <div className="text-sm text-slate-600">
+                <strong>Business Hours:</strong>
+                <br />
+                Mon-Fri: 8AM-8PM EST
+                <br />
+                Sat: 9AM-5PM EST
+              </div>
             </div>
-            <p className="text-xs text-slate-500">
-              By subscribing, you agree to receive marketing emails. Unsubscribe anytime.
-            </p>
           </div>
         </div>
 
         {/* Bottom Footer */}
-        <div className="mt-8 pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center">
+        <div className="mt-8 pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-center items-center">
           <p className="text-xs text-slate-500">
-            © 2024 MortgageHackr Pro. All rights reserved. | Licensed Financial Services Provider
+            © 2024 LoanAnalyzer Pro. All rights reserved. | Licensed Financial Services Provider
           </p>
-          <div className="flex space-x-4 text-xs text-slate-500 mt-4 sm:mt-0">
-            <Link href="/#" className="hover:text-[#73a334]">
-              Privacy Policy
-            </Link>
-            <Link href="/#" className="hover:text-[#73a334]">
-              Terms of Service
-            </Link>
-            <Link href="/#" className="hover:text-[#73a334]">
-              Security
-            </Link>
-            <Link href="/#" className="hover:text-[#73a334]">
-              Disclaimer
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

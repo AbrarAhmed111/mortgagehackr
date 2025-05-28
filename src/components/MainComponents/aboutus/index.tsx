@@ -16,8 +16,6 @@ import {
   Eye,
   Compass,
 } from "lucide-react"
-import Header from "../../components/header/header"
-import Footer from "../../components/footer/footer"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -36,7 +34,6 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -356,8 +353,6 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   )
 }
