@@ -13,6 +13,7 @@ export default function Error({
   React.useEffect(() => {
     console.error(error);
   }, [error]);
+  
 
   return (
     <main className="flex h-screen flex-col items-center justify-center bg-white text-black">
