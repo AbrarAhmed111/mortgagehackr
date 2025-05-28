@@ -10,6 +10,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "../assets/css/globals.css"; // CSS is now included here
+import Header from '@/components/MainComponents/header/header'
+import Footer from '@/components/MainComponents/footer/footer'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,7 +33,9 @@ export default function RootLayout({
         <head></head>
         <body suppressHydrationWarning className="antialiased w-full">
           <Toaster position="top-center" reverseOrder={false} />
+          <Header/>
           {children}
+          <Footer/>
         </body>
       </html>
     </Providers>

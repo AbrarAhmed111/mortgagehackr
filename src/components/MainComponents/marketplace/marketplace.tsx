@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Button } from "../../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
   Star,
   Shield,
@@ -16,8 +16,6 @@ import {
   ExternalLink,
   Calendar,
 } from "lucide-react"
-import Header from "../../components/header/header"
-import Footer from "../../components/footer/footer"
 
 // Mock data for mortgage offers
 const mortgageOffers = [
@@ -192,7 +190,6 @@ export default function MarketplacePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -554,7 +551,6 @@ export default function MarketplacePage() {
         </section>
       </main>
 
-      <Footer />
     </div>
   )
 }

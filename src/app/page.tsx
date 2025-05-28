@@ -14,8 +14,6 @@ import {
   Star,
 } from "lucide-react"
 import Image from "next/image"
-import Footer from "../components/footer/footer"
-import Header from "../components/header/header"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -40,7 +38,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -444,7 +441,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      <Footer />
     </div>
   )
 }

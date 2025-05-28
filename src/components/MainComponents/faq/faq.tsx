@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ChevronDown, ChevronUp, Search, HelpCircle, Phone, Mail, MessageSquare, Calculator, Home } from "lucide-react"
-import Header from "../../components/header/header"
-import Footer from "../../components/footer/footer"
 
 
 const faqs = [
@@ -68,8 +66,6 @@ export default function FAQPage() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Header />
-
             <main className="flex-1">
                 {/* Hero Section */}
                 <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
@@ -279,7 +275,6 @@ export default function FAQPage() {
                 </section>
             </main>
 
-            <Footer />
         </div>
     )
 }

@@ -1,6 +1,6 @@
-import { Button } from "../../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
   Calculator,
   DollarSign,
@@ -14,13 +14,10 @@ import {
   Calendar,
   PiggyBank,
 } from "lucide-react"
-import Header from "../../components/header/header"
-import Footer from "../../components/footer/footer"
 
 export default function CalculatorsPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -139,7 +136,6 @@ export default function CalculatorsPage() {
         </section>
       </main>
 
-      <Footer />
     </div>
   )
 }
