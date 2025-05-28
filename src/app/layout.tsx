@@ -33,9 +33,7 @@ export default function RootLayout({
         <head></head>
         <body suppressHydrationWarning className="antialiased w-full">
           <Toaster position="top-center" reverseOrder={false} />
-          <Header/>
           {children}
-          <Footer/>
         </body>
       </html>
     </Providers>
