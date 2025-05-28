@@ -5,14 +5,14 @@ import { createClient } from './lib/supabase/server'
 
 
 export async function middleware(request: NextRequest) {
-  const isVercelPreview =
-    request.headers.get('host')?.includes('vercel.app') ||
-    request.nextUrl.hostname.includes('vercel.app')
+  // const isVercelPreview =
+  //   request.headers.get('host')?.includes('vercel.app') ||
+  //   request.nextUrl.hostname.includes('vercel.app')
 
-  if (isVercelPreview) {
-    console.log('Vercel preview domain detected, allowing access')
-    return NextResponse.next()
-  }
+  // if (isVercelPreview) {
+  //   console.log('Vercel preview domain detected, allowing access')
+  //   return NextResponse.next()
+  // }
 
   // 🛑 Skip session check for sensitive POST routes
   const skipOnPostPaths = ['/reset-password']
