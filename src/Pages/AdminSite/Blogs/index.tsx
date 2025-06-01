@@ -1,20 +1,49 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
 import { Blog, BlogsColumn } from '@/utils/types'
-import { blogsData } from '@/constants'
 import { FiPlus } from 'react-icons/fi'
 import ProfileIcon from '@/assets/Images/image.png'
 import { AddBlogModal } from '@/components/AdminComponents/Modals/AddBlogModal'
-import { UpdateBlogModal } from '@/components/AdminComponents/Modals/UpdateBlogModal'
 import { DeleteBlogModal } from '@/components/AdminComponents/Modals/DeleteBlogModal'
+import { getAllBlogs } from '@/lib/actions/blogs'
+import { BiLoaderCircle } from 'react-icons/bi'
+import toast from 'react-hot-toast'
 
 const BlogsManagement: React.FC = () => {
-  const [blogs, setBlogs] = useState<Blog[]>(blogsData)
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false)
+  // const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false)
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null)
+
+  useEffect(() => {
+    getBlogs()
+  }, [currentPage])
+
+  const getBlogs = async () => {
+    setLoading(true)
+    try {
+      const blogsData = await getAllBlogs(currentPage, 8)
+      console.log('>>>>>>>>', blogsData)
+      const transformedBlogs: Blog[] = blogsData.map((blog: any) => ({
+        id: blog.id,
+        title: blog.title,
+        content:
+          blog.content?.map((block: any) => block.description).join(' ') || '',
+        image: blog.profile_image || ProfileIcon,
+        publishDate: blog.created_at,
+        slug: blog.slug,
+      }))
+      setBlogs(transformedBlogs)
+    } catch (error) {
+      console.error('Error loading blogs:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const columns: BlogsColumn<Blog>[] = [
     {
@@ -38,35 +67,30 @@ const BlogsManagement: React.FC = () => {
   ]
 
   // Handlers
-  const handleAdd = (newBlog: Blog) => {
-    setBlogs([...blogs, newBlog])
+  const handleAdd = async () => {
     setIsAddModalOpen(false)
+    await getBlogs()
   }
 
-  const handleEdit = (blog: Blog) => {
-    setSelectedBlog(blog)
-    setIsUpdateModalOpen(true)
-  }
+  // const handleEdit = (blog: Blog) => {
+  //   setSelectedBlog(blog)
+  //   setIsUpdateModalOpen(true)
+  // }
 
-  const handleUpdate = (updatedBlog: Blog) => {
-    setBlogs(
-      blogs.map(blog =>
-        blog.title === selectedBlog?.title ? updatedBlog : blog,
-      ),
-    )
-    setIsUpdateModalOpen(false)
-  }
+  // const handleUpdate = async (updatedBlog: Blog) => {
+  //   await getBlogs()
+  //   setIsUpdateModalOpen(false)
+  // }
 
   const handleDelete = (blog: Blog) => {
     setSelectedBlog(blog)
     setIsDeleteModalOpen(true)
   }
 
-  const handleDeleteConfirm = () => {
-    if (selectedBlog) {
-      setBlogs(blogs.filter(blog => blog.title !== selectedBlog.title))
-      setIsDeleteModalOpen(false)
-    }
+  const handleDeleteSuccess = async () => {
+    setIsDeleteModalOpen(false)
+    await getBlogs()
+    toast.success('Blog deleted successfully')
   }
 
   const handleSelection = (selectedBlogs: Blog[]) => {
@@ -85,15 +109,25 @@ const BlogsManagement: React.FC = () => {
           Add Blog
         </button>
       </div>
-
-      <DataTable
-        data={blogs}
-        columns={columns}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onSelect={handleSelection}
-        itemsPerPage={8}
-      />
+      {loading ? (
+        <div className="flex justify-center gap-4 items-center h-[50vh] border rounded-lg">
+          <BiLoaderCircle size={40} className="animate-spin" />
+          <span className="text-xl font-semibold">Loading blogs...</span>
+        </div>
+      ) : blogs.length > 0 ? (
+        <DataTable
+          data={blogs}
+          columns={columns}
+          // onEdit={handleEdit}
+          onDelete={handleDelete}
+          onSelect={handleSelection}
+          itemsPerPage={8}
+        />
+      ) : (
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">No blogs data available.</div>
+        </div>
+      )}
 
       {/* Add Blog Modal */}
       <AddBlogModal
@@ -104,21 +138,22 @@ const BlogsManagement: React.FC = () => {
       />
 
       {/* Update Blog Modal */}
-      <UpdateBlogModal
+      {/* <UpdateBlogModal
         isOpen={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}
         onUpdate={handleUpdate}
         blogData={selectedBlog}
-      />
+      /> */}
 
       {/* Delete Blog Modal */}
       <DeleteBlogModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onDelete={handleDeleteConfirm}
+        onDeleteSuccess={handleDeleteSuccess}
         blogData={selectedBlog}
       />
     </div>
   )
 }
+
 export default BlogsManagement

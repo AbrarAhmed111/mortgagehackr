@@ -27,6 +27,8 @@ export type Blog = {
   content: string
   image: string | StaticImageData
   publishDate: string
+  id?: string
+  slug?: string
 }
 
 export type BlogsColumn<T> = {

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { FiEye, FiEyeOff, FiMail, FiLock, FiUser } from 'react-icons/fi'
 import { toast } from 'react-hot-toast'
 import { adminSignin } from '@/lib/actions/auth'
-
+import { BiLoaderCircle } from 'react-icons/bi'
 const AdminLogin: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -149,8 +149,11 @@ const AdminLogin: React.FC = () => {
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="flex items-center gap-2">
+                  <BiLoaderCircle
+                    size={24}
+                    className="text-white animate-spin"
+                  />
                   Signing in...
                 </div>
               ) : (

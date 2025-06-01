@@ -123,9 +123,9 @@ export function DataTable<T>({
                         <Image
                           src={item[column.accessor] as string}
                           alt=""
-                          width={column.imageWidth || 40}
-                          height={column.imageHeight || 40}
-                          className="rounded-full"
+                          width={column.imageWidth || 50}
+                          height={column.imageHeight || 50}
+                          className="rounded-full w-14 h-10 object-cover"
                         />
                       </div>
                     ) : typeof column.accessor === 'function' ? (

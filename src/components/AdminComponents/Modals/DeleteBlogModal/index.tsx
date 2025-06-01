@@ -1,21 +1,42 @@
 'use client'
-
 import { Blog } from '@/utils/types'
+import { useState } from 'react'
+import { deleteBlogById } from '@/lib/actions/blogs'
+import { BiLoaderCircle } from 'react-icons/bi'
 
 type DeleteBlogModalProps = {
   isOpen: boolean
   onClose: () => void
-  onDelete: () => void
+  onDeleteSuccess: () => void
   blogData: Blog | null
 }
 
 export function DeleteBlogModal({
   isOpen,
   onClose,
-  onDelete,
+  onDeleteSuccess,
   blogData,
 }: DeleteBlogModalProps) {
   if (!isOpen || !blogData) return null
+  const [loading, setLoading] = useState(false)
+
+  const handleDelete = async () => {
+    if (!blogData?.id) return
+
+    setLoading(true)
+    try {
+      const result = await deleteBlogById(blogData.id)
+      if (result.success) {
+        onDeleteSuccess()
+      } else {
+        console.error('Error deleting blog:', result.error)
+      }
+    } catch (error) {
+      console.error('Error deleting blog:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -28,17 +49,17 @@ export function DeleteBlogModal({
         <div className="flex justify-end space-x-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            disabled={loading}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
-            onClick={() => {
-              onDelete()
-              onClose()
-            }}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            onClick={handleDelete}
+            disabled={loading}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
+            {loading && <BiLoaderCircle className="animate-spin" />}
             Delete
           </button>
         </div>
