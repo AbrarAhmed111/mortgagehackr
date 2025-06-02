@@ -59,6 +59,37 @@ export async function getOffers(filters?: {
   return data
 }
 
+
+export async function logApplyNowClick({
+  lenderOfferId,
+  userIp,
+  userAgent,
+}: {
+  lenderOfferId: string
+  userIp?: string
+  userAgent?: string
+}) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('apply_now_clicks')
+    .insert([
+      {
+        lender_offer_id: lenderOfferId,
+        user_ip: userIp || null,
+        user_agent: userAgent || null,
+      },
+    ])
+
+  if (error) {
+    console.error('Error logging Apply Now click:', error)
+    return { error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+
 export async function getOfferById(offerId: string) {
   const supabase = await createClient()
 
