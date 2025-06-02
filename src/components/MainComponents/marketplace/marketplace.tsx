@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,20 +16,22 @@ import {
   ExternalLink,
   Calendar,
 } from "lucide-react"
+import { getOffers } from "@/lib/actions/lenderOffers"
+import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
 
 // Mock data for mortgage offers
 const mortgageOffers = [
   {
     id: 1,
-    lenderName: "Wells Fargo",
+    lender_name: "Wells Fargo",
     lenderLogo: "WF",
-    interestRate: 6.875,
+    interest_rate: 6.875,
     apr: 7.125,
-    loanTerm: 30,
+    loan_term: 30,
     eligibility: "Credit Score 620+",
     applyUrl: "/#",
-    expirationDate: "2024-02-15",
-    isActive: true,
+    expiration_date: "2024-02-15",
+    status: true,
     rating: 4.2,
     reviews: 1250,
     features: ["No PMI options", "First-time buyer programs", "Online application"],
@@ -38,15 +40,15 @@ const mortgageOffers = [
   },
   {
     id: 2,
-    lenderName: "Rocket Mortgage",
+    lender_name: "Rocket Mortgage",
     lenderLogo: "RM",
-    interestRate: 6.75,
+    interest_rate: 6.75,
     apr: 6.95,
-    loanTerm: 30,
+    loan_term: 30,
     eligibility: "Credit Score 580+",
     applyUrl: "/#",
-    expirationDate: "2024-02-20",
-    isActive: true,
+    expiration_date: "2024-02-20",
+    status: true,
     rating: 4.5,
     reviews: 2100,
     features: ["Fast approval", "Digital process", "Rate lock guarantee"],
@@ -55,15 +57,15 @@ const mortgageOffers = [
   },
   {
     id: 3,
-    lenderName: "Bank of America",
+    lender_name: "Bank of America",
     lenderLogo: "BOA",
-    interestRate: 6.95,
+    interest_rate: 6.95,
     apr: 7.2,
-    loanTerm: 15,
+    loan_term: 15,
     eligibility: "Credit Score 640+",
     applyUrl: "/#",
-    expirationDate: "2024-02-10",
-    isActive: true,
+    expiration_date: "2024-02-10",
+    status: true,
     rating: 4.1,
     reviews: 890,
     features: ["Preferred rewards discount", "No origination fee", "Local support"],
@@ -72,15 +74,15 @@ const mortgageOffers = [
   },
   {
     id: 4,
-    lenderName: "Chase Bank",
+    lender_name: "Chase Bank",
     lenderLogo: "CB",
-    interestRate: 6.825,
+    interest_rate: 6.825,
     apr: 7.075,
-    loanTerm: 30,
+    loan_term: 30,
     eligibility: "Credit Score 600+",
     applyUrl: "/#",
-    expirationDate: "2024-02-25",
-    isActive: true,
+    expiration_date: "2024-02-25",
+    status: true,
     rating: 4.3,
     reviews: 1680,
     features: ["Relationship discounts", "Jumbo loan options", "Construction loans"],
@@ -89,15 +91,15 @@ const mortgageOffers = [
   },
   {
     id: 5,
-    lenderName: "Quicken Loans",
+    lender_name: "Quicken Loans",
     lenderLogo: "QL",
-    interestRate: 7.125,
+    interest_rate: 7.125,
     apr: 7.35,
-    loanTerm: 15,
+    loan_term: 15,
     eligibility: "Credit Score 620+",
     applyUrl: "/#",
-    expirationDate: "2024-01-30",
-    isActive: false,
+    expiration_date: "2024-01-30",
+    status: false,
     rating: 4.4,
     reviews: 1950,
     features: ["YOURgage program", "Expert guidance", "Technology-driven"],
@@ -106,15 +108,15 @@ const mortgageOffers = [
   },
   {
     id: 6,
-    lenderName: "Better Mortgage",
+    lender_name: "Better Mortgage",
     lenderLogo: "BM",
-    interestRate: 6.625,
+    interest_rate: 6.625,
     apr: 6.825,
-    loanTerm: 30,
+    loan_term: 30,
     eligibility: "Credit Score 600+",
     applyUrl: "/#!",
-    expirationDate: "2024-03-01",
-    isActive: true,
+    expiration_date: "2024-03-01",
+    status: true,
     rating: 4.6,
     reviews: 750,
     features: ["No origination fees", "Digital-first", "One-day verified approval"],
@@ -141,27 +143,45 @@ const trackApplyClick = (lender: string, offerId: number) => {
   console.log("Click tracked:", clickData)
 }
 
+
+ 
 export default function MarketplacePage() {
   const [showInactive, setShowInactive] = useState(false)
   const [sortBy, setSortBy] = useState("rate")
   const [filterRate, setFilterRate] = useState({ min: 0, max: 10 })
   const [filterTerm, setFilterTerm] = useState("all")
   const [filterLender, setFilterLender] = useState("")
+  const [offers, setOffers] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+   useEffect(() => {
+    const loadOffers = async () => {
+      const data = await getOffers()
+      setOffers(data)
+      setLoading(false)
+    }
+
+    loadOffers()
+  }, [])
+
+
+console.log("Market Data",offers)
+console.log("Loading Market Data",loading)
 
   // Filter and sort offers
   const filteredAndSortedOffers = useMemo(() => {
-    const filtered = mortgageOffers.filter((offer) => {
+    const filtered = offers.filter((offer) => {
       // Active/Inactive filter
-      if (!showInactive && !offer.isActive) return false
+      if (!showInactive && !offer.status) return false
 
       // Interest rate filter
-      if (offer.interestRate < filterRate.min || offer.interestRate > filterRate.max) return false
+      if (offer.interest_rate < filterRate.min || offer.interest_rate > filterRate.max) return false
 
       // Loan term filter
-      if (filterTerm !== "all" && offer.loanTerm.toString() !== filterTerm) return false
+      if (filterTerm !== "all" && offer.loan_term.toString() !== filterTerm) return false
 
       // Lender name filter
-      if (filterLender && !offer.lenderName.toLowerCase().includes(filterLender.toLowerCase())) return false
+      if (filterLender && !offer.lender_name.toLowerCase().includes(filterLender.toLowerCase())) return false
 
       return true
     })
@@ -170,23 +190,25 @@ export default function MarketplacePage() {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "rate":
-          return a.interestRate - b.interestRate
+          return a.interest_rate - b.interest_rate
         case "newest":
           return b.id - a.id // Assuming higher ID = newer
         case "expiration":
-          return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime()
+          return new Date(a.expiration_date).getTime() - new Date(b.expiration_date).getTime()
         default:
           return 0
       }
     })
 
     return filtered
-  }, [showInactive, sortBy, filterRate, filterTerm, filterLender])
+  }, [showInactive, sortBy, filterRate, filterTerm, filterLender,offers])
 
   const handleApplyClick = (offer: any) => {
-    trackApplyClick(offer.lenderName, offer.id)
-    window.open(offer.applyUrl, "_blank")
+    trackApplyClick(offer.lender_name, offer.id)
+    window.open(offer.applyUrl || "/#", "_blank")
   }
+
+ 
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -337,7 +359,13 @@ export default function MarketplacePage() {
         {/* Mortgage Offers */}
         <section className="w-full py-16 md:py-24">
           <div className="container px-4 md:px-6">
-            {filteredAndSortedOffers.length === 0 ? (
+            {loading === true ? 
+            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+               {[...Array(6)].map((_, index) => (
+        <LenderCardSkeleton key={index} />
+      ))}
+            </div> : 
+            filteredAndSortedOffers.length === 0 ? (
               <div className="text-center py-12">
                 <h3 className="text-xl font-semibold mb-2">No offers match your criteria</h3>
                 <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
@@ -358,16 +386,16 @@ export default function MarketplacePage() {
                   <Card
                     key={offer.id}
                     className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg ${
-                      !offer.isActive ? "opacity-60 bg-gray-50" : ""
+                      !offer.status ? "opacity-60 bg-gray-50" : ""
                     }`}
                   >
                     {/* Status Badge */}
                     <div className="absolute top-4 right-4">
-                      {!offer.isActive ? (
+                      {!offer.status ? (
                         <Badge variant="secondary" className="bg-gray-400 text-white">
                           Inactive
                         </Badge>
-                      ) : new Date(offer.expirationDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? (
+                      ) : new Date(offer.expiration_date) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? (
                         <Badge variant="destructive">Expires Soon</Badge>
                       ) : (
                         <Badge className="bg-green-500 text-white">Active</Badge>
@@ -381,18 +409,18 @@ export default function MarketplacePage() {
                           {offer.lenderLogo}
                         </div>
                         <div className="flex-1">
-                          <CardTitle className="text-lg">{offer.lenderName}</CardTitle>
+                          <CardTitle className="text-lg">{offer.lender_name}</CardTitle>
                           <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
                                 className={`h-4 w-4 ${
-                                  i < Math.floor(offer.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                                  i < Math.floor(offer?.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
                                 }`}
                               />
                             ))}
                             <span className="text-sm text-gray-600 ml-1">
-                              {offer.rating} ({offer.reviews.toLocaleString()} reviews)
+                              {offer?.rating || 0} ({offer?.reviews?.toLocaleString() || 0} reviews)
                             </span>
                           </div>
                         </div>
@@ -401,7 +429,7 @@ export default function MarketplacePage() {
                       {/* Rate Information */}
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="text-center p-3 bg-green-50 rounded-lg">
-                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.interestRate}%</div>
+                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.interest_rate}%</div>
                           <div className="text-sm text-gray-600">Interest Rate</div>
                         </div>
                         <div className="text-center p-3 bg-blue-50 rounded-lg">
@@ -414,11 +442,11 @@ export default function MarketplacePage() {
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-600">Loan Term:</span>
-                          <span className="font-medium">{offer.loanTerm} years</span>
+                          <span className="font-medium">{offer.loan_term} years</span>
                         </div>
                         {offer.eligibility && (
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Eligibility:</span>
+                            <span className="text-gray-600">eligibility:</span>
                             <span className="font-medium">{offer.eligibility}</span>
                           </div>
                         )}
@@ -432,7 +460,7 @@ export default function MarketplacePage() {
                           <span className="text-gray-600">Expires:</span>
                           <span className="font-medium flex items-center">
                             <Calendar className="h-4 w-4 mr-1" />
-                            {new Date(offer.expirationDate).toLocaleDateString()}
+                            {new Date(offer.expiration_date).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
@@ -440,7 +468,7 @@ export default function MarketplacePage() {
 
                     <CardContent className="space-y-4">
                       {/* Features */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <h4 className="font-semibold text-sm">Key Features:</h4>
                         <div className="space-y-1">
                           {offer.features.map((feature, index) => (
@@ -450,17 +478,17 @@ export default function MarketplacePage() {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Apply Button */}
                       <Button
                         className={`w-full h-12 ${
-                          offer.isActive ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
+                          offer.status ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
                         }`}
-                        disabled={!offer.isActive}
+                        disabled={!offer.status}
                         onClick={() => handleApplyClick(offer)}
                       >
-                        {offer.isActive ? (
+                        {offer.status ? (
                           <>
                             Apply Now
                             <ExternalLink className="ml-2 h-4 w-4" />
@@ -471,13 +499,14 @@ export default function MarketplacePage() {
                       </Button>
 
                       <p className="text-xs text-gray-500 text-center">
-                        Clicking "Apply Now" will redirect to {offer.lenderName}'s website
+                        Clicking "Apply Now" will redirect to {offer.lender_name}'s website
                       </p>
                     </CardContent>
                   </Card>
                 ))}
               </div>
-            )}
+            )
+            }
           </div>
         </section>
 
