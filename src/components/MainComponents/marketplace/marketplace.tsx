@@ -9,121 +9,18 @@ import {
   Shield,
   Clock,
   DollarSign,
-  CheckCircle,
   ArrowRight,
   Filter,
   SortAsc,
   ExternalLink,
   Calendar,
+  Loader2Icon,
 } from "lucide-react"
-import { getOffers } from "@/lib/actions/lenderOffers"
+import { getOffers, logApplyNowClick } from "@/lib/actions/lenderOffers"
 import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
+import toast from "react-hot-toast"
 
 // Mock data for mortgage offers
-const mortgageOffers = [
-  {
-    id: 1,
-    lender_name: "Wells Fargo",
-    lenderLogo: "WF",
-    interest_rate: 6.875,
-    apr: 7.125,
-    loan_term: 30,
-    eligibility: "Credit Score 620+",
-    applyUrl: "/#",
-    expiration_date: "2024-02-15",
-    status: true,
-    rating: 4.2,
-    reviews: 1250,
-    features: ["No PMI options", "First-time buyer programs", "Online application"],
-    minLoanAmount: 100000,
-    maxLoanAmount: 2000000,
-  },
-  {
-    id: 2,
-    lender_name: "Rocket Mortgage",
-    lenderLogo: "RM",
-    interest_rate: 6.75,
-    apr: 6.95,
-    loan_term: 30,
-    eligibility: "Credit Score 580+",
-    applyUrl: "/#",
-    expiration_date: "2024-02-20",
-    status: true,
-    rating: 4.5,
-    reviews: 2100,
-    features: ["Fast approval", "Digital process", "Rate lock guarantee"],
-    minLoanAmount: 50000,
-    maxLoanAmount: 3000000,
-  },
-  {
-    id: 3,
-    lender_name: "Bank of America",
-    lenderLogo: "BOA",
-    interest_rate: 6.95,
-    apr: 7.2,
-    loan_term: 15,
-    eligibility: "Credit Score 640+",
-    applyUrl: "/#",
-    expiration_date: "2024-02-10",
-    status: true,
-    rating: 4.1,
-    reviews: 890,
-    features: ["Preferred rewards discount", "No origination fee", "Local support"],
-    minLoanAmount: 75000,
-    maxLoanAmount: 1500000,
-  },
-  {
-    id: 4,
-    lender_name: "Chase Bank",
-    lenderLogo: "CB",
-    interest_rate: 6.825,
-    apr: 7.075,
-    loan_term: 30,
-    eligibility: "Credit Score 600+",
-    applyUrl: "/#",
-    expiration_date: "2024-02-25",
-    status: true,
-    rating: 4.3,
-    reviews: 1680,
-    features: ["Relationship discounts", "Jumbo loan options", "Construction loans"],
-    minLoanAmount: 80000,
-    maxLoanAmount: 2500000,
-  },
-  {
-    id: 5,
-    lender_name: "Quicken Loans",
-    lenderLogo: "QL",
-    interest_rate: 7.125,
-    apr: 7.35,
-    loan_term: 15,
-    eligibility: "Credit Score 620+",
-    applyUrl: "/#",
-    expiration_date: "2024-01-30",
-    status: false,
-    rating: 4.4,
-    reviews: 1950,
-    features: ["YOURgage program", "Expert guidance", "Technology-driven"],
-    minLoanAmount: 60000,
-    maxLoanAmount: 2000000,
-  },
-  {
-    id: 6,
-    lender_name: "Better Mortgage",
-    lenderLogo: "BM",
-    interest_rate: 6.625,
-    apr: 6.825,
-    loan_term: 30,
-    eligibility: "Credit Score 600+",
-    applyUrl: "/#!",
-    expiration_date: "2024-03-01",
-    status: true,
-    rating: 4.6,
-    reviews: 750,
-    features: ["No origination fees", "Digital-first", "One-day verified approval"],
-    minLoanAmount: 100000,
-    maxLoanAmount: 3000000,
-  },
-]
 
 // Click tracking function
 const trackApplyClick = (lender: string, offerId: number) => {
@@ -153,6 +50,9 @@ export default function MarketplacePage() {
   const [filterLender, setFilterLender] = useState("")
   const [offers, setOffers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingOfferId, setLoadingOfferId] = useState("")
+  const [userIp, setuserIp] = useState("")
+  const [userAgent, setUserAgent] = useState("")
 
    useEffect(() => {
     const loadOffers = async () => {
@@ -203,12 +103,66 @@ console.log("Loading Market Data",loading)
     return filtered
   }, [showInactive, sortBy, filterRate, filterTerm, filterLender,offers])
 
-  const handleApplyClick = (offer: any) => {
+  const handleApplyClick = async (offer: any) => {
+      setLoadingOfferId(offer.id); // Assuming offer has a unique `id`
+  
+
     trackApplyClick(offer.lender_name, offer.id)
-    window.open(offer.applyUrl || "/#", "_blank")
+    const lenderOfferId = offer.id
+    
+   const data = await logApplyNowClick({lenderOfferId,userIp,userAgent})
+    console.log(">>>>",data)
+      setLoadingOfferId(""); // Assuming offer has a unique `id`
+  
+    if(data?.success === true)
+    {
+      toast.success(data?.message)
+    }
+    if(data?.success === false)
+    {
+      toast.error(data?.message)
+    }
+
   }
 
  
+  //Apply Offer Functions
+
+   const getBrowserName = () => {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("OPR")) {
+      return "Chrome";
+    } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+      return "Safari";
+    } else if (userAgent.includes("Firefox")) {
+      return "Firefox";
+    } else if (userAgent.includes("Edg")) {
+      return "Edge";
+    } else if (userAgent.includes("OPR") || userAgent.includes("Opera")) {
+      return "Opera";
+    } else {
+      return "Unknown";
+    }
+  };
+
+  const getIpAddress = async () => {
+    try {
+      const res = await fetch("https://api.ipify.org?format=json");
+      const data = await res.json();
+      console.log("IP Address:", data.ip);
+      setuserIp(data.ip)
+    } catch (error) {
+      console.error("Error getting IP address:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Browser:", getBrowserName());
+      setUserAgent(getBrowserName())
+    getIpAddress();
+  }, []);
+
+  
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -392,37 +346,23 @@ console.log("Loading Market Data",loading)
                     {/* Status Badge */}
                     <div className="absolute top-4 right-4">
                       {!offer.status ? (
-                        <Badge variant="secondary" className="bg-gray-400 text-white">
-                          Inactive
-                        </Badge>
-                      ) : new Date(offer.expiration_date) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? (
+                        
+                        <></>
+                      ) : new Date(offer.expiration_date) < new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) ? (
                         <Badge variant="destructive">Expires Soon</Badge>
                       ) : (
-                        <Badge className="bg-green-500 text-white">Active</Badge>
+                        
+                        <></>
                       )}
                     </div>
 
                     <CardHeader className="pb-4">
                       {/* Lender Info */}
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                          {offer.lenderLogo}
-                        </div>
+                       
                         <div className="flex-1">
                           <CardTitle className="text-lg">{offer.lender_name}</CardTitle>
-                          <div className="flex items-center space-x-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${
-                                  i < Math.floor(offer?.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                            <span className="text-sm text-gray-600 ml-1">
-                              {offer?.rating || 0} ({offer?.reviews?.toLocaleString() || 0} reviews)
-                            </span>
-                          </div>
+                         
                         </div>
                       </div>
 
@@ -450,12 +390,7 @@ console.log("Loading Market Data",loading)
                             <span className="font-medium">{offer.eligibility}</span>
                           </div>
                         )}
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Loan Range:</span>
-                          <span className="font-medium">
-                            ${(offer.minLoanAmount / 1000).toFixed(0)}K - ${(offer.maxLoanAmount / 1000000).toFixed(1)}M
-                          </span>
-                        </div>
+                       
                         <div className="flex justify-between">
                           <span className="text-gray-600">Expires:</span>
                           <span className="font-medium flex items-center">
@@ -467,36 +402,29 @@ console.log("Loading Market Data",loading)
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                      {/* Features */}
-                      {/* <div className="space-y-2">
-                        <h4 className="font-semibold text-sm">Key Features:</h4>
-                        <div className="space-y-1">
-                          {offer.features.map((feature, index) => (
-                            <div key={index} className="flex items-center space-x-2 text-sm">
-                              <CheckCircle className="h-4 w-4 text-[#8cc63f]" />
-                              <span>{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div> */}
 
                       {/* Apply Button */}
-                      <Button
-                        className={`w-full h-12 ${
-                          offer.status ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
-                        }`}
-                        disabled={!offer.status}
-                        onClick={() => handleApplyClick(offer)}
-                      >
-                        {offer.status ? (
-                          <>
-                            Apply Now
-                            <ExternalLink className="ml-2 h-4 w-4" />
-                          </>
-                        ) : (
-                          "Offer Expired"
-                        )}
-                      </Button>
+                     <Button
+  className={`w-full h-12 ${
+    offer.status ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
+  }`}
+  disabled={!offer.status || loadingOfferId === offer.id}
+  onClick={() => handleApplyClick(offer)}
+>
+  {offer.status ? (
+    loadingOfferId === offer.id ? (
+      <Loader2Icon className="animate-spin" />
+    ) : (
+      <>
+        Apply Now
+        <ExternalLink className="ml-2 h-4 w-4" />
+      </>
+    )
+  ) : (
+    "Offer Expired"
+  )}
+</Button>
+
 
                       <p className="text-xs text-gray-500 text-center">
                         Clicking "Apply Now" will redirect to {offer.lender_name}'s website
