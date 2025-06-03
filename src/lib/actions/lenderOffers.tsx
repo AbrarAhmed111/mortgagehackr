@@ -34,22 +34,24 @@ export async function getOffers(filters?: {
   status?: 'active' | 'inactive'
 }) {
   const supabase = await createClient()
-  let query = supabase.from('offers').select('*')
+  let query = supabase.from('lender_offers').select('*')
 
   if (filters) {
     if (filters.interestRateMin !== undefined)
-      query = query.gte('interestRate', filters.interestRateMin)
+      query = query.gte('interest_rate', filters.interestRateMin)
     if (filters.interestRateMax !== undefined)
-      query = query.lte('interestRate', filters.interestRateMax)
+      query = query.lte('interest_rate', filters.interestRateMax)
     if (filters.lenderName)
-      query = query.ilike('lenderName', `%${filters.lenderName}%`)
+      query = query.ilike('lender_name', `%${filters.lenderName}%`)
     if (filters.loanTerm)
-      query = query.eq('loanTerm', filters.loanTerm)
-    if (filters.status)
-      query = query.eq('status', filters.status)
+      query = query.eq('loan_term', filters.loanTerm)
+    if (filters.status) {
+      const isActive = filters.status === 'active'
+      query = query.eq('status', isActive)
+    }
   }
 
-  const { data, error } = await query.order('interestRate', { ascending: true })
+  const { data, error } = await query.order('interest_rate', { ascending: true })
 
   if (error) {
     console.error(error)
@@ -58,6 +60,7 @@ export async function getOffers(filters?: {
 
   return data
 }
+
 
 
 export async function logApplyNowClick({
@@ -76,9 +79,9 @@ export async function logApplyNowClick({
     .insert([
       {
         lender_offer_id: lenderOfferId,
-        user_ip: userIp || null,
-        user_agent: userAgent || null,
-      },
+        user_ip: userIp ?? null,
+        user_agent: userAgent ?? null,
+      }
     ])
 
   if (error) {
