@@ -62,7 +62,6 @@ export async function getOffers(filters?: {
 }
 
 
-
 export async function logApplyNowClick({
   lenderOfferId,
   userIp,
@@ -74,6 +73,28 @@ export async function logApplyNowClick({
 }) {
   const supabase = await createClient()
 
+  // Step 1: Check if a click already exists for this combination
+  const { data: existing, error: checkError } = await supabase
+    .from('apply_now_clicks')
+    .select('id')
+    .eq('lender_offer_id', lenderOfferId)
+    .eq('user_ip', userIp ?? null)
+    .eq('user_agent', userAgent ?? null)
+    .limit(1)
+    .single()
+
+  if (checkError && checkError.code !== 'PGRST116') {
+    // PGRST116 = no rows found for .single()
+    console.error('Error checking existing Apply Now click:', checkError)
+    return { error: checkError.message }
+  }
+
+  if (existing) {
+    // Already exists, no need to insert again
+    return { success: false, message: 'Click already logged for this user/IP.' }
+  }
+
+  // Step 2: Insert new click
   const { data, error } = await supabase
     .from('apply_now_clicks')
     .insert([
@@ -91,6 +112,7 @@ export async function logApplyNowClick({
 
   return { success: true, data }
 }
+
 
 
 export async function getOfferById(offerId: string) {
