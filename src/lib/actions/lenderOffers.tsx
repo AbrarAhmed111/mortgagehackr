@@ -59,66 +59,153 @@ export async function getOffers(filters?: {
   return data
 }
 
-export async function getOfferById(offerId: string) {
+
+
+export async function logApplyNowClick({
+  lenderOfferId,
+  userIp,
+  userAgent,
+}: {
+  lenderOfferId: string
+  userIp?: string
+  userAgent?: string
+}) {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from('offers')
-    .select('*')
-    .eq('id', offerId)
+  // Step 1: Check if a click already exists for this combination
+  const { data: existing, error: checkError } = await supabase
+    .from('apply_now_clicks')
+    .select('id')
+    .eq('lender_offer_id', lenderOfferId)
+    .eq('user_ip', userIp ?? null)
+    .eq('user_agent', userAgent ?? null)
+    .limit(1)
     .single()
 
-  if (error) {
-    console.error(error)
-    return null
+  if (checkError && checkError.code !== 'PGRST116') {
+    // PGRST116 = no rows found for .single()
+    console.error('Error checking existing Apply Now click:', checkError)
+    return { error: checkError.message }
   }
 
-  return data
+  if (existing) {
+    // Already exists, no need to insert again
+    return { success: false, message: 'Click already logged for this user/IP.' }
+  }
+
+  // Step 2: Insert new click
+  const { data, error } = await supabase
+    .from('apply_now_clicks')
+    .insert([
+      {
+        lender_offer_id: lenderOfferId,
+        user_ip: userIp ?? null,
+        user_agent: userAgent ?? null,
+      }
+    ])
+
+  if (error) {
+    console.error('Error logging Apply Now click:', error)
+    return { error: error.message }
+  }
+
+  return { success: true, data }
 }
 
-export async function updateOffer(offerId: string, updateData: Partial<{
-  lenderName: string
-  interestRate: number
-  apr: number
-  loanTerm: number
-  eligibilityCriteria?: string
-  ctaLink: string
-  expirationDate: string
-  status: 'active' | 'inactive'
-}>) {
+
+
+export async function getOffersWithLink() {
+  const supabase = await createClient()
+
+  // Get all lender offers ordered by interest_rate ascending
+  const { data: offers, error } = await supabase
+    .from('lender_offers')
+    .select('*')
+    .order('interest_rate', { ascending: true })
+
+  if (error || !offers) {
+    console.error(error)
+    return []
+  }
+
+  // For each offer, fetch the total clicks count
+  const offersWithClicks = await Promise.all(
+    offers.map(async (offer) => {
+      const { count, error: countError } = await supabase
+        .from('apply_now_clicks')
+        .select('*', { count: 'exact', head: true }) // only count, no rows
+        .eq('lender_offer_id', offer.id)
+
+      if (countError) {
+        console.error(`Error counting clicks for offer ${offer.id}:`, countError)
+        return { ...offer, click_count: 0 }
+      }
+
+      return { ...offer, click_count: count ?? 0 }
+    })
+  )
+
+  return offersWithClicks
+}
+
+
+export async function updateOfferLink(offerId: string, cta_link: string) {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('offers')
-    .update(updateData)
+    .from('lender_offers')
+    .update({
+      cta_link,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', offerId)
     .select()
     .single()
 
   if (error) {
-    console.error(error)
+    console.error('Error updating offer link:', error)
     return { error: error.message }
   }
 
   return data
 }
 
+
 export async function toggleOfferStatus(offerId: string, newStatus: 'active' | 'inactive') {
-  return updateOffer(offerId, { status: newStatus })
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('lender_offers')
+    .update({
+      status: newStatus === 'active',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', offerId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error toggling offer status:', error)
+    return { error: error.message }
+  }
+
+  return data
 }
 
 export async function deleteOffer(offerId: string) {
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from('offers')
+  const { data, error } = await supabase
+    .from('lender_offers')
     .delete()
     .eq('id', offerId)
+    .select()
+    .single()
 
   if (error) {
-    console.error(error)
+    console.error('Error deleting offer:', error)
     return { error: error.message }
   }
 
-  return { success: 'Offer deleted successfully' }
+  return { success: 'Offer deleted successfully', deletedOffer: data }
 }
