@@ -2,72 +2,37 @@
 
 import { createClient } from '../supabase/server'
 
-export async function logClick(lenderName: string) {
+export async function getAllClicksWithLender() {
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from('click_logs')
-    .insert([{ lenderName, clickedAt: new Date().toISOString() }])
+  const { data, error } = await supabase
+    .from('apply_now_clicks')
+    .select(`
+      id,
+      lender_offer_id,
+      clicked_at,
+      user_ip,
+      user_agent,
+      lender_offers (
+        lender_name
+      )
+    `)
+    .order('clicked_at', { ascending: false })
 
   if (error) {
-    console.error(error)
-    return { error: error.message }
-  }
-
-  return { success: 'Click logged successfully' }
-}
-
-export async function getClickLogs(filters?: {
-  lenderName?: string
-  startDate?: string // ISO date string
-  endDate?: string // ISO date string
-}) {
-  const supabase = await createClient()
-  let query = supabase.from('click_logs').select('*')
-
-  if (filters) {
-    if (filters.lenderName)
-      query = query.eq('lenderName', filters.lenderName)
-    if (filters.startDate)
-      query = query.gte('clickedAt', filters.startDate)
-    if (filters.endDate)
-      query = query.lte('clickedAt', filters.endDate)
-  }
-
-  const { data, error } = await query.order('clickedAt', { ascending: false })
-
-  if (error) {
-    console.error(error)
+    console.error('Failed to fetch click data:', error)
     return []
   }
 
-  return data
-}
+  // Flatten response for easier consumption (optional)
+  const formatted = data.map(click => ({
+    id: click.id,
+    lender_offer_id: click.lender_offer_id,
+    clicked_at: click.clicked_at,
+    user_ip: click.user_ip,
+    user_agent: click.user_agent,
+    lender_name: click.lender_offers?.lender_name || 'Unknown'
+  }))
 
-export async function exportClickLogs(format: 'csv' | 'json', filters?: {
-  lenderName?: string
-  startDate?: string
-  endDate?: string
-}) {
-  const logs = await getClickLogs(filters)
-
-  if (!logs || logs.length === 0) {
-    return { error: 'No logs found for export' }
-  }
-
-  if (format === 'json') {
-    return JSON.stringify(logs, null, 2)
-  }
-
-  if (format === 'csv') {
-    // Simple CSV conversion
-    const headers = Object.keys(logs[0])
-    const csvRows = [
-      headers.join(','), // header row
-      ...logs.map(log => headers.map(h => `"${(log as any)[h]}"`).join(',')),
-    ]
-    return csvRows.join('\n')
-  }
-
-  return { error: 'Invalid export format' }
+  return formatted
 }
