@@ -2,29 +2,6 @@
 
 import { createClient } from '../supabase/server'
 
-export async function createOffer(offerData: {
-  lenderName: string
-  interestRate: number
-  apr: number
-  loanTerm: number
-  eligibilityCriteria?: string
-  ctaLink: string
-  expirationDate: string
-  status: 'active' | 'inactive'
-}) {
-  const supabase = await createClient()
-
-  const { data, error } = await supabase
-    .from('offers')
-    .insert([offerData])
-
-  if (error) {
-    console.error(error)
-    return { error: error.message }
-  }
-
-  return data?.[0]
-}
 
 export async function getOffers(filters?: {
   interestRateMin?: number
@@ -34,24 +11,22 @@ export async function getOffers(filters?: {
   status?: 'active' | 'inactive'
 }) {
   const supabase = await createClient()
-  let query = supabase.from('lender_offers').select('*')
+  let query = supabase.from('offers').select('*')
 
   if (filters) {
     if (filters.interestRateMin !== undefined)
-      query = query.gte('interest_rate', filters.interestRateMin)
+      query = query.gte('interestRate', filters.interestRateMin)
     if (filters.interestRateMax !== undefined)
-      query = query.lte('interest_rate', filters.interestRateMax)
+      query = query.lte('interestRate', filters.interestRateMax)
     if (filters.lenderName)
-      query = query.ilike('lender_name', `%${filters.lenderName}%`)
+      query = query.ilike('lenderName', `%${filters.lenderName}%`)
     if (filters.loanTerm)
-      query = query.eq('loan_term', filters.loanTerm)
-    if (filters.status) {
-      const isActive = filters.status === 'active'
-      query = query.eq('status', isActive)
-    }
+      query = query.eq('loanTerm', filters.loanTerm)
+    if (filters.status)
+      query = query.eq('status', filters.status)
   }
 
-  const { data, error } = await query.order('interest_rate', { ascending: true })
+  const { data, error } = await query.order('interestRate', { ascending: true })
 
   if (error) {
     console.error(error)
@@ -60,6 +35,7 @@ export async function getOffers(filters?: {
 
   return data
 }
+
 
 
 export async function logApplyNowClick({
@@ -114,25 +90,7 @@ export async function logApplyNowClick({
 }
 
 
-
-export async function getOfferById(offerId: string) {
-  const supabase = await createClient()
-
-  const { data, error } = await supabase
-    .from('offers')
-    .select('*')
-    .eq('id', offerId)
-    .single()
-
-  if (error) {
-    console.error(error)
-    return null
-  }
-
-  return data
-}
-
-export async function updateOffer(offerId: string, updateData: Partial<{
+export async function createOffer(offerData: {
   lenderName: string
   interestRate: number
   apr: number
@@ -141,40 +99,122 @@ export async function updateOffer(offerId: string, updateData: Partial<{
   ctaLink: string
   expirationDate: string
   status: 'active' | 'inactive'
-}>) {
+}) {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('offers')
-    .update(updateData)
+    .from('lender_offers')
+    .insert([{
+      lender_name: offerData.lenderName,
+      interest_rate: offerData.interestRate,
+      apr: offerData.apr,
+      loan_term: offerData.loanTerm,
+      eligibility_criteria: offerData.eligibilityCriteria ?? null,
+      cta_link: offerData.ctaLink,
+      expiration_date: offerData.expirationDate,
+      status: offerData.status === 'active' // stored as boolean
+    }])
+
+  if (error) {
+    console.error(error)
+    return { error: error.message }
+  }
+
+  return data?.[0]
+}
+
+export async function getOffersWithLink() {
+  const supabase = await createClient()
+
+  // Get all lender offers ordered by interest_rate ascending
+  const { data: offers, error } = await supabase
+    .from('lender_offers')
+    .select('*')
+    .order('interest_rate', { ascending: true })
+
+  if (error || !offers) {
+    console.error(error)
+    return []
+  }
+
+  // For each offer, fetch the total clicks count
+  const offersWithClicks = await Promise.all(
+    offers.map(async (offer) => {
+      const { count, error: countError } = await supabase
+        .from('apply_now_clicks')
+        .select('*', { count: 'exact', head: true }) // only count, no rows
+        .eq('lender_offer_id', offer.id)
+
+      if (countError) {
+        console.error(`Error counting clicks for offer ${offer.id}:`, countError)
+        return { ...offer, click_count: 0 }
+      }
+
+      return { ...offer, click_count: count ?? 0 }
+    })
+  )
+
+  return offersWithClicks
+}
+
+
+export async function updateOfferLink(offerId: string, cta_link: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('lender_offers')
+    .update({
+      cta_link,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', offerId)
     .select()
     .single()
 
   if (error) {
-    console.error(error)
+    console.error('Error updating offer link:', error)
     return { error: error.message }
   }
 
   return data
 }
 
+
 export async function toggleOfferStatus(offerId: string, newStatus: 'active' | 'inactive') {
-  return updateOffer(offerId, { status: newStatus })
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('lender_offers')
+    .update({
+      status: newStatus === 'active',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', offerId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error toggling offer status:', error)
+    return { error: error.message }
+  }
+
+  return data
 }
 
 export async function deleteOffer(offerId: string) {
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from('offers')
+  const { data, error } = await supabase
+    .from('lender_offers')
     .delete()
     .eq('id', offerId)
+    .select()
+    .single()
 
   if (error) {
-    console.error(error)
+    console.error('Error deleting offer:', error)
     return { error: error.message }
   }
 
-  return { success: 'Offer deleted successfully' }
+  return { success: 'Offer deleted successfully', deletedOffer: data }
 }
