@@ -2,29 +2,6 @@
 
 import { createClient } from '../supabase/server'
 
-export async function createOffer(offerData: {
-  lenderName: string
-  interestRate: number
-  apr: number
-  loanTerm: number
-  eligibilityCriteria?: string
-  ctaLink: string
-  expirationDate: string
-  status: 'active' | 'inactive'
-}) {
-  const supabase = await createClient()
-
-  const { data, error } = await supabase
-    .from('offers')
-    .insert([offerData])
-
-  if (error) {
-    console.error(error)
-    return { error: error.message }
-  }
-
-  return data?.[0]
-}
 
 export async function getOffers(filters?: {
   interestRateMin?: number
@@ -113,6 +90,38 @@ export async function logApplyNowClick({
 }
 
 
+export async function createOffer(offerData: {
+  lenderName: string
+  interestRate: number
+  apr: number
+  loanTerm: number
+  eligibilityCriteria?: string
+  ctaLink: string
+  expirationDate: string
+  status: 'active' | 'inactive'
+}) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('lender_offers')
+    .insert([{
+      lender_name: offerData.lenderName,
+      interest_rate: offerData.interestRate,
+      apr: offerData.apr,
+      loan_term: offerData.loanTerm,
+      eligibility_criteria: offerData.eligibilityCriteria ?? null,
+      cta_link: offerData.ctaLink,
+      expiration_date: offerData.expirationDate,
+      status: offerData.status === 'active' // stored as boolean
+    }])
+
+  if (error) {
+    console.error(error)
+    return { error: error.message }
+  }
+
+  return data?.[0]
+}
 
 export async function getOffersWithLink() {
   const supabase = await createClient()
