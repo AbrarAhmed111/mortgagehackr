@@ -89,7 +89,6 @@ export async function logApplyNowClick({
   return { success: true, data }
 }
 
-
 export async function createOffer(offerData: {
   lenderName: string
   interestRate: number
@@ -97,7 +96,7 @@ export async function createOffer(offerData: {
   loanTerm: number
   eligibilityCriteria?: string
   ctaLink: string
-  expirationDate: string
+  expirationDate: string // should be in YYYY-MM-DD format
   status: 'active' | 'inactive'
 }) {
   const supabase = await createClient()
@@ -109,19 +108,20 @@ export async function createOffer(offerData: {
       interest_rate: offerData.interestRate,
       apr: offerData.apr,
       loan_term: offerData.loanTerm,
-      eligibility_criteria: offerData.eligibilityCriteria ?? null,
+      eligibility: offerData.eligibilityCriteria ?? null,
       cta_link: offerData.ctaLink,
       expiration_date: offerData.expirationDate,
-      status: offerData.status === 'active' // stored as boolean
+      status: offerData.status === 'active' ? true : false
     }])
 
   if (error) {
-    console.error(error)
+    console.error('Error creating offer:', error)
     return { error: error.message }
   }
 
   return data?.[0]
 }
+
 
 export async function getOffersWithLink() {
   const supabase = await createClient()
