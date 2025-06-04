@@ -2,7 +2,6 @@
 
 import { createClient } from '../supabase/server'
 
-
 export async function getOffers(filters?: {
   interestRateMin?: number
   interestRateMax?: number
@@ -20,10 +19,8 @@ export async function getOffers(filters?: {
       query = query.lte('interestRate', filters.interestRateMax)
     if (filters.lenderName)
       query = query.ilike('lenderName', `%${filters.lenderName}%`)
-    if (filters.loanTerm)
-      query = query.eq('loanTerm', filters.loanTerm)
-    if (filters.status)
-      query = query.eq('status', filters.status)
+    if (filters.loanTerm) query = query.eq('loanTerm', filters.loanTerm)
+    if (filters.status) query = query.eq('status', filters.status)
   }
 
   const { data, error } = await query.order('interestRate', { ascending: true })
@@ -35,8 +32,6 @@ export async function getOffers(filters?: {
 
   return data
 }
-
-
 
 export async function logApplyNowClick({
   lenderOfferId,
@@ -60,26 +55,21 @@ export async function logApplyNowClick({
     .single()
 
   if (checkError && checkError.code !== 'PGRST116') {
-    // PGRST116 = no rows found for .single()
     console.error('Error checking existing Apply Now click:', checkError)
     return { error: checkError.message }
   }
 
   if (existing) {
-    // Already exists, no need to insert again
     return { success: false, message: 'Click already logged for this user/IP.' }
   }
 
-  // Step 2: Insert new click
-  const { data, error } = await supabase
-    .from('apply_now_clicks')
-    .insert([
-      {
-        lender_offer_id: lenderOfferId,
-        user_ip: userIp ?? null,
-        user_agent: userAgent ?? null,
-      }
-    ])
+  const { data, error } = await supabase.from('apply_now_clicks').insert([
+    {
+      lender_offer_id: lenderOfferId,
+      user_ip: userIp ?? null,
+      user_agent: userAgent ?? null,
+    },
+  ])
 
   if (error) {
     console.error('Error logging Apply Now click:', error)
@@ -96,14 +86,13 @@ export async function createOffer(offerData: {
   loanTerm: number
   eligibilityCriteria?: string
   ctaLink: string
-  expirationDate: string // should be in YYYY-MM-DD format
+  expirationDate: string
   status: 'active' | 'inactive'
 }) {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from('lender_offers')
-    .insert([{
+  const { data, error } = await supabase.from('lender_offers').insert([
+    {
       lender_name: offerData.lenderName,
       interest_rate: offerData.interestRate,
       apr: offerData.apr,
@@ -111,8 +100,9 @@ export async function createOffer(offerData: {
       eligibility: offerData.eligibilityCriteria ?? null,
       cta_link: offerData.ctaLink,
       expiration_date: offerData.expirationDate,
-      status: offerData.status === 'active' ? true : false
-    }])
+      status: offerData.status === 'active' ? true : false,
+    },
+  ])
 
   if (error) {
     console.error('Error creating offer:', error)
@@ -121,7 +111,6 @@ export async function createOffer(offerData: {
 
   return data?.[0]
 }
-
 
 export async function getOffersWithLink() {
   const supabase = await createClient()
@@ -139,24 +128,26 @@ export async function getOffersWithLink() {
 
   // For each offer, fetch the total clicks count
   const offersWithClicks = await Promise.all(
-    offers.map(async (offer) => {
+    offers.map(async offer => {
       const { count, error: countError } = await supabase
         .from('apply_now_clicks')
         .select('*', { count: 'exact', head: true }) // only count, no rows
         .eq('lender_offer_id', offer.id)
 
       if (countError) {
-        console.error(`Error counting clicks for offer ${offer.id}:`, countError)
+        console.error(
+          `Error counting clicks for offer ${offer.id}:`,
+          countError,
+        )
         return { ...offer, click_count: 0 }
       }
 
       return { ...offer, click_count: count ?? 0 }
-    })
+    }),
   )
 
   return offersWithClicks
 }
-
 
 export async function updateOfferLink(offerId: string, cta_link: string) {
   const supabase = await createClient()
@@ -179,8 +170,10 @@ export async function updateOfferLink(offerId: string, cta_link: string) {
   return data
 }
 
-
-export async function toggleOfferStatus(offerId: string, newStatus: 'active' | 'inactive') {
+export async function toggleOfferStatus(
+  offerId: string,
+  newStatus: 'active' | 'inactive',
+) {
   const supabase = await createClient()
 
   const { data, error } = await supabase

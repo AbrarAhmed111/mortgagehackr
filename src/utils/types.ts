@@ -32,7 +32,6 @@ export interface Blog {
   createdAt: string // ISO timestamp string
 }
 
-
 export type BlogsColumn<T> = {
   header: string
   accessor: keyof T | ((item: T) => React.ReactNode)
@@ -54,8 +53,6 @@ export interface LenderOffer {
   status: 'active' | 'inactive'
   click_count?: number // Optional: if you're attaching click data in the UI
 }
-
-
 
 export interface LeadAttribution {
   id: string
