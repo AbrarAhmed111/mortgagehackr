@@ -1,4 +1,3 @@
-import { StaticImageData } from 'next/image'
 import { JSX } from 'react'
 
 // 1 - Sidebar
@@ -21,13 +20,18 @@ export interface NavLinkProps {
   onClick?: () => void
 }
 
-// 2 - Blogs
-export type Blog = {
+export interface Blog {
+  id: string
   title: string
-  content: string
-  image: string | StaticImageData
-  publishDate: string
+  slug: string
+  content: {
+    image?: string
+    description: string
+  }[]
+  profileImage?: string
+  createdAt: string // ISO timestamp string
 }
+
 
 export type BlogsColumn<T> = {
   header: string
@@ -38,26 +42,20 @@ export type BlogsColumn<T> = {
   render?: (item: T) => React.ReactNode
 }
 
-// Lender offers
 export interface LenderOffer {
   id: string
   lenderName: string
-  interestRate: string
-  loanTerm: string
-  eligibility: string
+  interestRate: number
+  apr: number
+  loanTerm: number
+  eligibilityCriteria?: string
   ctaLink: string
-  expirationDate: string
-  status: 'Active' | 'Inactive'
+  expirationDate: string // ISO date string (e.g. "2025-06-30")
+  status: 'active' | 'inactive'
+  click_count?: number // Optional: if you're attaching click data in the UI
 }
 
-export interface LenderOffersColumn<T> {
-  header: string
-  // accessor?: ((item: T) => React.ReactNode) | keyof T
-  accessor: keyof T | ((item: T) => React.ReactNode)
 
-  render?: (item: T) => React.ReactNode
-  isImage?: boolean
-}
 
 export interface LeadAttribution {
   id: string
