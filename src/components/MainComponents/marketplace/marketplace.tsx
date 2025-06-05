@@ -19,6 +19,7 @@ import {
 import { getOffers, logApplyNowClick } from "@/lib/actions/lenderOffers"
 import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
 import toast from "react-hot-toast"
+import { Offer } from "@/utils/types"
 
 // Mock data for mortgage offers
 
@@ -43,90 +44,99 @@ const trackApplyClick = (lender: string, offerId: number) => {
 
  
 export default function MarketplacePage() {
-  const [showInactive, setShowInactive] = useState(false)
+ 
+  const [showInactive, setShowInactive] = useState(true)
   const [sortBy, setSortBy] = useState("rate")
-  const [filterRate, setFilterRate] = useState({ min: 0, max: 10 })
-  const [filterTerm, setFilterTerm] = useState("all")
+  const [filterRate, setFilterRate] = useState({ min: 0, max: 20 })
+  const [filterTerm, setFilterTerm] = useState("0")
   const [filterLender, setFilterLender] = useState("")
-  const [offers, setOffers] = useState<any[]>([])
+  const [offers, setOffers] = useState<Offer[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingOfferId, setLoadingOfferId] = useState("")
   const [userIp, setuserIp] = useState("")
   const [userAgent, setUserAgent] = useState("")
+  const [noFilter,setNoFilter] = useState(true)
 
-   useEffect(() => {
-    const loadOffers = async () => {
-      const data = await getOffers()
-      setOffers(data)
-      setLoading(false)
+
+  useEffect(() => {
+    const filters =
+    {
+      interestRateMin: filterRate.min,
+      interestRateMax: filterRate.max,
+      lenderName: filterLender,
+      loanTerm: parseInt(filterTerm, 10),
+      status: showInactive
+          }
+
+   
+  const loadOffers = async () => {
+  try {
+    setLoading(true);
+    let data;
+
+    if (noFilter) {
+      data = await getOffers();
+      setNoFilter(false);
+    } else {
+      data = await getOffers(filters);
+      setNoFilter(false);
     }
 
-    loadOffers()
-  }, [])
+    // Apply sorting on the frontend
+    data.sort((a, b) => {
+      switch (sortBy) {
+        case "rate":
+          return a.interest_rate - b.interest_rate;
+        case "newest":
+          return b.id - a.id; // Assuming higher ID is newer
+        case "expiration":
+          return new Date(a.expiration_date).getTime() - new Date(b.expiration_date).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    setOffers(data);
+  } catch (error) {
+    console.error("Failed to load offers:", error);
+  } finally {
+    setLoading(false);
+    setNoFilter(false);
+  }
+};
+
+
+  loadOffers();
+}, [showInactive,filterRate,filterTerm,filterLender,sortBy]);
+
 
 
 console.log("Market Data",offers)
-console.log("Loading Market Data",loading)
-
-  // Filter and sort offers
-  const filteredAndSortedOffers = useMemo(() => {
-    const filtered = offers.filter((offer) => {
-      // Active/Inactive filter
-      if (!showInactive && !offer.status) return false
-
-      // Interest rate filter
-      if (offer.interest_rate < filterRate.min || offer.interest_rate > filterRate.max) return false
-
-      // Loan term filter
-      if (filterTerm !== "all" && offer.loan_term.toString() !== filterTerm) return false
-
-      // Lender name filter
-      if (filterLender && !offer.lender_name.toLowerCase().includes(filterLender.toLowerCase())) return false
-
-      return true
-    })
-
-    // Sort offers
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "rate":
-          return a.interest_rate - b.interest_rate
-        case "newest":
-          return b.id - a.id // Assuming higher ID = newer
-        case "expiration":
-          return new Date(a.expiration_date).getTime() - new Date(b.expiration_date).getTime()
-        default:
-          return 0
-      }
-    })
-
-    return filtered
-  }, [showInactive, sortBy, filterRate, filterTerm, filterLender,offers])
-
-  const handleApplyClick = async (offer: any) => {
-      setLoadingOfferId(offer.id); // Assuming offer has a unique `id`
-  
-
-    trackApplyClick(offer.lender_name, offer.id)
-    const lenderOfferId = offer.id
-    
-   const data = await logApplyNowClick({lenderOfferId,userIp,userAgent})
-    console.log(">>>>",data)
-      setLoadingOfferId(""); // Assuming offer has a unique `id`
-  
-    if(data?.success === true)
-    {
-      toast.success(data?.message)
-    }
-    if(data?.success === false)
-    {
-      toast.error(data?.message)
-    }
-
-  }
-
- 
   //Apply Offer Functions
+
+const handleApplyClick = async (offer: Offer) => {
+  try {
+    setLoadingOfferId(offer.id); // Show loading spinner for the clicked offer
+
+    trackApplyClick(offer.lender_name, parseInt(offer.id,10));
+
+    const lenderOfferId = offer.id;
+
+    const data = await logApplyNowClick({ lenderOfferId, userIp, userAgent });
+
+    if (data?.success === true) {
+      toast.success(data.message || "Application submitted successfully.");
+    } else {
+      toast.error(data?.message || "Something went wrong while applying.");
+    }
+  } catch (error: any) {
+    console.error("Error applying for offer:", error);
+    toast.error("An unexpected error occurred. Please try again later.");
+  } finally {
+    setLoadingOfferId(""); // Always reset loading state
+  }
+};
+
 
    const getBrowserName = () => {
     const userAgent = navigator.userAgent;
@@ -205,16 +215,17 @@ console.log("Loading Market Data",loading)
               <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <h2 className="text-xl font-semibold">Mortgage Offers</h2>
-                  <Badge variant="outline">{filteredAndSortedOffers.length} offers available</Badge>
+                  <Badge variant="outline">{offers.length} offers available</Badge>
                 </div>
                 <div className="flex items-center space-x-4">
                   <label className="flex items-center space-x-2 text-sm">
                     <input
                       type="checkbox"
-                      checked={showInactive}
-                      onChange={(e) => setShowInactive(e.target.checked)}
+                      checked={!showInactive}
+                      onChange={(e) => setShowInactive(!showInactive)}
                       className="rounded"
                     />
+                    
                     <span>Show inactive offers</span>
                   </label>
                 </div>
@@ -258,7 +269,7 @@ console.log("Loading Market Data",loading)
                     onChange={(e) => setFilterTerm(e.target.value)}
                     className="w-full p-2 border rounded text-sm"
                   >
-                    <option value="all">All Terms</option>
+                    <option value="">All Terms</option>
                     <option value="15">15 Years</option>
                     <option value="30">30 Years</option>
                   </select>
@@ -295,10 +306,11 @@ console.log("Loading Market Data",loading)
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setFilterRate({ min: 0, max: 10 })
-                      setFilterTerm("all")
-                      setFilterLender("")
-                      setSortBy("rate")
+                        setFilterRate({ min: 0, max: 20 })
+                    setFilterTerm("0")
+                    setFilterLender("")
+                    setShowInactive(true)
+                    setNoFilter(true)
                     }}
                     className="w-full"
                   >
@@ -319,16 +331,18 @@ console.log("Loading Market Data",loading)
         <LenderCardSkeleton key={index} />
       ))}
             </div> : 
-            filteredAndSortedOffers.length === 0 ? (
+            offers.length === 0 ? (
               <div className="text-center py-12">
                 <h3 className="text-xl font-semibold mb-2">No offers match your criteria</h3>
                 <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setFilterRate({ min: 0, max: 10 })
-                    setFilterTerm("all")
+                    setFilterRate({ min: 0, max: 20 })
+                    setFilterTerm("0")
                     setFilterLender("")
+                     setShowInactive(true)
+                    setNoFilter(true)
                   }}
                 >
                   Reset Filters
@@ -336,7 +350,7 @@ console.log("Loading Market Data",loading)
               </div>
             ) : (
               <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                {filteredAndSortedOffers.map((offer) => (
+                {offers.map((offer) => (
                   <Card
                     key={offer.id}
                     className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg ${
