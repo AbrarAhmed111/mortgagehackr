@@ -102,3 +102,17 @@ export interface DataTableProps<T> {
   onSelect: (selected: T[]) => void
   itemsPerPage: number
 }
+
+//Offer Data
+
+export  interface Offer {
+  id: string;
+  interest_rate: number;
+  expiration_date: string; // or Date if you're parsing it
+  lender_name: string;
+  loan_term: number;
+  status: string; // could be 'active' | 'inactive' if known
+  eligibility: string;
+  apr: string;
+  cta_link: string;
+}

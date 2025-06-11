@@ -3,29 +3,29 @@
 import { createClient } from "../supabase/server";
 
 export async function getOffers(filters?: {
-  interestRateMin?: number;
-  interestRateMax?: number;
-  lenderName?: string;
-  loanTerm?: number;
-  status?: "active" | "inactive";
+  interestRateMin?: number
+  interestRateMax?: number
+  lenderName?: string
+  loanTerm?: number
+  status?: boolean
 }) {
-  const supabase = await createClient();
-  let query = supabase.from("offers").select("*");
+  const supabase = await createClient()
+  let query = supabase.from('lender_offers').select('*')
 
   if (filters) {
     if (filters.interestRateMin !== undefined)
-      query = query.gte("interestRate", filters.interestRateMin);
+      query = query.gte('interest_rate', filters.interestRateMin)
     if (filters.interestRateMax !== undefined)
-      query = query.lte("interestRate", filters.interestRateMax);
+      query = query.lte('interest_rate', filters.interestRateMax)
     if (filters.lenderName)
-      query = query.ilike("lenderName", `%${filters.lenderName}%`);
-    if (filters.loanTerm) query = query.eq("loanTerm", filters.loanTerm);
-    if (filters.status) query = query.eq("status", filters.status);
+      query = query.ilike('lender_name', `%${filters.lenderName}%`)
+    if (filters.loanTerm)
+      query = query.eq('loan_term', filters.loanTerm)
+    if (filters.status)
+      query = query.eq('status', filters.status)
   }
 
-  const { data, error } = await query.order("interestRate", {
-    ascending: true,
-  });
+  const { data, error } = await query.order('interest_rate', { ascending: true })
 
   if (error) {
     console.error(error);
