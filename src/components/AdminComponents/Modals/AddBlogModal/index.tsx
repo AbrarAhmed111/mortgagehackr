@@ -1,18 +1,16 @@
 'use client'
-
 import { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
+import { addBlog } from '@/lib/actions/addBlog'
+import { BiLoaderCircle } from 'react-icons/bi'
+import toast from 'react-hot-toast'
+import { Blog } from '@/utils/types'
 
 type AddBlogModalProps = {
   isOpen: boolean
   onClose: () => void
-  onAdd: (blog: {
-    title: string
-    content: string
-    image: string
-    publishDate: string
-  }) => void
-  defaultImage: string | StaticImageData
+  onAdd: (newBlog: Blog) => Promise<void>
+  defaultImage: StaticImageData | string
 }
 
 export function AddBlogModal({
@@ -26,17 +24,66 @@ export function AddBlogModal({
   const [publishDate, setPublishDate] = useState(
     new Date().toISOString().split('T')[0],
   )
-  const [image, setImage] = useState(defaultImage)
+  const [image, setImage] = useState<StaticImageData | string>(defaultImage)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onAdd({
-      title,
-      content,
-      image: typeof image === 'string' ? image : image.src,
-      publishDate,
-    })
-    onClose()
+    setLoading(true)
+
+    try {
+      const slug = title.toLowerCase().replace(/\s+/g, '-')
+
+      // Convert profile image to base64 if exists
+      let profileImageBase64: string | undefined
+      if (imageFile) {
+        profileImageBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsDataURL(imageFile)
+        })
+      }
+
+      const result = await addBlog({
+        title,
+        slug,
+        profileImage: profileImageBase64,
+        content: [{ description: content }],
+      })
+
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
+      toast.success(result.success || 'Blog added successfully!')
+
+      await onAdd({
+        id: '',
+        title,
+        content,
+        image: profileImageBase64 || defaultImage,
+        publishDate,
+        slug,
+      })
+
+      onClose()
+      resetForm()
+    } catch (error) {
+      console.error('Blog add failed:', error)
+      toast.error(error instanceof Error ? error.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resetForm = () => {
+    setTitle('')
+    setContent('')
+    setImage(defaultImage)
+    setImageFile(null)
+    setPublishDate(new Date().toISOString().split('T')[0])
   }
 
   if (!isOpen) return null
@@ -54,15 +101,17 @@ export function AddBlogModal({
               <Image
                 src={image}
                 alt="Profile Preview"
-                width={60}
-                height={60}
-                className="rounded-full mr-4"
+                width={50}
+                height={50}
+                className="rounded-full mr-4 w-12 h-12 object-cover"
               />
               <input
                 type="file"
+                accept="image/*"
                 onChange={e => {
-                  if (e.target.files?.[0]) {
-                    const file = e.target.files[0]
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    setImageFile(file)
                     const reader = new FileReader()
                     reader.onload = event => {
                       if (event.target?.result) {
@@ -113,14 +162,23 @@ export function AddBlogModal({
               type="button"
               onClick={onClose}
               className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center min-w-[100px]"
+              disabled={loading}
             >
-              Add Blog
+              {loading ? (
+                <>
+                  <BiLoaderCircle size={20} className="animate-spin mr-2" />
+                  Adding...
+                </>
+              ) : (
+                'Add Blog'
+              )}
             </button>
           </div>
         </form>
