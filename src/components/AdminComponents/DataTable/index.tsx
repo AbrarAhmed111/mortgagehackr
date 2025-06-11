@@ -22,7 +22,6 @@ type TableProps<T> = {
   itemsPerPage?: number
   onEdit?: (item: T) => void
   onDelete?: (item: T) => void
-  onSelect?: (selectedItems: T[]) => void
 }
 
 export function DataTable<T>({
@@ -31,29 +30,13 @@ export function DataTable<T>({
   itemsPerPage = 10,
   onEdit,
   onDelete,
-  onSelect,
 }: TableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedItems, setSelectedItems] = useState<T[]>([])
 
   const totalPages = Math.ceil(data.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentItems = data.slice(startIndex, endIndex)
-  const toggleSelect = (item: T) => {
-    const newSelectedItems = selectedItems.includes(item)
-      ? selectedItems.filter(selected => selected !== item)
-      : [...selectedItems, item]
-    setSelectedItems(newSelectedItems)
-    onSelect?.(newSelectedItems)
-  }
-
-  const toggleSelectAll = () => {
-    const newSelectedItems =
-      selectedItems.length === currentItems.length ? [] : [...currentItems]
-    setSelectedItems(newSelectedItems)
-    onSelect?.(newSelectedItems)
-  }
 
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)))
@@ -65,22 +48,6 @@ export function DataTable<T>({
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              {onSelect && (
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedItems.length === currentItems.length &&
-                      currentItems.length > 0
-                    }
-                    onChange={toggleSelectAll}
-                    className="h-4 w-4 text-[#8cc63f] focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                </th>
-              )}
               {columns.map((column, index) => (
                 <th
                   key={index}
@@ -102,20 +69,7 @@ export function DataTable<T>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {currentItems.map((item, rowIndex) => (
-              <tr
-                key={rowIndex}
-                className={selectedItems.includes(item) ? 'bg-blue-50' : ''}
-              >
-                {onSelect && (
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item)}
-                      onChange={() => toggleSelect(item)}
-                      className="h-4 w-4 text-[#8cc63f] focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                  </td>
-                )}
+              <tr key={rowIndex}>
                 {columns.map((column, colIndex) => (
                   <td key={colIndex} className="px-6 py-4 whitespace-nowrap">
                     {column.isImage && typeof column.accessor === 'string' ? (
@@ -143,7 +97,7 @@ export function DataTable<T>({
                       {onEdit && (
                         <button
                           onClick={() => onEdit(item)}
-                          className="text-[#8cc63f] hover:text-blue-900"
+                          className="text-[#8cc63f] hover:text-white hover:cursor-pointer hover:bg-[#8cc63f]/50 px-2 py-1.5 rounded-lg"
                           title="Edit"
                         >
                           <FiEdit2 />
@@ -152,7 +106,7 @@ export function DataTable<T>({
                       {onDelete && (
                         <button
                           onClick={() => onDelete(item)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-600 hover:text-white hover:cursor-pointer hover:bg-red-300 px-2 py-1.5 rounded-lg"
                           title="Delete"
                         >
                           <FiTrash2 />
@@ -188,7 +142,7 @@ export function DataTable<T>({
                   <button
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="relative inline-flex  items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="sr-only">Previous</span>
                     <FiChevronLeft className="h-5 w-5" aria-hidden="true" />
