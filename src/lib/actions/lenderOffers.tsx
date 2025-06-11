@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../supabase/server";
+export const dynamic = 'force-dynamic'; 
 
 export async function getOffers(filters?: {
   interestRateMin?: number;
