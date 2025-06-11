@@ -85,8 +85,7 @@ export async function logApplyNowClick({
     console.error('Error logging Apply Now click:', error)
     return { error: error.message }
   }
-
-  return { success: true, data }
+  return { success: true, message: "Applied Successfully"  }
 }
 
 export async function createOffer(offerData: {
