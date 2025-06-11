@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,6 +19,7 @@ import { getOffers, logApplyNowClick } from "@/lib/actions/lenderOffers"
 import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
 import toast from "react-hot-toast"
 import { Offer } from "@/utils/types"
+import { useRouter } from "next/navigation";
 
 // Mock data for mortgage offers
 
@@ -56,6 +56,7 @@ export default function MarketplacePage() {
   const [userIp, setuserIp] = useState("")
   const [userAgent, setUserAgent] = useState("")
   const [noFilter,setNoFilter] = useState(true)
+const router = useRouter();
 
 
   useEffect(() => {
@@ -126,6 +127,10 @@ const handleApplyClick = async (offer: Offer) => {
 
     if (data?.success === true) {
       toast.success(data.message || "Application submitted successfully.");
+      setTimeout(() => {
+    router.push(offer.cta_link); // replace with your actual route
+  }, 2000);
+
     } else {
       toast.error(data?.message || "Something went wrong while applying.");
     }

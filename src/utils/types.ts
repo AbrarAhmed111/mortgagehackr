@@ -114,4 +114,5 @@ export  interface Offer {
   status: string; // could be 'active' | 'inactive' if known
   eligibility: string;
   apr: string;
+  cta_link: string;
 }
