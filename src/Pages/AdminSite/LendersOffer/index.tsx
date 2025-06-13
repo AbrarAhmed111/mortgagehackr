@@ -7,6 +7,7 @@ import {
   deleteOffer,
   getOffersWithLink,
   toggleOfferStatus,
+  updateLenderOffer,
   updateOfferLink,
 } from '@/lib/actions/lenderOffers'
 import { StatusDropdown } from './Modals/StatusUpdateDropdown'
@@ -162,19 +163,55 @@ const LendersOfferManagement: React.FC = () => {
     setIsUpdateModalOpen(true)
   }
 
-  const handleUpdate = async (updatedData: { id: string; ctaLink: string }) => {
+  // const handleUpdate = async (updatedData: { id: string; ctaLink: string }) => {
+  //   try {
+  //     const result = await updateOfferLink(updatedData.id, updatedData.ctaLink)
+  //     if (result.error) {
+  //       console.error('Error updating offer:', result.error)
+  //       return
+  //     }
+  //     toast.success('Offer updated successfully')
+  //     await loadOffers()
+  //     setIsUpdateModalOpen(false)
+  //     setSelectedOffer(null)
+  //   } catch (error) {
+  //     console.error('Error updating offer:', error)
+  //   }
+  // }
+  // Updated handleUpdate function for your main component
+  const handleUpdate = async (updatedData: {
+    id: string
+    lenderName: string
+    interestRate: number
+    apr: number
+    loanTerm: number
+    eligibility: string
+    ctaLink: string
+    expirationDate: string
+    status: 'active' | 'inactive'
+  }) => {
     try {
-      const result = await updateOfferLink(updatedData.id, updatedData.ctaLink)
-      if (result.error) {
-        console.error('Error updating offer:', result.error)
-        return
+      const result = await updateLenderOffer({
+        id: updatedData.id,
+        lender_name: updatedData.lenderName,
+        interest_rate: updatedData.interestRate,
+        apr: updatedData.apr,
+        loan_term: updatedData.loanTerm,
+        eligibility: updatedData.eligibility,
+        cta_link: updatedData.ctaLink,
+        expiration_date: updatedData.expirationDate,
+        status: updatedData.status === 'active',
+      })
+
+      if (result?.status === 200) {
+        toast.success('Offer updated successfully')
+        await loadOffers()
+        setIsUpdateModalOpen(false)
+        setSelectedOffer(null)
       }
-      toast.success('Offer updated successfully')
-      await loadOffers()
-      setIsUpdateModalOpen(false)
-      setSelectedOffer(null)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating offer:', error)
+      toast.error(error?.message || 'Failed to update offer')
     }
   }
 
