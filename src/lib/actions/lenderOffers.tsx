@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "../supabase/server";
-export const dynamic = 'force-dynamic'; 
 
 export async function getOffers(filters?: {
   interestRateMin?: number;
@@ -155,6 +154,65 @@ export async function getOffersWithLink() {
   );
 
   return offersWithClicks;
+}
+
+export interface UpdateLenderOfferInput {
+  id: string;
+  lender_name?: string;
+  interest_rate?: number;
+  apr?: number;
+  loan_term?: number;
+  eligibility?: string;
+  cta_link?: string;
+  expiration_date?: string;
+  status?: boolean;
+}
+
+export async function updateLenderOffer(input: UpdateLenderOfferInput) {
+  const { id, ...fields } = input;
+
+  if (!id) {
+    throw {
+      status: 400,
+      message: "Missing required field: id",
+    };
+  }
+
+  const supabase = await createClient();
+
+  const fieldsToUpdate = {
+    ...fields,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from("lender_offers")
+    .update(fieldsToUpdate)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase error:", error);
+    throw {
+      status: 500,
+      message: "Failed to update lender offer",
+      details: error.message,
+    };
+  }
+
+  if (!data) {
+    throw {
+      status: 404,
+      message: "Lender offer not found",
+    };
+  }
+
+  return {
+    status: 200,
+    message: "Lender offer updated successfully",
+    data,
+  };
 }
 
 export async function updateOfferLink(offerId: string, cta_link: string) {

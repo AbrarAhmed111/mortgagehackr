@@ -15,20 +15,21 @@ export type Blog = {
   profile_image?: string | null; // Author or profile image URL
   created_at: string; // ISO timestamp
 };
-
 // --- LENDER OFFERS ---
 export interface LenderOffer {
   id: string; // UUID
-  lenderName: string;
-  interestRateAPR: number; // percentage, e.g. 3.75
-  loanTerm: 15 | 30; // years
-  eligibilityCriteria?: string; // optional description
-  ctaLink: string; // external Apply Now URL
-  expirationDate: string; // ISO date string
-  isActive: boolean; // active/inactive toggle
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  lender_name: string;
+  interest_rate: number; // percentage, e.g. 3.75
+  apr?: number; // optional APR
+  loan_term: number; // in months or years (match with backend)
+  eligibility?: string; // optional description
+  cta_link: string; // external Apply Now URL
+  expiration_date: string; // ISO date string (from 'date' in SQL)
+  status: boolean; // active/inactive
+  created_at: string; // ISO datetime string
+  updated_at: string; // ISO datetime string
 }
+
 
 // --- APPLY NOW CLICKS (for tracking CTA clicks) ---
 export interface ApplyNowClick {
