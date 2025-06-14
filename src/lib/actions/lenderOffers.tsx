@@ -171,6 +171,8 @@ export interface UpdateLenderOfferInput {
 export async function updateLenderOffer(input: UpdateLenderOfferInput) {
   const { id, ...fields } = input
 
+
+  
   if (!id) {
     throw {
       status: 400,
