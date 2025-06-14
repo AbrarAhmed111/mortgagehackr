@@ -1,16 +1,52 @@
-// components/ResetPasswordForm.tsx
 'use client'
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { FiLock } from 'react-icons/fi'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { updatePasswordAction } from '@/lib/actions/auth'
+import { FiLock } from 'react-icons/fi'
 
 const ResetPasswordForm = () => {
+  const searchParams = useSearchParams()
   const router = useRouter()
+
+  const [code, setCode] = useState<string | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [codeVerified, setCodeVerified] = useState(false)
+
+  useEffect(() => {
+    const paramCode = searchParams?.get('code')
+    if (paramCode && !code) {
+      setCode(paramCode)
+    }
+  }, [searchParams, code])
+
+  useEffect(() => {
+    const exchangeCode = async () => {
+      if (!code) return
+
+      const supabase = createClient()
+      const { data: sessionData } = await supabase.auth.getSession()
+
+      if (!sessionData.session) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+        if (error) {
+          console.error('Exchange error:', error)
+          setError('Invalid or expired reset link.')
+        } else {
+          setCodeVerified(true)
+        }
+      } else {
+        // already signed in
+        setCodeVerified(true)
+      }
+    }
+
+    exchangeCode()
+  }, [code])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,6 +65,7 @@ const ResetPasswordForm = () => {
     setIsLoading(true)
     try {
       await updatePasswordAction(newPassword)
+      router.push('/signin')
     } catch (err: any) {
       setError(err.message || 'Failed to reset password.')
     } finally {
@@ -45,40 +82,44 @@ const ResetPasswordForm = () => {
           <p className="text-gray-600">Enter your new password</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              New Password
-            </label>
-            <input
-              type="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition"
-          >
-            {isLoading ? 'Resetting...' : 'Reset Password'}
-          </button>
-        </form>
+        {!codeVerified ? (
+          <p className="text-center text-gray-500">Verifying reset link...</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && <div className="text-red-500 text-sm">{error}</div>}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                required
+                className="w-full px-3 py-2 border rounded-lg"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                required
+                className="w-full px-3 py-2 border rounded-lg"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition"
+            >
+              {isLoading ? 'Resetting...' : 'Reset Password'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )
