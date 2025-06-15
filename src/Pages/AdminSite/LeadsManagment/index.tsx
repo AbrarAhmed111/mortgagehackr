@@ -249,10 +249,6 @@ const LeadsManagement: React.FC = () => {
     // Implement delete functionality
   }
 
-  const handleSelection = (selected: Lead[]) => {
-    console.log('Selected leads:', selected)
-  }
-
   const exportLeads = () => {
     const csvContent = [
       // CSV Headers
@@ -404,7 +400,6 @@ const LeadsManagement: React.FC = () => {
         columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onSelect={handleSelection}
         itemsPerPage={10}
       />
     </div>

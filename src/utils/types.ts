@@ -102,14 +102,41 @@ export interface DataTableProps<T> {
 
 //Offer Data
 
-export  interface Offer {
-  id: string;
-  interest_rate: number;
-  expiration_date: string; // or Date if you're parsing it
-  lender_name: string;
-  loan_term: number;
-  status: string; // could be 'active' | 'inactive' if known
-  eligibility: string;
-  apr: string;
-  cta_link: string;
+export interface Offer {
+  id: string
+  interest_rate: number
+  expiration_date: string // or Date if you're parsing it
+  lender_name: string
+  loan_term: number
+  status: string // could be 'active' | 'inactive' if known
+  eligibility: string
+  apr: string
+  cta_link: string
+}
+
+export interface TopOffer {
+  id: number
+  lender_name: string
+  expiration_date: string
+  click_count: number
+}
+
+export interface ClicksOverTimeData {
+  period: string
+  clicks: number
+}
+
+export interface OfferStatusData {
+  active: number
+  inactive: number
+}
+
+export interface LeadsData {
+  contactLeads: number
+  helocLeads: number
+  dealAnalyzerLeads: {
+    Great: number
+    Fair: number
+    Poor: number
+  }
 }

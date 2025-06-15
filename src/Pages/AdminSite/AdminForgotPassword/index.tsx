@@ -63,7 +63,7 @@ const ForgotPasswordForm = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition"
+              className="w-full text-white py-2 rounded-lg bg-[#8cc63f] hover:bg-[#8cc63f]/80 transition"
             >
               {isLoading ? 'Sending...' : 'Send Reset Email'}
             </button>
