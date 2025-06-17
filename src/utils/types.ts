@@ -29,7 +29,7 @@ export interface Blog {
     description: string
   }[]
   profileImage?: string
-  createdAt: string // ISO timestamp string
+  publishDate: string
 }
 
 export type BlogsColumn<T> = {
@@ -38,7 +38,6 @@ export type BlogsColumn<T> = {
   isImage?: boolean
   imageWidth?: number
   imageHeight?: number
-  render?: (item: T) => React.ReactNode
 }
 
 export interface LenderOffer {

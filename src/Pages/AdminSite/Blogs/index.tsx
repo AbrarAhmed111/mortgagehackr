@@ -1,23 +1,24 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
-import { Blog, BlogsColumn } from '@/utils/types'
 import { FiPlus } from 'react-icons/fi'
 import ProfileIcon from '@/assets/Images/image.png'
 import { AddBlogModal } from '@/components/AdminComponents/Modals/AddBlogModal'
 import { DeleteBlogModal } from '@/components/AdminComponents/Modals/DeleteBlogModal'
 import { getAllBlogs } from '@/lib/actions/blogs'
-import { BiLoaderCircle } from 'react-icons/bi'
 import toast from 'react-hot-toast'
+import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
+import { Blog, BlogsColumn } from '@/utils/types'
 
 const BlogsManagement: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false)
-  // const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false)
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null)
+  const itemsPerPage = 8
 
   useEffect(() => {
     getBlogs()
@@ -26,20 +27,22 @@ const BlogsManagement: React.FC = () => {
   const getBlogs = async () => {
     setLoading(true)
     try {
-      const blogsData = await getAllBlogs(currentPage, 8)
-      console.log('>>>>>>>>', blogsData)
-      const transformedBlogs: Blog[] = blogsData.map((blog: any) => ({
+      const response = await getAllBlogs(currentPage, itemsPerPage)
+      const blogsData = response.data
+      const transformedBlogs: Blog[] = blogsData?.map((blog: any) => ({
         id: blog.id,
         title: blog.title,
-        content:
-          blog.content?.map((block: any) => block.description).join(' ') || '',
-        image: blog.profile_image || ProfileIcon,
-        publishDate: blog.created_at,
         slug: blog.slug,
+        content: blog.content || [],
+        profileImage: blog.profile_image || ProfileIcon,
+        publishDate: blog.created_at || new Date().toISOString(),
       }))
+
       setBlogs(transformedBlogs)
+      setTotalCount(response.total)
     } catch (error) {
       console.error('Error loading blogs:', error)
+      toast.error('Failed to load blogs')
     } finally {
       setLoading(false)
     }
@@ -48,17 +51,27 @@ const BlogsManagement: React.FC = () => {
   const columns: BlogsColumn<Blog>[] = [
     {
       header: 'Image',
-      accessor: 'image',
+      accessor: 'profileImage',
       isImage: true,
       imageWidth: 40,
       imageHeight: 40,
     },
     { header: 'Title', accessor: 'title' },
-    { header: 'Content', accessor: 'content' },
+    {
+      header: 'Content',
+      accessor: (blog: Blog) => (
+        <div className="text-sm text-gray-600 max-w-xs">
+          {blog.content && blog.content.length > 0
+            ? blog.content[0]?.description
+              ? `${blog.content[0].description.substring(0, 100)}${blog.content[0].description.length > 100 ? '...' : ''}`
+              : 'No content'
+            : 'No content'}
+        </div>
+      ),
+    },
     {
       header: 'Publish Date',
-      accessor: 'publishDate',
-      render: (blog: Blog) => (
+      accessor: (blog: Blog) => (
         <span className="text-sm text-gray-600">
           {new Date(blog.publishDate).toLocaleDateString()}
         </span>
@@ -69,18 +82,9 @@ const BlogsManagement: React.FC = () => {
   // Handlers
   const handleAdd = async () => {
     setIsAddModalOpen(false)
+    setCurrentPage(1)
     await getBlogs()
   }
-
-  // const handleEdit = (blog: Blog) => {
-  //   setSelectedBlog(blog)
-  //   setIsUpdateModalOpen(true)
-  // }
-
-  // const handleUpdate = async (updatedBlog: Blog) => {
-  //   await getBlogs()
-  //   setIsUpdateModalOpen(false)
-  // }
 
   const handleDelete = (blog: Blog) => {
     setSelectedBlog(blog)
@@ -89,12 +93,17 @@ const BlogsManagement: React.FC = () => {
 
   const handleDeleteSuccess = async () => {
     setIsDeleteModalOpen(false)
-    await getBlogs()
+    const totalPages = Math.ceil(totalCount / itemsPerPage)
+    if (blogs.length === 1 && currentPage > 1 && currentPage === totalPages) {
+      setCurrentPage(currentPage - 1)
+    } else {
+      await getBlogs()
+    }
     toast.success('Blog deleted successfully')
   }
 
-  const handleSelection = (selectedBlogs: Blog[]) => {
-    console.log('Selected blogs:', selectedBlogs)
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
   }
 
   return (
@@ -109,19 +118,23 @@ const BlogsManagement: React.FC = () => {
           Add Blog
         </button>
       </div>
+
       {loading ? (
-        <div className="flex justify-center gap-4 items-center h-[50vh] border rounded-lg">
-          <BiLoaderCircle size={40} className="animate-spin" />
-          <span className="text-xl font-semibold">Loading blogs...</span>
-        </div>
+        <DataTableSkeleton
+          columns={columns}
+          itemsPerPage={10}
+          showActions={!!handleDelete}
+        />
       ) : blogs.length > 0 ? (
         <DataTable
           data={blogs}
           columns={columns}
-          // onEdit={handleEdit}
           onDelete={handleDelete}
-          onSelect={handleSelection}
-          itemsPerPage={8}
+          itemsPerPage={itemsPerPage}
+          serverSide={true}
+          currentPage={currentPage}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
         />
       ) : (
         <div className="flex justify-center items-center h-64">
@@ -136,14 +149,6 @@ const BlogsManagement: React.FC = () => {
         onAdd={handleAdd}
         defaultImage={ProfileIcon}
       />
-
-      {/* Update Blog Modal */}
-      {/* <UpdateBlogModal
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-        onUpdate={handleUpdate}
-        blogData={selectedBlog}
-      /> */}
 
       {/* Delete Blog Modal */}
       <DeleteBlogModal

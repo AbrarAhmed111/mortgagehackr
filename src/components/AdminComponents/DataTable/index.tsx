@@ -22,6 +22,11 @@ type TableProps<T> = {
   itemsPerPage?: number
   onEdit?: (item: T) => void
   onDelete?: (item: T) => void
+  // Server-side pagination props
+  serverSide?: boolean
+  currentPage?: number
+  totalCount?: number
+  onPageChange?: (page: number) => void
 }
 
 export function DataTable<T>({
@@ -30,16 +35,48 @@ export function DataTable<T>({
   itemsPerPage = 10,
   onEdit,
   onDelete,
+  // Server-side pagination props
+  serverSide = false,
+  currentPage = 1,
+  totalCount = 0,
+  onPageChange,
 }: TableProps<T>) {
-  const [currentPage, setCurrentPage] = useState(1)
+  const [localCurrentPage, setLocalCurrentPage] = useState(1)
 
-  const totalPages = Math.ceil(data.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentItems = data.slice(startIndex, endIndex)
+  // Use server-side pagination if enabled, otherwise use client-side
+  const activePage = serverSide ? currentPage : localCurrentPage
+  const activeItemsPerPage = itemsPerPage
+
+  let totalPages: number
+  let currentItems: T[]
+  let startIndex: number
+  let endIndex: number
+  let totalItems: number
+
+  if (serverSide) {
+    // Server-side pagination
+    totalPages = Math.ceil(totalCount / activeItemsPerPage)
+    currentItems = data // Data is already paginated from server
+    startIndex = (activePage - 1) * activeItemsPerPage
+    endIndex = Math.min(startIndex + activeItemsPerPage, totalCount)
+    totalItems = totalCount
+  } else {
+    // Client-side pagination
+    totalPages = Math.ceil(data.length / activeItemsPerPage)
+    startIndex = (activePage - 1) * activeItemsPerPage
+    endIndex = startIndex + activeItemsPerPage
+    currentItems = data.slice(startIndex, endIndex)
+    totalItems = data.length
+  }
 
   const goToPage = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)))
+    const newPage = Math.max(1, Math.min(page, totalPages))
+
+    if (serverSide && onPageChange) {
+      onPageChange(newPage)
+    } else {
+      setLocalCurrentPage(newPage)
+    }
   }
 
   return (
@@ -127,10 +164,8 @@ export function DataTable<T>({
             <div>
               <p className="text-sm text-gray-700">
                 Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
-                <span className="font-medium">
-                  {Math.min(endIndex, data.length)}
-                </span>{' '}
-                of <span className="font-medium">{data.length}</span> results
+                <span className="font-medium">{endIndex}</span> of{' '}
+                <span className="font-medium">{totalItems}</span> results
               </p>
             </div>
             <div>
@@ -139,8 +174,8 @@ export function DataTable<T>({
                 aria-label="Pagination"
               >
                 <button
-                  onClick={() => goToPage(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  onClick={() => goToPage(activePage - 1)}
+                  disabled={activePage === 1}
                   className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="sr-only">Previous</span>
@@ -152,7 +187,7 @@ export function DataTable<T>({
                       key={page}
                       onClick={() => goToPage(page)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        currentPage === page
+                        activePage === page
                           ? 'z-10 bg-blue-50 border-blue-500 text-[#8cc63f]'
                           : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                       }`}
@@ -162,8 +197,8 @@ export function DataTable<T>({
                   ),
                 )}
                 <button
-                  onClick={() => goToPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(activePage + 1)}
+                  disabled={activePage === totalPages}
                   className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="sr-only">Next</span>
