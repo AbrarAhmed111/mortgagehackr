@@ -1,6 +1,6 @@
 import { Calculator, Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Shield, Clock, Users } from "lucide-react"
 import Link from "next/link"
-import logo from "@/assets/Images/mortgagehackr-2.png"
+import logo from "@/assets/Images/mortgagehackr-logo.png"
 import Image from "next/image"
 export default function Footer() {
   return (

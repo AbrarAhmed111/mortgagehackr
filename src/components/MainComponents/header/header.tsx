@@ -5,7 +5,7 @@ import { Button } from "../../ui/button"
 import { Calculator, Menu, Phone, Mail, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import logo from "@/assets/Images/mortgagehackr-2.png"
+import logo from "@/assets/Images/mortgagehackr-logo.png"
 
 export default function Header() {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
