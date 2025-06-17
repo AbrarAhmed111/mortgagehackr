@@ -3,23 +3,27 @@
 import { createClient } from '../supabase/server'
 
 export async function getAllBlogs(page = 1, limit = 10) {
-  const supabase = await createClient()
-  const from = (page - 1) * limit
-  const to = from + limit - 1
+  const supabase = await createClient();
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from('blogs')
-    .select('*')
+    .select('*', { count: 'exact' }) // <-- get total count
     .order('created_at', { ascending: false })
-    .range(from, to)
+    .range(from, to);
 
   if (error) {
-    console.error(error)
-    return []
+    console.error(error);
+    return { data: [], total: 0 };
   }
 
-  return data
+  return {
+    data,
+    total: count ?? 0,
+  };
 }
+
 
 export async function getBlogBySlug(slug: string) {
   const supabase = await createClient()
