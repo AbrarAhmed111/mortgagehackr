@@ -2,16 +2,21 @@
 
 import { createClient } from '../supabase/server'
 
-export async function getAllBlogs(page = 1, limit = 10) {
+export async function getAllBlogs(page = 1, limit = 10, searchQuery = '') {
   const supabase = await createClient();
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from('blogs')
-    .select('*', { count: 'exact' }) // <-- get total count
-    .order('created_at', { ascending: false })
-    .range(from, to);
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false });
+
+  if (searchQuery.trim()) {
+    query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+  }
+
+  const { data, error, count } = await query.range(from, to);
 
   if (error) {
     console.error(error);
@@ -23,6 +28,7 @@ export async function getAllBlogs(page = 1, limit = 10) {
     total: count ?? 0,
   };
 }
+
 
 
 export async function getBlogBySlug(slug: string) {
