@@ -31,7 +31,14 @@ export default function RootLayout({
   return (
     <Providers>
       <html lang="en">
-        <head></head>
+        <head>
+           <script
+    src={`https://www.google.com/recaptcha/api.js?render=your_site_key`}
+    async
+    defer
+  />
+        </head>
+        
         <body suppressHydrationWarning className="antialiased w-full">
           <Toaster position="top-center" reverseOrder={false} />
           {children}

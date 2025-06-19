@@ -1,12 +1,71 @@
+"use client"
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Phone, Mail, MapPin, Clock, MessageSquare, HelpCircle } from "lucide-react"
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  MessageSquare,
+  HelpCircle,
+} from "lucide-react"
+import { createLead } from "@/lib/actions/contactLeads"
 
 export default function ContactPage() {
+  const [error, setError] = useState("")
+  const [lastSubmittedAt, setLastSubmittedAt] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError("")
+
+    const now = Date.now()
+    if (lastSubmittedAt && now - lastSubmittedAt < 30000) {
+      setError("Please wait 30 seconds before submitting again.")
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const token = await grecaptcha.execute("your_site_key", {
+        action: "submit",
+      })
+      if (!token) throw new Error("No token received")
+
+      const formData = new FormData(e.currentTarget)
+      const payload = {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        subject: formData.get("subject"),
+        message: formData.get("message"),
+        token: token,
+      }
+      const name = formData.get("firstName")
+      const email = formData.get("email")
+      const message = formData.get("message") 
+      const isSpam = false
+ await createLead(name,email,message,isSpam)
+   
+      setLastSubmittedAt(Date.now())
+      alert("Message sent successfully!")
+      e.currentTarget.reset()
+    } catch (err) {
+      console.error(err)
+      setError("Verification failed. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
@@ -38,78 +97,93 @@ export default function ContactPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <form onSubmit={handleSubmit}>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">First Name *</label>
+                          <input
+                            name="firstName"
+                            type="text"
+                            required
+                            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="John"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Last Name *</label>
+                          <input
+                            name="lastName"
+                            type="text"
+                            required
+                            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Smith"
+                          />
+                        </div>
+                      </div>
+
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">First Name *</label>
+                        <label className="text-sm font-medium">Email Address *</label>
                         <input
-                          type="text"
-                          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="John"
+                          name="email"
+                          type="email"
                           required
+                          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="john@example.com"
                         />
                       </div>
+
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Last Name *</label>
+                        <label className="text-sm font-medium">Phone Number</label>
                         <input
-                          type="text"
+                          name="phone"
+                          type="tel"
                           className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Smith"
-                          required
+                          placeholder="(555) 123-4567"
                         />
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Email Address *</label>
-                      <input
-                        type="email"
-                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="john@example.com"
-                        required
-                      />
-                    </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Subject *</label>
+                        <select
+                          name="subject"
+                          required
+                          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option>General Inquiry</option>
+                          <option>Loan Analysis Question</option>
+                          <option>Technical Support</option>
+                          <option>Partnership Opportunity</option>
+                          <option>Media Inquiry</option>
+                          <option>Other</option>
+                        </select>
+                      </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Phone Number</label>
-                      <input
-                        type="tel"
-                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="(555) 123-4567"
-                      />
-                    </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Message *</label>
+                        <textarea
+                          name="message"
+                          required
+                          rows={5}
+                          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Tell us how we can help you..."
+                        ></textarea>
+                      </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Subject *</label>
-                      <select className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option>General Inquiry</option>
-                        <option>Loan Analysis Question</option>
-                        <option>Technical Support</option>
-                        <option>Partnership Opportunity</option>
-                        <option>Media Inquiry</option>
-                        <option>Other</option>
-                      </select>
-                    </div>
+                      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12" disabled={loading}>
+                        {loading ? "Sending..." : "Send Message"}
+                      </Button>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Message *</label>
-                      <textarea
-                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={5}
-                        placeholder="Tell us how we can help you..."
-                        required
-                      ></textarea>
-                    </div>
+                      {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
 
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12">Send Message</Button>
-
-                    <p className="text-xs text-gray-500 text-center">
-                      By submitting this form, you agree to our Privacy Policy and Terms of Service.
-                    </p>
+                      <p className="text-xs text-gray-500 text-center">
+                        By submitting this form, you agree to our Privacy Policy and Terms of Service.
+                      </p>
+                    </form>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Contact Information */}
+              {/* Contact Info */}
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold mb-4">Get in touch</h2>
@@ -188,65 +262,40 @@ export default function ContactPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="p-6">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
-                    <CardTitle className="text-lg">Is the loan analysis really free?</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    Yes, our loan analysis is completely free. We're compensated by lenders when you choose to work with
-                    them, but there's never any cost to you for using our analysis tools.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-
-              <Card className="p-6">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
-                    <CardTitle className="text-lg">Will checking rates affect my credit score?</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    No, our initial analysis and rate checking only use soft credit inquiries, which don't impact your
-                    credit score. Hard inquiries only occur when you formally apply for a loan.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-
-              <Card className="p-6">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
-                    <CardTitle className="text-lg">How accurate are your calculations?</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    Our calculations use industry-standard formulas and are highly accurate. However, final loan terms
-                    may vary based on your creditworthiness and lender requirements.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-
-              <Card className="p-6">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3">
-                    <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
-                    <CardTitle className="text-lg">What if I don't have all the loan information?</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    That's okay! Our flexible system works with whatever information you have. We can calculate missing
-                    details and provide preliminary analysis, then refine it as you provide more information.
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              {[
+                {
+                  question: "Is the loan analysis really free?",
+                  answer:
+                    "Yes, our loan analysis is completely free. We're compensated by lenders when you choose to work with them, but there's never any cost to you for using our analysis tools.",
+                },
+                {
+                  question: "Will checking rates affect my credit score?",
+                  answer:
+                    "No, our initial analysis and rate checking only use soft credit inquiries, which don't impact your credit score. Hard inquiries only occur when you formally apply for a loan.",
+                },
+                {
+                  question: "How accurate are your calculations?",
+                  answer:
+                    "Our calculations use industry-standard formulas and are highly accurate. However, final loan terms may vary based on your creditworthiness and lender requirements.",
+                },
+                {
+                  question: "What if I don't have all the loan information?",
+                  answer:
+                    "That's okay! Our flexible system works with whatever information you have. We can calculate missing details and provide preliminary analysis, then refine it as you provide more information.",
+                },
+              ].map((item, index) => (
+                <Card key={index} className="p-6">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-3">
+                      <HelpCircle className="h-5 w-5 text-[#8cc63f]" />
+                      <CardTitle className="text-lg">{item.question}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base">{item.answer}</CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
@@ -262,61 +311,45 @@ export default function ContactPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <MessageSquare className="h-8 w-8 text-[#8cc63f]" />
-                  </div>
-                  <CardTitle className="text-lg">Live Chat</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">
-                    Get instant help from our support team through live chat on our website.
-                  </CardDescription>
-                  <Button variant="outline" className="w-full">
-                    Start Chat
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <HelpCircle className="h-8 w-8 text-[#8cc63f]" />
-                  </div>
-                  <CardTitle className="text-lg">Help Center</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">
-                    Browse our comprehensive help center with guides, tutorials, and FAQs.
-                  </CardDescription>
-                  <Button variant="outline" className="w-full">
-                    Visit Help Center
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <Phone className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <CardTitle className="text-lg">Schedule a Call</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">
-                    Book a personalized consultation with one of our financial experts.
-                  </CardDescription>
-                  <Button variant="outline" className="w-full">
-                    Schedule Call
-                  </Button>
-                </CardContent>
-              </Card>
+              {[
+                {
+                  icon: <MessageSquare className="h-8 w-8 text-[#8cc63f]" />,
+                  title: "Live Chat",
+                  description: "Get instant help from our support team through live chat on our website.",
+                  action: "Start Chat",
+                },
+                {
+                  icon: <HelpCircle className="h-8 w-8 text-[#8cc63f]" />,
+                  title: "Help Center",
+                  description: "Browse our comprehensive help center with guides, tutorials, and FAQs.",
+                  action: "Visit Help Center",
+                },
+                {
+                  icon: <Phone className="h-8 w-8 text-purple-600" />,
+                  title: "Schedule a Call",
+                  description: "Book a personalized consultation with one of our financial experts.",
+                  action: "Schedule Call",
+                },
+              ].map((item, index) => (
+                <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                      {item.icon}
+                    </div>
+                    <CardTitle className="text-lg">{item.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="mb-4">{item.description}</CardDescription>
+                    <Button variant="outline" className="w-full">
+                      {item.action}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
       </main>
-
     </div>
   )
 }
