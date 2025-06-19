@@ -13,7 +13,7 @@ export async function getAllBlogs(page = 1, limit = 10, searchQuery = '') {
     .order('created_at', { ascending: false });
 
   if (searchQuery.trim()) {
-    query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+    query = query.ilike('title', `%${searchQuery}%`);
   }
 
   const { data, error, count } = await query.range(from, to);
@@ -28,7 +28,6 @@ export async function getAllBlogs(page = 1, limit = 10, searchQuery = '') {
     total: count ?? 0,
   };
 }
-
 
 
 export async function getBlogBySlug(slug: string) {
