@@ -6,20 +6,30 @@ export async function createLead(
   name: string,
   email: string,
   message: string,
-  isSpam = false
+  ip_address?: string, // optional, for logging/spam detection
+  is_spam: boolean = false
 ) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { error } = await supabase
-    .from('leads')
-    .insert([{ name, email, message, isSpam, createdAt: new Date().toISOString() }])
+    .from('contact_leads')
+    .insert([
+      {
+        name,
+        email,
+        message,
+        ip_address: ip_address || null,
+        is_spam
+        // no need to pass submitted_at explicitly
+      }
+    ]);
 
   if (error) {
-    console.error(error)
-    return { error: error.message }
+    console.error("Error creating contact lead:", error);
+    return { error: error.message };
   }
 
-  return { success: 'Lead created successfully' }
+  return { success: "Lead created successfully" };
 }
 
 export async function getLeads(
