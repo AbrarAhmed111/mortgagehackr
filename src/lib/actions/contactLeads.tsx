@@ -6,21 +6,53 @@ export async function createLead(
   name: string,
   email: string,
   message: string,
-  isSpam = false
+  ip_address?: string, // optional
+  is_spam: boolean = false
 ) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { error } = await supabase
-    .from('leads')
-    .insert([{ name, email, message, isSpam, createdAt: new Date().toISOString() }])
+  // Step 1: Optional rate limit check if IP is provided
+  if (ip_address) {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
-  if (error) {
-    console.error(error)
-    return { error: error.message }
+    const { count, error: rateLimitError } = await supabase
+      .from('contact_leads')
+      .select('id', { count: 'exact', head: true })
+      .gte('submitted_at', oneHourAgo)
+      .eq('ip_address', ip_address);
+
+    if (rateLimitError) {
+      console.error("Rate limit check error:", rateLimitError);
+      return { error: "Failed to check rate limit." };
+    }
+
+    const RATE_LIMIT = 3;
+    if ((count || 0) >= RATE_LIMIT) {
+      return {
+        error: `Rate limit exceeded. Please try again later.`,
+      };
+    }
   }
 
-  return { success: 'Lead created successfully' }
+  // Step 2: Insert lead
+  const { error } = await supabase.from('contact_leads').insert([
+    {
+      name,
+      email,
+      message,
+      ip_address: ip_address || null, // nullable
+      is_spam,
+    },
+  ]);
+
+  if (error) {
+    console.error("Error creating contact lead:", error);
+    return { error: error.message };
+  }
+
+  return { success: "Lead created successfully" };
 }
+
 
 export async function getLeads(
   page = 1,
