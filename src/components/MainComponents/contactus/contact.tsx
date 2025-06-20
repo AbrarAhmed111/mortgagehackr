@@ -1,6 +1,6 @@
 "use client"
-
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
+import ReCAPTCHA from "react-google-recaptcha"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,66 +16,80 @@ import { createLead } from "@/lib/actions/contactLeads"
 import toast from "react-hot-toast"
 
 export default function ContactPage() {
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [message, setMessage] = useState("")
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
   const [error, setError] = useState("")
-  const [lastSubmittedAt, setLastSubmittedAt] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
-  const [firstName,setFirstName] = useState(" ")
-  const [lastName,setLastName] = useState(" ")
-  const [email,setEmail] = useState(" ")
-  const [message,setMessage] = useState(" ")
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setError("");
+  const [cooldown, setCooldown] = useState(0)
 
-  const now = Date.now();
-  if (lastSubmittedAt && now - lastSubmittedAt < 30000) {
-    setError("Please wait 30 seconds before submitting again.");
-    return;
-  }
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
 
-  setLoading(true);
-
-  try {
-    // Ensure grecaptcha is available
-    if (typeof window !== "undefined" && window.grecaptcha) {
-      const token = await window.grecaptcha.execute("6LdqOmcrAAAAAMi6d5yU2MYHUPgMVs3sLVMFyQMY", {
-        action: "submit",
-      });
-
-      if (!token) throw new Error("reCAPTCHA token not received");
-      // console.log("Token>>>",token)
-      let isSpam = false;
-      if(!token)
-      {
-         isSpam = true;
+  useEffect(() => {
+    const stored = localStorage.getItem("lastSubmittedAt")
+    if (stored) {
+      const timePassed = Date.now() - parseInt(stored)
+      if (timePassed < 30000) {
+        setCooldown(Math.ceil((30000 - timePassed) / 1000))
       }
-      else
-      {
-        isSpam = false
-      }
+    }
+  }, [])
 
-      // Optionally verify token on backend here
-      
-      const name = firstName + lastName
-      await createLead(name.trim(), email.trim(), message.trim(), isSpam);
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const interval = setInterval(() => {
+      setCooldown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [cooldown])
 
-      setLastSubmittedAt(Date.now());
-      toast.success("Message sent successfully!");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError("")
+
+    if (cooldown > 0) {
+      setError(`Please wait ${cooldown} second${cooldown > 1 ? "s" : ""} before submitting again.`)
+      return
+    }
+
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA.")
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const name = `${firstName} ${lastName}`
+      await createLead(name.trim(), email.trim(), message.trim(), false)
+
+      toast.success("Message sent successfully!")
+
       setFirstName("")
       setLastName("")
       setEmail("")
       setMessage("")
-    } else {
-      throw new Error("reCAPTCHA not loaded");
-    }
-  } catch (err) {
-    console.error(err);
-    setError("reCAPTCHA verification failed. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      setRecaptchaToken(null)
+      recaptchaRef.current?.reset()
 
+      const now = Date.now()
+      localStorage.setItem("lastSubmittedAt", now.toString())
+      setCooldown(30)
+    } catch (err) {
+      console.error(err)
+      setError("Failed to submit. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -115,26 +129,23 @@ export default function ContactPage() {
                         <div className="space-y-2">
                           <label className="text-sm font-medium">First Name *</label>
                           <input
-                          value={firstName}
-                            name="firstName"
+                            value={firstName}
                             type="text"
                             required
                             className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="John"
-                            onChange={(e)=>{setFirstName(e.target.value)}}
+                            onChange={(e) => setFirstName(e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Last Name *</label>
                           <input
-                          value={lastName}
-                            name="lastName"
+                            value={lastName}
                             type="text"
                             required
                             className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Smith"
-                            
-                            onChange={(e)=>{setLastName(e.target.value)}}
+                            onChange={(e) => setLastName(e.target.value)}
                           />
                         </div>
                       </div>
@@ -142,48 +153,20 @@ export default function ContactPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Email Address *</label>
                         <input
-                        value={email}
-                          name="email"
+                          value={email}
                           type="email"
                           required
                           className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="john@example.com"
-                          onChange={(e)=>{setEmail(e.target.value)}}
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
-
-                      {/* <div className="space-y-2">
-                        <label className="text-sm font-medium">Phone Number</label>
-                        <input
-                          name="phone"
-                          type="tel"
-                          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="(555) 123-4567"
-                        />
-                      </div> */}
-
-                      {/* <div className="space-y-2">
-                        <label className="text-sm font-medium">Subject *</label>
-                        <select
-                          name="subject"
-                          required
-                          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option>General Inquiry</option>
-                          <option>Loan Analysis Question</option>
-                          <option>Technical Support</option>
-                          <option>Partnership Opportunity</option>
-                          <option>Media Inquiry</option>
-                          <option>Other</option>
-                        </select>
-                      </div> */}
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Message *</label>
                         <textarea
-                        value={message}
-                        onChange={(e)=>{setMessage(e.target.value)}}
-                          name="message"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
                           required
                           rows={5}
                           className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -191,7 +174,21 @@ export default function ContactPage() {
                         ></textarea>
                       </div>
 
-                      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12" disabled={loading}>
+                      {/* reCAPTCHA v2 */}
+                      <div className="pt-4">
+                        <ReCAPTCHA
+                          sitekey="6Ldj4mcrAAAAAPIuUu-iHyLx47OjtixMGn_YxFVR"
+                          ref={recaptchaRef}
+                          onChange={(token) => setRecaptchaToken(token)}
+                          onExpired={() => setRecaptchaToken(null)}
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-blue-600 hover:bg-blue-700 h-12 mt-4"
+                        disabled={loading || !recaptchaToken}
+                      >
                         {loading ? "Sending..." : "Send Message"}
                       </Button>
 

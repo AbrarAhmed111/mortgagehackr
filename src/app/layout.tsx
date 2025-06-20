@@ -38,7 +38,7 @@ export default function RootLayout({
         
         <body suppressHydrationWarning className="antialiased w-full">
            <Script
-            src="https://www.google.com/recaptcha/api.js?render=6LdqOmcrAAAAAMi6d5yU2MYHUPgMVs3sLVMFyQMY"
+            src="https://www.google.com/recaptcha/api.js?render=6Ldj4mcrAAAAAPIuUu-iHyLx47OjtixMGn_YxFVR"
             strategy="afterInteractive"
           />
           <Toaster position="top-center" reverseOrder={false} />
