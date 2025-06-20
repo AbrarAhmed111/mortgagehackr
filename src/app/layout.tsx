@@ -12,6 +12,7 @@ import { Inter } from "next/font/google"
 import "../assets/css/globals.css"; // CSS is now included here
 import Header from '@/components/MainComponents/header/header'
 import Footer from '@/components/MainComponents/footer/footer'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -32,14 +33,14 @@ export default function RootLayout({
     <Providers>
       <html lang="en">
         <head>
-           <script
-    src={`https://www.google.com/recaptcha/api.js?render=your_site_key`}
-    async
-    defer
-  />
+  
         </head>
         
         <body suppressHydrationWarning className="antialiased w-full">
+           <Script
+            src="https://www.google.com/recaptcha/api.js?render=6LdqOmcrAAAAAMi6d5yU2MYHUPgMVs3sLVMFyQMY"
+            strategy="afterInteractive"
+          />
           <Toaster position="top-center" reverseOrder={false} />
           {children}
         </body>

@@ -13,56 +13,69 @@ import {
   HelpCircle,
 } from "lucide-react"
 import { createLead } from "@/lib/actions/contactLeads"
+import toast from "react-hot-toast"
 
 export default function ContactPage() {
   const [error, setError] = useState("")
   const [lastSubmittedAt, setLastSubmittedAt] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
+  const [firstName,setFirstName] = useState(" ")
+  const [lastName,setLastName] = useState(" ")
+  const [email,setEmail] = useState(" ")
+  const [message,setMessage] = useState(" ")
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError("")
-
-    const now = Date.now()
-    if (lastSubmittedAt && now - lastSubmittedAt < 30000) {
-      setError("Please wait 30 seconds before submitting again.")
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const token = await grecaptcha.execute("your_site_key", {
-        action: "submit",
-      })
-      if (!token) throw new Error("No token received")
-
-      const formData = new FormData(e.currentTarget)
-      const payload = {
-        firstName: formData.get("firstName"),
-        lastName: formData.get("lastName"),
-        email: formData.get("email"),
-        phone: formData.get("phone"),
-        subject: formData.get("subject"),
-        message: formData.get("message"),
-        token: token,
-      }
-      const name = formData.get("firstName")
-      const email = formData.get("email")
-      const message = formData.get("message") 
-      const isSpam = false
- await createLead(name,email,message,isSpam)
-   
-      setLastSubmittedAt(Date.now())
-      alert("Message sent successfully!")
-      e.currentTarget.reset()
-    } catch (err) {
-      console.error(err)
-      setError("Verification failed. Please try again.")
-    } finally {
-      setLoading(false)
-    }
+  const now = Date.now();
+  if (lastSubmittedAt && now - lastSubmittedAt < 30000) {
+    setError("Please wait 30 seconds before submitting again.");
+    return;
   }
+
+  setLoading(true);
+
+  try {
+    // Ensure grecaptcha is available
+    if (typeof window !== "undefined" && window.grecaptcha) {
+      const token = await window.grecaptcha.execute("6LdqOmcrAAAAAMi6d5yU2MYHUPgMVs3sLVMFyQMY", {
+        action: "submit",
+      });
+
+      if (!token) throw new Error("reCAPTCHA token not received");
+      // console.log("Token>>>",token)
+      let isSpam = false;
+      if(!token)
+      {
+         isSpam = true;
+      }
+      else
+      {
+        isSpam = false
+      }
+
+      // Optionally verify token on backend here
+      
+      const name = firstName + lastName
+      await createLead(name.trim(), email.trim(), message.trim(), isSpam);
+
+      setLastSubmittedAt(Date.now());
+      toast.success("Message sent successfully!");
+      setFirstName("")
+      setLastName("")
+      setEmail("")
+      setMessage("")
+    } else {
+      throw new Error("reCAPTCHA not loaded");
+    }
+  } catch (err) {
+    console.error(err);
+    setError("reCAPTCHA verification failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -102,21 +115,26 @@ export default function ContactPage() {
                         <div className="space-y-2">
                           <label className="text-sm font-medium">First Name *</label>
                           <input
+                          value={firstName}
                             name="firstName"
                             type="text"
                             required
                             className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="John"
+                            onChange={(e)=>{setFirstName(e.target.value)}}
                           />
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Last Name *</label>
                           <input
+                          value={lastName}
                             name="lastName"
                             type="text"
                             required
                             className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Smith"
+                            
+                            onChange={(e)=>{setLastName(e.target.value)}}
                           />
                         </div>
                       </div>
@@ -124,15 +142,17 @@ export default function ContactPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Email Address *</label>
                         <input
+                        value={email}
                           name="email"
                           type="email"
                           required
                           className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="john@example.com"
+                          onChange={(e)=>{setEmail(e.target.value)}}
                         />
                       </div>
 
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="text-sm font-medium">Phone Number</label>
                         <input
                           name="phone"
@@ -140,9 +160,9 @@ export default function ContactPage() {
                           className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="(555) 123-4567"
                         />
-                      </div>
+                      </div> */}
 
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="text-sm font-medium">Subject *</label>
                         <select
                           name="subject"
@@ -156,11 +176,13 @@ export default function ContactPage() {
                           <option>Media Inquiry</option>
                           <option>Other</option>
                         </select>
-                      </div>
+                      </div> */}
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Message *</label>
                         <textarea
+                        value={message}
+                        onChange={(e)=>{setMessage(e.target.value)}}
                           name="message"
                           required
                           rows={5}
