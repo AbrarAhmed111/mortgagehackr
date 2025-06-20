@@ -2,7 +2,7 @@
 
 import { createClient } from '../supabase/server'
 
-export async function createContactLead(
+export async function createLead(
   name: string,
   email: string,
   message: string,
