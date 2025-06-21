@@ -62,10 +62,17 @@ export function AddBlogModal({
       await onAdd({
         id: '',
         title,
-        content,
-        image: profileImageBase64 || defaultImage,
-        publishDate,
         slug,
+        publishDate,
+        profileImage:
+          profileImageBase64 ||
+          (typeof defaultImage === 'string' ? defaultImage : defaultImage.src),
+        content: [
+          {
+            description: content,
+            image: imageFile || undefined,
+          },
+        ],
       })
 
       onClose()
