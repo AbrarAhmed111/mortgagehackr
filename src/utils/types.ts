@@ -20,14 +20,15 @@ export interface NavLinkProps {
   onClick?: () => void
 }
 
+export interface BlogContentBlock {
+  image?: File
+  description: string
+}
 export interface Blog {
   id: string
   title: string
   slug: string
-  content: {
-    image?: string
-    description: string
-  }[]
+  content: BlogContentBlock[]
   profileImage?: string
   publishDate: string
 }

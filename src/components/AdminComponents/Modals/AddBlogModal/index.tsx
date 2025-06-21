@@ -2,9 +2,16 @@
 import { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { addBlog } from '@/lib/actions/addBlog'
-import { BiLoaderCircle } from 'react-icons/bi'
+import { BiLoaderCircle, BiPlus, BiTrash } from 'react-icons/bi'
 import toast from 'react-hot-toast'
 import { Blog } from '@/utils/types'
+
+type ContentBlock = {
+  id: string
+  description: string
+  image?: File
+  imagePreview?: string
+}
 
 type AddBlogModalProps = {
   isOpen: boolean
@@ -20,13 +27,54 @@ export function AddBlogModal({
   defaultImage,
 }: AddBlogModalProps) {
   const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
   const [publishDate, setPublishDate] = useState(
     new Date().toISOString().split('T')[0],
   )
-  const [image, setImage] = useState<StaticImageData | string>(defaultImage)
-  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [profileImage, setProfileImage] = useState<StaticImageData | string>(
+    defaultImage,
+  )
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
+  const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([
+    { id: '1', description: '' },
+  ])
   const [loading, setLoading] = useState(false)
+
+  const addContentBlock = () => {
+    const newBlock: ContentBlock = {
+      id: Date.now().toString(),
+      description: '',
+    }
+    setContentBlocks([...contentBlocks, newBlock])
+  }
+
+  const removeContentBlock = (id: string) => {
+    if (contentBlocks.length > 1) {
+      setContentBlocks(contentBlocks.filter(block => block.id !== id))
+    }
+  }
+
+  const updateContentBlock = (
+    id: string,
+    field: keyof ContentBlock,
+    value: any,
+  ) => {
+    setContentBlocks(
+      contentBlocks.map(block =>
+        block.id === id ? { ...block, [field]: value } : block,
+      ),
+    )
+  }
+
+  const handleContentImageUpload = (id: string, file: File) => {
+    const reader = new FileReader()
+    reader.onload = event => {
+      if (event.target?.result) {
+        updateContentBlock(id, 'imagePreview', event.target.result as string)
+      }
+    }
+    reader.readAsDataURL(file)
+    updateContentBlock(id, 'image', file)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,20 +85,26 @@ export function AddBlogModal({
 
       // Convert profile image to base64 if exists
       let profileImageBase64: string | undefined
-      if (imageFile) {
+      if (profileImageFile) {
         profileImageBase64 = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader()
           reader.onload = () => resolve(reader.result as string)
           reader.onerror = reject
-          reader.readAsDataURL(imageFile)
+          reader.readAsDataURL(profileImageFile)
         })
       }
+
+      // Prepare content blocks for submission
+      const contentForSubmission = contentBlocks.map(block => ({
+        description: block.description,
+        image: block.image,
+      }))
 
       const result = await addBlog({
         title,
         slug,
         profileImage: profileImageBase64,
-        content: [{ description: content }],
+        content: contentForSubmission,
       })
 
       if (result.error) {
@@ -62,10 +116,15 @@ export function AddBlogModal({
       await onAdd({
         id: '',
         title,
-        content,
-        image: profileImageBase64 || defaultImage,
-        publishDate,
         slug,
+        publishDate,
+        profileImage:
+          profileImageBase64 ||
+          (typeof defaultImage === 'string' ? defaultImage : defaultImage.src),
+        content: contentBlocks.map(block => ({
+          description: block.description,
+          image: block.image || undefined,
+        })),
       })
 
       onClose()
@@ -80,9 +139,9 @@ export function AddBlogModal({
 
   const resetForm = () => {
     setTitle('')
-    setContent('')
-    setImage(defaultImage)
-    setImageFile(null)
+    setProfileImage(defaultImage)
+    setProfileImageFile(null)
+    setContentBlocks([{ id: '1', description: '' }])
     setPublishDate(new Date().toISOString().split('T')[0])
   }
 
@@ -90,16 +149,17 @@ export function AddBlogModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Add New Blog</h2>
         <form onSubmit={handleSubmit}>
+          {/* Profile Image */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Profile Image
             </label>
             <div className="flex items-center">
               <Image
-                src={image}
+                src={profileImage}
                 alt="Profile Preview"
                 width={50}
                 height={50}
@@ -111,11 +171,11 @@ export function AddBlogModal({
                 onChange={e => {
                   const file = e.target.files?.[0]
                   if (file) {
-                    setImageFile(file)
+                    setProfileImageFile(file)
                     const reader = new FileReader()
                     reader.onload = event => {
                       if (event.target?.result) {
-                        setImage(event.target.result as string)
+                        setProfileImage(event.target.result as string)
                       }
                     }
                     reader.readAsDataURL(file)
@@ -125,6 +185,8 @@ export function AddBlogModal({
               />
             </div>
           </div>
+
+          {/* Title */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Title</label>
             <input
@@ -135,16 +197,95 @@ export function AddBlogModal({
               required
             />
           </div>
+
+          {/* Content Blocks */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Content</label>
-            <textarea
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              className="w-full p-2 border rounded"
-              rows={4}
-              required
-            />
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium">
+                Content Blocks
+              </label>
+              <button
+                type="button"
+                onClick={addContentBlock}
+                className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+              >
+                <BiPlus className="mr-1" />
+                Add Block
+              </button>
+            </div>
+
+            {contentBlocks.map((block, index) => (
+              <div
+                key={block.id}
+                className="border rounded-lg p-4 mb-3 bg-gray-50"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium">Block {index + 1}</h4>
+                  {contentBlocks.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeContentBlock(block.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <BiTrash />
+                    </button>
+                  )}
+                </div>
+
+                {/* Block Image */}
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">
+                    Image (Optional)
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    {block.imagePreview && (
+                      <Image
+                        src={block.imagePreview}
+                        alt={`Block ${index + 1} preview`}
+                        width={60}
+                        height={60}
+                        className="rounded w-15 h-15 object-cover"
+                      />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={e => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          handleContentImageUpload(block.id, file)
+                        }
+                      }}
+                      className="text-sm flex-1"
+                    />
+                  </div>
+                </div>
+
+                {/* Block Description */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    value={block.description}
+                    onChange={e =>
+                      updateContentBlock(
+                        block.id,
+                        'description',
+                        e.target.value,
+                      )
+                    }
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    placeholder="Enter description for this block..."
+                    required
+                  />
+                </div>
+              </div>
+            ))}
           </div>
+
+          {/* Publish Date */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Publish Date
@@ -157,6 +298,8 @@ export function AddBlogModal({
               required
             />
           </div>
+
+          {/* Action Buttons */}
           <div className="flex justify-end space-x-2">
             <button
               type="button"
