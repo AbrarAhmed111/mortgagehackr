@@ -29,7 +29,7 @@ export interface Blog {
     description: string
   }[]
   profileImage?: string
-  createdAt: string // ISO timestamp string
+  publishDate: string
 }
 
 export type BlogsColumn<T> = {
@@ -38,7 +38,6 @@ export type BlogsColumn<T> = {
   isImage?: boolean
   imageWidth?: number
   imageHeight?: number
-  render?: (item: T) => React.ReactNode
 }
 
 export interface LenderOffer {
@@ -102,14 +101,41 @@ export interface DataTableProps<T> {
 
 //Offer Data
 
-export  interface Offer {
-  id: string;
-  interest_rate: number;
-  expiration_date: string; // or Date if you're parsing it
-  lender_name: string;
-  loan_term: number;
-  status: string; // could be 'active' | 'inactive' if known
-  eligibility: string;
-  apr: string;
-  cta_link: string;
+export interface Offer {
+  id: string
+  interest_rate: number
+  expiration_date: string // or Date if you're parsing it
+  lender_name: string
+  loan_term: number
+  status: string // could be 'active' | 'inactive' if known
+  eligibility: string
+  apr: string
+  cta_link: string
+}
+
+export interface TopOffer {
+  id: number
+  lender_name: string
+  expiration_date: string
+  click_count: number
+}
+
+export interface ClicksOverTimeData {
+  period: string
+  clicks: number
+}
+
+export interface OfferStatusData {
+  active: number
+  inactive: number
+}
+
+export interface LeadsData {
+  contactLeads: number
+  helocLeads: number
+  dealAnalyzerLeads: {
+    Great: number
+    Fair: number
+    Poor: number
+  }
 }

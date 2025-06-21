@@ -8,14 +8,13 @@ import {
   getOffersWithLink,
   toggleOfferStatus,
   updateLenderOffer,
-  updateOfferLink,
 } from '@/lib/actions/lenderOffers'
 import { StatusDropdown } from './Modals/StatusUpdateDropdown'
 import { AddOfferModal } from './Modals/AddOfferModal'
 import { UpdateOfferModal } from './Modals/UpdateOfferModal'
 import { DeleteOfferModal } from './Modals/DeleteOfferModal'
-import { BiLoaderCircle } from 'react-icons/bi'
 import toast from 'react-hot-toast'
+import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
 
 type LenderOffer = {
   id: string
@@ -45,6 +44,9 @@ const LendersOfferManagement: React.FC = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedOffer, setSelectedOffer] = useState<LenderOffer | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const itemsPerPage = 8
 
   // Load offers on component mount
   useEffect(() => {
@@ -55,13 +57,16 @@ const LendersOfferManagement: React.FC = () => {
     try {
       setLoading(true)
       const data = await getOffersWithLink()
-      console.log('DATA>> : ', data)
       setOffers(data)
     } catch (error) {
       console.error('Error loading offers:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
   }
 
   const columns: Column<LenderOffer>[] = [
@@ -162,22 +167,6 @@ const LendersOfferManagement: React.FC = () => {
     setSelectedOffer(offer)
     setIsUpdateModalOpen(true)
   }
-
-  // const handleUpdate = async (updatedData: { id: string; ctaLink: string }) => {
-  //   try {
-  //     const result = await updateOfferLink(updatedData.id, updatedData.ctaLink)
-  //     if (result.error) {
-  //       console.error('Error updating offer:', result.error)
-  //       return
-  //     }
-  //     toast.success('Offer updated successfully')
-  //     await loadOffers()
-  //     setIsUpdateModalOpen(false)
-  //     setSelectedOffer(null)
-  //   } catch (error) {
-  //     console.error('Error updating offer:', error)
-  //   }
-  // }
   // Updated handleUpdate function for your main component
   const handleUpdate = async (updatedData: {
     id: string
@@ -275,17 +264,22 @@ const LendersOfferManagement: React.FC = () => {
         </button>
       </div>
       {loading ? (
-        <div className="flex justify-center gap-4 items-center h-[50vh] border rounded-lg">
-          <BiLoaderCircle size={40} className="animate-spin text-blue-600" />
-          <span className="text-xl font-semibold">Loading offers...</span>
-        </div>
+        <DataTableSkeleton
+          columns={columns}
+          itemsPerPage={10}
+          showActions={!!handleDelete}
+        />
       ) : offers.length > 0 ? (
         <DataTable
           data={offers}
           columns={columns}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          itemsPerPage={8}
+          itemsPerPage={itemsPerPage}
+          serverSide={true}
+          currentPage={currentPage}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
         />
       ) : (
         <div className="flex justify-center items-center h-64">
