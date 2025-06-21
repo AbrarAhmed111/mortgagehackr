@@ -1,17 +1,18 @@
 'use server'
 
 import { createClient } from '../supabase/server'
+import nodemailer from 'nodemailer';
 
 export async function createLead(
   name: string,
   email: string,
   message: string,
-  ip_address?: string, // optional
+  ip_address?: string,
   is_spam: boolean = false
 ) {
   const supabase = await createClient();
 
-  // Step 1: Optional rate limit check if IP is provided
+  // Rate limiting check
   if (ip_address) {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
@@ -26,21 +27,18 @@ export async function createLead(
       return { error: "Failed to check rate limit." };
     }
 
-    const RATE_LIMIT = 3;
-    if ((count || 0) >= RATE_LIMIT) {
-      return {
-        error: `Rate limit exceeded. Please try again later.`,
-      };
+    if ((count || 0) >= 3) {
+      return { error: `Rate limit exceeded. Please try again later.` };
     }
   }
 
-  // Step 2: Insert lead
+  // Insert lead
   const { error } = await supabase.from('contact_leads').insert([
     {
       name,
       email,
       message,
-      ip_address: ip_address || null, // nullable
+      ip_address: ip_address || null,
       is_spam,
     },
   ]);
@@ -50,9 +48,55 @@ export async function createLead(
     return { error: error.message };
   }
 
-  return { success: "Lead created successfully" };
-}
+  // Email setup
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // Or your SMTP provider
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
+  // Email to admin
+  const adminMailOptions = {
+    from: process.env.EMAIL_USER,
+    to: 'eersam36@gmail.com',
+    subject: `New Lead from ${name}`,
+    html: `
+      <h2>New Contact Lead</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Message:</strong></p>
+      <p>${message}</p>
+      <p><strong>IP:</strong> ${ip_address || 'Not provided'}</p>
+    `,
+  };
+
+  // Email to user
+  const userMailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "We received your message – MortgageHackr",
+    html: `
+      <h2>Thank you for contacting us!</h2>
+      <p>Dear ${name},</p>
+      <p>We've received your message:</p>
+      <blockquote>${message}</blockquote>
+      <p>We'll get back to you shortly.</p>
+      <p>– The MortgageHackr Team</p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(adminMailOptions);
+    await transporter.sendMail(userMailOptions);
+  } catch (mailError) {
+    console.error("Email sending error:", mailError);
+    return { error: "Lead saved, but failed to send confirmation email." };
+  }
+
+  return { success: "Lead created and emails sent successfully." };
+}
 
 export async function getLeads(
   page = 1,
