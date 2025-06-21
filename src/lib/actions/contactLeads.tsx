@@ -106,7 +106,7 @@ export async function getContactLeads(page = 1, limit = 10) {
   const { data, count, error } = await supabase
     .from('contact_leads')
     .select('*', { count: 'exact' }) // fetch total count
-    .order('createdAt', { ascending: false })
+    .order('created_at', { ascending: false })
     .range(from, to)
 
   if (error) {
