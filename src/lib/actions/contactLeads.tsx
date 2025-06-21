@@ -98,22 +98,16 @@ export async function createLead(
   return { success: "Lead created and emails sent successfully." };
 }
 
-export async function getLeads(
-  page = 1,
-  limit = 10,
-  filterSpam: boolean | null = null
-) {
+export async function getContactLeads(page = 1, limit = 10) {
   const supabase = await createClient()
   const from = (page - 1) * limit
   const to = from + limit - 1
 
-  let query = supabase.from('leads').select('*').order('createdAt', { ascending: false })
-
-  if (filterSpam !== null) {
-    query = query.eq('isSpam', filterSpam)
-  }
-
-  const { data, error } = await query.range(from, to)
+  const { data, error } = await supabase
+    .from('contact_leads')
+    .select('*')
+    .order('createdAt', { ascending: false })
+    .range(from, to)
 
   if (error) {
     console.error(error)
@@ -122,6 +116,7 @@ export async function getLeads(
 
   return data
 }
+
 
 export async function markLeadSpam(leadId: string, spamStatus = true) {
   const supabase = await createClient()
