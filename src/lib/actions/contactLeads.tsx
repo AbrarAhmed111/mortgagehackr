@@ -103,50 +103,29 @@ export async function getContactLeads(page = 1, limit = 10) {
   const from = (page - 1) * limit
   const to = from + limit - 1
 
-  const { data, error } = await supabase
+  const { data, count, error } = await supabase
     .from('contact_leads')
-    .select('*')
+    .select('*', { count: 'exact' }) // fetch total count
     .order('createdAt', { ascending: false })
     .range(from, to)
 
   if (error) {
     console.error(error)
-    return []
+    return { data: [], total: 0 }
   }
 
-  return data
+  return { data, total: count ?? 0 }
 }
 
 
-export async function markLeadSpam(leadId: string, spamStatus = true) {
+
+export async function exportLeads(format: 'csv' | 'json') {
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from('leads')
-    .update({ isSpam: spamStatus })
-    .eq('id', leadId)
-
-  if (error) {
-    console.error(error)
-    return { error: error.message }
-  }
-
-  return { success: `Lead marked as ${spamStatus ? 'spam' : 'not spam'}` }
-}
-
-export async function exportLeads(
-  format: 'csv' | 'json',
-  filterSpam: boolean | null = null
-) {
-  const supabase = await createClient()
-
-  let query = supabase.from('leads').select('*').order('createdAt', { ascending: false })
-
-  if (filterSpam !== null) {
-    query = query.eq('isSpam', filterSpam)
-  }
-
-  const { data, error } = await query
+  const { data, error } = await supabase
+    .from('contact_leads')
+    .select('*')
+    .order('createdAt', { ascending: false })
 
   if (error) {
     console.error(error)
@@ -163,10 +142,19 @@ export async function exportLeads(
 
   if (format === 'csv') {
     const headers = Object.keys(data[0])
+    const escapeCSV = (value: any) => {
+      if (value === null || value === undefined) return ''
+      const stringValue = String(value)
+      return `"${stringValue.replace(/"/g, '""')}"`
+    }
+
     const csvRows = [
       headers.join(','), // header row
-      ...data.map(lead => headers.map(h => `"${(lead as any)[h]}"`).join(',')),
+      ...data.map(lead =>
+        headers.map(h => escapeCSV((lead as any)[h])).join(',')
+      ),
     ]
+
     return csvRows.join('\n')
   }
 
