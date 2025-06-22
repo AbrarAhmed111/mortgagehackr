@@ -1,7 +1,6 @@
 'use client'
 import { useState, JSX, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
-import { FiFilter } from 'react-icons/fi'
 import CSVExport from '@/components/AdminComponents/ExportCSV'
 import { getContactLeads } from '@/lib/actions/contactLeads'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
@@ -11,7 +10,6 @@ interface ContactLeads {
   email: string
   message: string
   submitted_at: string
-  created_at: string
 }
 
 interface LeadsColumn<T> {
@@ -22,7 +20,6 @@ interface LeadsColumn<T> {
 
 const ContactLeads: React.FC = () => {
   const [leads, setLeads] = useState<ContactLeads[]>([])
-  const [showFilters, setShowFilters] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [total, setTotal] = useState(0)
@@ -91,15 +88,6 @@ const ContactLeads: React.FC = () => {
       render: lead => (
         <span className="text-sm text-gray-600">
           {new Date(lead.submitted_at).toLocaleDateString()}
-        </span>
-      ),
-    },
-    {
-      header: 'Created',
-      accessor: 'created_at',
-      render: lead => (
-        <span className="text-sm text-gray-600">
-          {new Date(lead.created_at).toLocaleDateString()}
         </span>
       ),
     },
