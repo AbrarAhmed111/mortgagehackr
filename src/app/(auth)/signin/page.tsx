@@ -1,4 +1,4 @@
-import AdminLogin from '@/Pages/AdminSite/AdminLogin'
+import AdminLogin from '@/NamePages/AdminSite/AdminLogin'
 import React from 'react'
 
 const page = () => {

@@ -1,4 +1,4 @@
-import LendersOfferManagement from '@/Pages/AdminSite/LendersOffer'
+import LendersOfferManagement from '@/NamePages/AdminSite/LendersOffer'
 import React from 'react'
 
 const page = () => {

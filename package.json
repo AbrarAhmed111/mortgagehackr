@@ -21,6 +21,7 @@
     "axios": "^1.7.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cookie": "^1.0.2",
     "framer-motion": "^12.5.0",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.456.0",

@@ -1,15 +1,8 @@
+'use server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies, type UnsafeUnwrappedCookies } from 'next/headers'
-import { Database } from '../database.types'
+import { createFetch } from '../database.types'
 
-export const createFetch =
-  (options: Pick<RequestInit, 'next' | 'cache'>) =>
-  (url: RequestInfo | URL, init?: RequestInit) => {
-    return fetch(url, {
-      ...init,
-      ...options,
-    })
-  }
 
 export async function createClient() {
   const rawCookies = await cookies()
@@ -20,7 +13,7 @@ export async function createClient() {
     (typeof window !== 'undefined' &&
       window.location.hostname.includes('vercel.app'))
 
-  return createServerClient<Database>(
+  return createServerClient<any>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {

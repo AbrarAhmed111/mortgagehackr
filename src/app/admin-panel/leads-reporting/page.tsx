@@ -1,4 +1,4 @@
-import LeadsReporting from '@/Pages/AdminSite/LeadsReporting'
+import LeadsReporting from '@/NamePages/AdminSite/LeadsReporting'
 import React from 'react'
 
 const page = () => {

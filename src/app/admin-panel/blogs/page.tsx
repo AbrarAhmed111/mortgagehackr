@@ -1,4 +1,4 @@
-import BlogsManagement from '@/Pages/AdminSite/Blogs'
+import BlogsManagement from '@/NamePages/AdminSite/Blogs'
 import React from 'react'
 
 const page = () => {

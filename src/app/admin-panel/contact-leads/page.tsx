@@ -1,4 +1,4 @@
-import ContactLeads from '@/Pages/AdminSite/ContactLeads'
+import ContactLeads from '@/NamePages/AdminSite/ContactLeads'
 import React from 'react'
 
 const page = () => {

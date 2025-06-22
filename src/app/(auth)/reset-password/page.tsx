@@ -1,4 +1,4 @@
-import ResetPasswordForm from '@/Pages/AdminSite/AdminResetPassword'
+import ResetPasswordForm from '@/NamePages/AdminSite/AdminResetPassword'
 import React from 'react'
 
 const page = () => {

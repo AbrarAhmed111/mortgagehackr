@@ -15,6 +15,17 @@ export type Blog = {
   profile_image?: string | null // Author or profile image URL
   created_at: string // ISO timestamp
 }
+
+// src/lib/utils/fetch.ts
+export const createFetch =
+  (options: Pick<RequestInit, 'next' | 'cache'>) =>
+  (url: RequestInfo | URL, init?: RequestInit) => {
+    return fetch(url, {
+      ...init,
+      ...options,
+    })
+  }
+
 // --- LENDER OFFERS ---
 export interface LenderOffer {
   id: string // UUID

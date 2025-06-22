@@ -1,4 +1,4 @@
-import Dashboard from '@/Pages/AdminSite/Dashboard'
+import Dashboard from '@/NamePages/AdminSite/Dashboard'
 
 export default function Home() {
   return (
