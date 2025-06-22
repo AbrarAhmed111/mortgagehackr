@@ -23,15 +23,13 @@ export default function BlogClientPage() {
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+
+  
   useEffect(() => {
     const fetchBlogs = async () => {
-       let slug = "mortgage-mistakes-to-avoid"
-   const detail = await getBlogBySlug(slug)
-    console.log("Detail>>>",detail)
-      setLoading(true);
       try {
         const blogs = await getAllBlogs(page, limit, searchQuery);
         if (page === 1) {
@@ -134,9 +132,9 @@ export default function BlogClientPage() {
               </div>
 
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {loading ? (
+                {loading === true  ? (
                   renderSkeletons()
-                ) : allBlogs.length > 0 ? (
+                ) : allBlogs.length > 0   ? (
                   allBlogs.map((post: any) => (
                     <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="relative h-48">
