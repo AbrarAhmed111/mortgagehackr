@@ -3,17 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from './lib/supabase/middleware'
 import { createClient } from './lib/supabase/server'
 
-
 export async function middleware(request: NextRequest) {
-  // const isVercelPreview =
-  //   request.headers.get('host')?.includes('vercel.app') ||
-  //   request.nextUrl.hostname.includes('vercel.app')
-
-  // if (isVercelPreview) {
-  //   console.log('Vercel preview domain detected, allowing access')
-  //   return NextResponse.next()
-  // }
-
   // 🛑 Skip session check for sensitive POST routes
   const skipOnPostPaths = ['/reset-password']
   if (
@@ -24,11 +14,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const publicPaths = [
-    '/signin',
-    '/forget-password',
-    '/reset-password',
-  ]
+  const publicPaths = ['/signin', '/forget-password', '/reset-password']
   if (
     publicPaths.some(path => request.nextUrl.pathname.startsWith(path)) ||
     request.nextUrl.pathname === '/'
@@ -38,14 +24,10 @@ export async function middleware(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    // Redirect logged-in users away from signin page
+    // Redirect logged-in users away from auth pages
     if (
       user &&
-      [
-        '/signin',
-        '/forget-password',
-        '/reset-password',
-      ].includes(request.nextUrl.pathname)
+      publicPaths.includes(request.nextUrl.pathname)
     ) {
       const defaultRedirect = '/admin-panel'
       return NextResponse.redirect(new URL(defaultRedirect, request.url))
@@ -58,26 +40,22 @@ export async function middleware(request: NextRequest) {
 
   try {
     const prodAuthCookie = request.cookies.get(
-      'sb-ozkhmrwkclvvvcorrsxe-auth-token',
+      'sb-ozkhmrwkclvvvcorrsxe-auth-token'
     )
 
     const protectedRoutes = ['/admin-panel']
     const isProtected = protectedRoutes.some(path =>
-      request.nextUrl.pathname.startsWith(path),
+      request.nextUrl.pathname.startsWith(path)
     )
 
     if (isProtected && !prodAuthCookie?.value) {
-      const redirectUrl = new URL('/signin',
-        request.url,
-      )
+      const redirectUrl = new URL('/signin', request.url)
       const fullPath = request.nextUrl.pathname + request.nextUrl.search
       redirectUrl.searchParams.set('returnUrl', fullPath)
       return NextResponse.redirect(redirectUrl)
     }
 
-    // Get current session
     const supabase = await createClient()
-    // Get current session
     const {
       data: { user },
       error: useError,
@@ -88,7 +66,7 @@ export async function middleware(request: NextRequest) {
       const redirectUrl = new URL('/signin', request.url)
       redirectUrl.searchParams.set(
         'returnUrl',
-        request.nextUrl.pathname + request.nextUrl.search,
+        request.nextUrl.pathname + request.nextUrl.search
       )
       return NextResponse.redirect(redirectUrl)
     }
