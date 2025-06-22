@@ -86,7 +86,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-center lg:justify-end">
+              <div className="flex items-center invisible justify-center lg:justify-end">
                 <div className="relative">
                   <Image
                     src="/placeholder.svg?height=500&width=300"
