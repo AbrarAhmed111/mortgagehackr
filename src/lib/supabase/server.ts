@@ -1,17 +1,12 @@
 'use server'
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies, type UnsafeUnwrappedCookies } from 'next/headers'
 import { createFetch } from '../database.types'
 
-
 export async function createClient() {
   const rawCookies = await cookies()
   const cookieStore = rawCookies as UnsafeUnwrappedCookies
-  const isDevelopment = process.env.NODE_ENV === 'development'
-  const isVercelPreview =
-    process.env.VERCEL_ENV === 'preview' ||
-    (typeof window !== 'undefined' &&
-      window.location.hostname.includes('vercel.app'))
 
   return createServerClient<any>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,18 +27,14 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Don't set domain for preview or development environments
               const cookieOptions: CookieOptions = {
                 ...options,
-                domain:
-                  isDevelopment || isVercelPreview ? undefined : '.nizam.co',
+                secure: true, // ensures cookies are only sent over HTTPS
               }
               cookieStore.set(name, value, cookieOptions)
             })
           } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+            // This can be ignored if setAll is called from a Server Component
           }
         },
       },
