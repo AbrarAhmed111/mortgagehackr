@@ -1,4 +1,4 @@
-
+'use server'
 import { createClient } from '../supabase/server'
 // import nodemailer from 'nodemailer'
 
