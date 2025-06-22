@@ -1,6 +1,7 @@
+'use server'
 
 import { createClient } from '../supabase/server'
-// import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer'
 
 export async function createLead(
   name: string,
@@ -47,52 +48,52 @@ export async function createLead(
     return { error: error.message }
   }
 
-  // // Email setup
-  // const transporter = nodemailer.createTransport({
-  //   service: 'gmail', // Or your SMTP provider
-  //   auth: {
-  //     user: process.env.EMAIL_USER,
-  //     pass: process.env.EMAIL_PASS,
-  //   },
-  // })
+  // Email setup
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // Or your SMTP provider
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  })
 
-  // // Email to admin
-  // const adminMailOptions = {
-  //   from: process.env.EMAIL_USER,
-  //   to: 'eersam36@gmail.com',
-  //   subject: `New Lead from ${name}`,
-  //   html: `
-  //     <h2>New Contact Lead</h2>
-  //     <p><strong>Name:</strong> ${name}</p>
-  //     <p><strong>Email:</strong> ${email}</p>
-  //     <p><strong>Message:</strong></p>
-  //     <p>${message}</p>
-  //     <p><strong>IP:</strong> ${ip_address || 'Not provided'}</p>
-  //   `,
-  // }
+  // Email to admin
+  const adminMailOptions = {
+    from: process.env.EMAIL_USER,
+    to: 'eersam36@gmail.com',
+    subject: `New Lead from ${name}`,
+    html: `
+      <h2>New Contact Lead</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Message:</strong></p>
+      <p>${message}</p>
+      <p><strong>IP:</strong> ${ip_address || 'Not provided'}</p>
+    `,
+  }
 
-  // // Email to user
-  // const userMailOptions = {
-  //   from: process.env.EMAIL_USER,
-  //   to: email,
-  //   subject: 'We received your message – MortgageHackr',
-  //   html: `
-  //     <h2>Thank you for contacting us!</h2>
-  //     <p>Dear ${name},</p>
-  //     <p>We've received your message:</p>
-  //     <blockquote>${message}</blockquote>
-  //     <p>We'll get back to you shortly.</p>
-  //     <p>– The MortgageHackr Team</p>
-  //   `,
-  // }
+  // Email to user
+  const userMailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'We received your message – MortgageHackr',
+    html: `
+      <h2>Thank you for contacting us!</h2>
+      <p>Dear ${name},</p>
+      <p>We've received your message:</p>
+      <blockquote>${message}</blockquote>
+      <p>We'll get back to you shortly.</p>
+      <p>– The MortgageHackr Team</p>
+    `,
+  }
 
-  // try {
-  //   await transporter.sendMail(adminMailOptions)
-  //   await transporter.sendMail(userMailOptions)
-  // } catch (mailError) {
-  //   console.error('Email sending error:', mailError)
-  //   return { error: 'Lead saved, but failed to send confirmation email.' }
-  // }
+  try {
+    await transporter.sendMail(adminMailOptions)
+    await transporter.sendMail(userMailOptions)
+  } catch (mailError) {
+    console.error('Email sending error:', mailError)
+    return { error: 'Lead saved, but failed to send confirmation email.' }
+  }
 
   return { success: 'Lead created and emails sent successfully.' }
 }
