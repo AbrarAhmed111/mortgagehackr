@@ -28,7 +28,7 @@ export default function BlogClientPage() {
 
   useEffect(() => {
     const fetchBlogs = async () => {
-       let slug = "final-testing"
+       let slug = "mortgage-mistakes-to-avoid"
    const detail = await getBlogBySlug(slug)
     console.log("Detail>>>",detail)
       setLoading(true);

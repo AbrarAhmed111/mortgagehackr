@@ -24,7 +24,7 @@ export default function ContactPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [cooldown, setCooldown] = useState(0)
-
+  const [is_spam,setIsSpam] = useState<boolean>(false)
   const recaptchaRef = useRef<ReCAPTCHA>(null)
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function ContactPage() {
           clearInterval(interval)
           return 0
         }
-        return prev - 1
+        return prev - 1 
       })
     }, 1000)
     return () => clearInterval(interval)
@@ -61,6 +61,7 @@ export default function ContactPage() {
     }
 
     if (!recaptchaToken) {
+      setIsSpam(true)
       setError("Please complete the reCAPTCHA.")
       return
     }
@@ -68,8 +69,9 @@ export default function ContactPage() {
     setLoading(true)
 
     try {
+      
       const name = `${firstName} ${lastName}`
-      await createLead(name.trim(), email.trim(), message.trim(), false)
+      await createLead(name.trim(), email.trim(), message.trim(), is_spam.toString())
 
       toast.success("Message sent successfully!")
 
