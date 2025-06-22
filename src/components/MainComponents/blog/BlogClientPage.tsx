@@ -188,7 +188,7 @@ export default function BlogClientPage() {
           </div>
         </section>
 
-        {/* Popular Topics */}
+        {/* Popular Topics
         <section className="w-full py-16 md:py-24">
           <div className="container px-4 md:px-6">
             <div className="max-w-6xl mx-auto">
@@ -230,7 +230,7 @@ export default function BlogClientPage() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
       </main>
     </div>
   )
