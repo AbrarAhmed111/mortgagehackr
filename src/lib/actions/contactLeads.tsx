@@ -59,7 +59,7 @@ export async function createLead(
   // Email to admin
   const adminMailOptions = {
     from: process.env.EMAIL_USER,
-    to: 'eersam36@gmail.com',
+    to: 'Mania@westcapitallending.com',
     subject: `New Lead from ${name}`,
     html: `
       <h2>New Contact Lead</h2>
