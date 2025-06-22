@@ -1,7 +1,9 @@
 'use client'
 import { useState, JSX, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
-import { FiDownload, FiFilter, FiX } from 'react-icons/fi'
+import { FiFilter } from 'react-icons/fi'
+import LeadsFilter from '@/components/AdminComponents/LeadsFIlter'
+import CSVExport from '@/components/AdminComponents/ExportCSV'
 
 // Lead type definition
 interface Lead {
@@ -88,13 +90,6 @@ const LeadsManagement: React.FC = () => {
   const [sourceFilter, setSourceFilter] = useState<string>('All')
   const [dealResultFilter, setDealResultFilter] = useState<string>('All')
   const [showFilters, setShowFilters] = useState(false)
-
-  // Get unique values for filter options
-  const uniqueStatuses = Array.from(new Set(leads.map(lead => lead.status)))
-  const uniqueSources = Array.from(new Set(leads.map(lead => lead.source)))
-  const uniqueDealResults = Array.from(
-    new Set(leads.map(lead => lead.dealAnalyzerResult).filter(Boolean)),
-  )
 
   // Filter leads based on search and filters
   const filterLeads = () => {
@@ -249,49 +244,6 @@ const LeadsManagement: React.FC = () => {
     // Implement delete functionality
   }
 
-  const exportLeads = () => {
-    const csvContent = [
-      // CSV Headers
-      [
-        'Name',
-        'Email',
-        'Phone',
-        'Source',
-        'Deal Result',
-        'Property Address',
-        'Estimated Value',
-        'Status',
-        'Created Date',
-        'Last Contact',
-      ].join(','),
-      // CSV Data
-      ...filteredLeads.map(lead =>
-        [
-          lead.name,
-          lead.email || '',
-          lead.phone,
-          lead.source,
-          lead.dealAnalyzerResult || '',
-          lead.propertyAddress || '',
-          lead.estimatedValue || '',
-          lead.status,
-          new Date(lead.createdAt).toLocaleDateString(),
-          lead.lastContact
-            ? new Date(lead.lastContact).toLocaleDateString()
-            : '',
-        ].join(','),
-      ),
-    ].join('\n')
-
-    const blob = new Blob([csvContent], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `leads-export-${new Date().toISOString().split('T')[0]}.csv`
-    a.click()
-    window.URL.revokeObjectURL(url)
-  }
-
   const clearFilters = () => {
     setSearchTerm('')
     setStatusFilter('All')
@@ -311,13 +263,11 @@ const LeadsManagement: React.FC = () => {
             <FiFilter className="text-lg" />
             Filters
           </button>
-          <button
-            onClick={exportLeads}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >
-            <FiDownload className="text-lg" />
-            Export CSV
-          </button>
+          <CSVExport
+            data={filteredLeads}
+            filename="leads-export"
+            buttonText="Export CSV"
+          />
         </div>
       </div>
 
@@ -325,75 +275,19 @@ const LeadsManagement: React.FC = () => {
       <div className="mb-6 space-y-4">
         {/* Filters Panel */}
         {showFilters && (
-          <div className="bg-gray-50 p-4 rounded-lg border">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={statusFilter}
-                  onChange={e => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="All">All Statuses</option>
-                  {uniqueStatuses.map(status => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Source
-                </label>
-                <select
-                  value={sourceFilter}
-                  onChange={e => setSourceFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="All">All Sources</option>
-                  {uniqueSources.map(source => (
-                    <option key={source} value={source}>
-                      {source}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Deal Result
-                </label>
-                <select
-                  value={dealResultFilter}
-                  onChange={e => setDealResultFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="All">All Results</option>
-                  {uniqueDealResults.map(result => (
-                    <option key={result} value={result}>
-                      {result}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-end">
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  <FiX className="text-lg" />
-                  Clear Filters
-                </button>
-              </div>
-            </div>
-          </div>
+          <LeadsFilter
+            leads={leads}
+            statusFilter={statusFilter}
+            sourceFilter={sourceFilter}
+            dealResultFilter={dealResultFilter}
+            onStatusFilterChange={setStatusFilter}
+            onSourceFilterChange={setSourceFilter}
+            onDealResultFilterChange={setDealResultFilter}
+            onClearFilters={clearFilters}
+          />
         )}
       </div>
+
       {/* Data Table */}
       <DataTable
         data={filteredLeads}

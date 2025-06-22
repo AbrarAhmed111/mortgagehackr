@@ -64,16 +64,24 @@ export function AddBlogModal({
       ),
     )
   }
-
   const handleContentImageUpload = (id: string, file: File) => {
     const reader = new FileReader()
     reader.onload = event => {
       if (event.target?.result) {
-        updateContentBlock(id, 'imagePreview', event.target.result as string)
+        setContentBlocks(prevBlocks =>
+          prevBlocks.map(block =>
+            block.id === id
+              ? {
+                  ...block,
+                  imagePreview: event?.target?.result as string,
+                  image: file,
+                }
+              : block,
+          ),
+        )
       }
     }
     reader.readAsDataURL(file)
-    updateContentBlock(id, 'image', file)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,7 +91,6 @@ export function AddBlogModal({
     try {
       const slug = title.toLowerCase().replace(/\s+/g, '-')
 
-      // Convert profile image to base64 if exists
       let profileImageBase64: string | undefined
       if (profileImageFile) {
         profileImageBase64 = await new Promise<string>((resolve, reject) => {
@@ -94,11 +101,26 @@ export function AddBlogModal({
         })
       }
 
-      // Prepare content blocks for submission
-      const contentForSubmission = contentBlocks.map(block => ({
-        description: block.description,
-        image: block.image,
-      }))
+      const contentForSubmission = await Promise.all(
+        contentBlocks.map(async block => {
+          let imageBase64: string | undefined = undefined
+
+          // Check if image exists and is a File object
+          if (block.image) {
+            imageBase64 = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(reader.result as string)
+              reader.onerror = reject
+              reader.readAsDataURL(block.image as File)
+            })
+          }
+
+          return {
+            description: block.description,
+            image: imageBase64,
+          }
+        }),
+      )
 
       const result = await addBlog({
         title,
@@ -121,10 +143,7 @@ export function AddBlogModal({
         profileImage:
           profileImageBase64 ||
           (typeof defaultImage === 'string' ? defaultImage : defaultImage.src),
-        content: contentBlocks.map(block => ({
-          description: block.description,
-          image: block.image || undefined,
-        })),
+        content: contentForSubmission,
       })
 
       onClose()

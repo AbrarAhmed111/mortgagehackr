@@ -21,7 +21,7 @@ export interface NavLinkProps {
 }
 
 export interface BlogContentBlock {
-  image?: File
+  image?: string
   description: string
 }
 export interface Blog {
@@ -139,4 +139,12 @@ export interface LeadsData {
     Fair: number
     Poor: number
   }
+}
+
+export interface ContactLeads {
+  name: string
+  email: string
+  message: string
+  submitted_at: string
+  created_at: string
 }

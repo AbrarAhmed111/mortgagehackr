@@ -3,7 +3,6 @@ import { FaMicroblog } from 'react-icons/fa'
 import { BiSolidOffer, BiSolidReport } from 'react-icons/bi'
 import { SiGoogleadsense, SiGoogleads } from 'react-icons/si'
 import { MdDashboard } from 'react-icons/md'
-import ProfileIcon from '@/assets/Images/image.png'
 
 // 1 -  For Sidebar
 export const navLinks: SidebarNavLinkType[] = [
@@ -28,6 +27,11 @@ export const navLinks: SidebarNavLinkType[] = [
     icon: <SiGoogleadsense size={20} />,
   },
   {
+    name: 'Contact Leads',
+    to: '/admin-panel/contact-leads',
+    icon: <SiGoogleadsense size={20} />,
+  },
+  {
     name: 'Leads Reporting ',
     to: '/admin-panel/leads-reporting',
     icon: <BiSolidReport size={20} />,
@@ -36,190 +40,6 @@ export const navLinks: SidebarNavLinkType[] = [
     name: 'HELOC Leads',
     to: '/admin-panel/heloc-leads',
     icon: <SiGoogleads size={20} />,
-  },
-]
-
-// 2 -  data for blog page
-export const blogsData = [
-  {
-    title: 'John Doe',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-01-15',
-  },
-  {
-    title: 'Jane Smith',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-02-21',
-  },
-  {
-    title: 'Mike Johnson',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-03-10',
-  },
-  {
-    title: 'Sarah Williams',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-04-05',
-  },
-  {
-    title: 'David Brown',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-05-18',
-  },
-  {
-    title: 'Emily Davis',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-06-22',
-  },
-  {
-    title: 'Robert Wilson',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-07-14',
-  },
-  {
-    title: 'Lisa Moore',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-08-30',
-  },
-  {
-    title: 'Thomas Taylor',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-09-11',
-  },
-  {
-    title: 'Jennifer Anderson',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-10-25',
-  },
-  {
-    title: 'Alex Martinez',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-11-19',
-  },
-  {
-    title: 'Patricia Clark',
-    content:
-      'Mostly they seek to define what blogging is, what makes it so important.',
-    image: ProfileIcon,
-    publishDate: '2023-12-08',
-  },
-]
-
-// 3 Lender Offers Data
-import { LenderOffer } from '@/utils/types'
-
-export const lenderOffersData: LenderOffer[] = [
-  {
-    id: '1',
-    lenderName: 'FastCash Finance',
-    interestRate: '7.2%',
-    loanTerm: '36 months',
-    eligibility: 'Minimum credit score of 650',
-    ctaLink: 'https://fastcash.com/apply',
-    expirationDate: '2025-12-31',
-    status: 'Active',
-  },
-  {
-    id: '2',
-    lenderName: 'Secure Loans Co.',
-    interestRate: '6.5%',
-    loanTerm: '48 months',
-    eligibility: 'Employed for 1+ year, 700+ credit score',
-    ctaLink: 'https://secureloans.com/start',
-    expirationDate: '2025-11-15',
-    status: 'Inactive',
-  },
-  {
-    id: '3',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: '4',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: '5',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: '6',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: '7',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: '8',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: '9',
-    lenderName: 'QuickFunds',
-    interestRate: '8.1%',
-    loanTerm: '24 months',
-    eligibility: 'Monthly income > $3000',
-    ctaLink: 'https://quickfunds.com/apply-now',
-    expirationDate: '2025-10-01',
-    status: 'Active',
   },
 ]
 
