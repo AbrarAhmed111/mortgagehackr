@@ -26,12 +26,12 @@ export default function BlogDetailPage() {
 
   const [post, setPost] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-const slug =
-  typeof params?.slug === "string"
-    ? params.slug
-    : Array.isArray(params?.slug)
-    ? params.slug[0]
-    : "";
+  const slug =
+    typeof params?.slug === "string"
+      ? params.slug
+      : Array.isArray(params?.slug)
+        ? params.slug[0]
+        : "";
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -133,27 +133,27 @@ const slug =
                 {/* <Badge className="bg-blue-600 text-white">{post.category}</Badge> */}
 
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">{post.title}</h1>
-         
-{post?.content?.map((item: { image: string ; description: string; }, index: number) => (
-  <div key={index} className="mb-6">
-    {item.image && (
-      
-      <Image
-        src={item?.image}
-        alt={`Image ${index + 1}`}
-        className="w-full h-auto rounded-lg mb-4"
-        width={100}
-        height={100}
-      />
-    )}
-    {item.description && (
-      <div
-        className="text-xl text-gray-600 leading-relaxed htmlStructure"
-        dangerouslySetInnerHTML={{ __html: item.description }}
-      ></div>
-    )}
-  </div>
-))}
+
+                {post?.content?.map((item: { image: string; description: string; }, index: number) => (
+                  <div key={index} className="mb-6">
+                    {item.image && (
+
+                      <Image
+                        src={item?.image}
+                        alt={`Image ${index + 1}`}
+                        className="w-full h-auto rounded-lg mb-4"
+                        width={100}
+                        height={100}
+                      />
+                    )}
+                    {item.description && (
+                      <div
+                        className="text-xl text-gray-600 leading-relaxed htmlStructure"
+                        dangerouslySetInnerHTML={{ __html: item.description }}
+                      ></div>
+                    )}
+                  </div>
+                ))}
 
                 <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
                   <div className="flex items-center space-x-2">

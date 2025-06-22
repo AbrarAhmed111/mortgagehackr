@@ -39,11 +39,11 @@ export default function Footer() {
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Company Info */}
           <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center">
-            <Image src={logo} alt="MortgageHackr Logo" className="w-60"/>
-            </Link>
-        </div>
+            <div className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center">
+                <Image src={logo} alt="MortgageHackr Logo" className="w-60" />
+              </Link>
+            </div>
             <p className="text-sm text-slate-600">
               Professional loan analysis tools to help you make smarter financial decisions. Get accurate calculations
               and expert insights in minutes.

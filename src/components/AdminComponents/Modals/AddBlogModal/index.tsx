@@ -72,10 +72,10 @@ export function AddBlogModal({
           prevBlocks.map(block =>
             block.id === id
               ? {
-                  ...block,
-                  imagePreview: event?.target?.result as string,
-                  image: file,
-                }
+                ...block,
+                imagePreview: event?.target?.result as string,
+                image: file,
+              }
               : block,
           ),
         )
