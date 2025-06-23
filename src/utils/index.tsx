@@ -28,6 +28,19 @@ export interface ContactLead {
   submitted_at: string
 }
 
+export interface LeadAnalyzers {
+  ip_address: string
+  email: string
+  source: string
+  interest_rate: string
+  loan_amount: number
+  loan_start_month: number
+  loan_start_year: number
+  loan_term: number
+  result_type: string
+  submitted_at: Date
+}
+
 export const lenderOfferCSVColumns: CSVColumn<LenderOffer>[] = [
   {
     header: 'Lender Name',
@@ -111,66 +124,46 @@ export const contactLeadCSVColumns: CSVColumn<ContactLead>[] = [
     formatter: (value: string) => new Date(value).toLocaleString(),
   },
 ]
-
-// Alternative: If you want to use function accessors for more complex data extraction
-// export const lenderOfferCSVColumnsAdvanced: CSVColumn<LenderOffer>[] = [
-//   {
-//     header: 'Lender Name',
-//     accessor: (offer: LenderOffer) => offer.lender_name,
-//   },
-//   {
-//     header: 'Interest Rate (%)',
-//     accessor: (offer: LenderOffer) => offer.interest_rate,
-//     formatter: (value: number) => `${value}%`,
-//   },
-//   {
-//     header: 'APR (%)',
-//     accessor: (offer: LenderOffer) => offer.apr,
-//     formatter: (value: number) => `${value}%`,
-//   },
-//   {
-//     header: 'Loan Term (Months)',
-//     accessor: (offer: LenderOffer) => offer.loan_term,
-//     formatter: (value: number) => `${value} months`,
-//   },
-//   {
-//     header: 'Eligibility',
-//     accessor: (offer: LenderOffer) => offer.eligibility || 'N/A',
-//   },
-//   {
-//     header: 'CTA Link',
-//     accessor: (offer: LenderOffer) => offer.cta_link,
-//   },
-//   {
-//     header: 'Click Count',
-//     accessor: (offer: LenderOffer) => offer.click_count || 0,
-//   },
-//   {
-//     header: 'Expiration Date',
-//     accessor: (offer: LenderOffer) => offer.expiration_date,
-//     formatter: (value: string) => new Date(value).toLocaleDateString(),
-//   },
-//   {
-//     header: 'Status',
-//     accessor: (offer: LenderOffer) => offer.status,
-//     formatter: (value: boolean) => (value ? 'Active' : 'Inactive'),
-//   },
-//   {
-//     header: 'Is Expired',
-//     accessor: (offer: LenderOffer) =>
-//       new Date(offer.expiration_date) < new Date(),
-//     formatter: (value: boolean) => (value ? 'Yes' : 'No'),
-//   },
-//   {
-//     header: 'Created At',
-//     accessor: (offer: LenderOffer) => offer.created_at || '',
-//     formatter: (value: string) =>
-//       value ? new Date(value).toLocaleDateString() : 'N/A',
-//   },
-//   {
-//     header: 'Updated At',
-//     accessor: (offer: LenderOffer) => offer.updated_at || '',
-//     formatter: (value: string) =>
-//       value ? new Date(value).toLocaleDateString() : 'N/A',
-//   },
-// ]
+export const leadAnalyzerCSVColumns: CSVColumn<LeadAnalyzers>[] = [
+  {
+    header: 'IP Address',
+    accessor: 'ip_address',
+  },
+  {
+    header: 'Email',
+    accessor: 'email',
+  },
+  {
+    header: 'Source',
+    accessor: 'source',
+  },
+  {
+    header: 'Interest Rate',
+    accessor: 'interest_rate',
+  },
+  {
+    header: 'Loan Amount',
+    accessor: 'loan_amount',
+  },
+  {
+    header: 'Loan Start Month',
+    accessor: 'loan_start_month',
+  },
+  {
+    header: 'Loan Start Year',
+    accessor: 'loan_start_year',
+  },
+  {
+    header: 'Loan Term',
+    accessor: 'loan_term',
+  },
+  {
+    header: 'Result Type',
+    accessor: 'result_type',
+  },
+  {
+    header: 'Submitted At',
+    accessor: 'submitted_at',
+    formatter: (value: string) => new Date(value).toLocaleString(),
+  },
+]

@@ -2,22 +2,27 @@
 import { useState, JSX, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
 import { FiFilter } from 'react-icons/fi'
-import LeadsFilter from '@/components/AdminComponents/LeadsFIlter'
+import { getAnalyzerDealsList } from '@/lib/actions/analyzerLeads'
+import LeadsFilter from './Filter'
+import DeleteLeadModal from './Modal'
 import CSVExport from '@/components/AdminComponents/ExportCSV'
+import { CSVColumn, leadAnalyzerCSVColumns } from '@/utils'
+import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
+import { DealResultType, DealSourceType } from '@/lib/database.types'
 
 // Lead type definition
 interface Lead {
   id: string
-  name: string
   email?: string
-  phone: string
+  interest_rate: string
   source: string
-  dealAnalyzerResult?: 'Great' | 'Fair' | 'Poor'
-  propertyAddress?: string
-  estimatedValue?: number
-  status: 'New' | 'Contacted' | 'Qualified' | 'Converted' | 'Lost'
-  createdAt: string
-  lastContact?: string
+  ip_address?: string
+  loan_amount?: number
+  loan_start_month: number
+  loan_start_year: number
+  loan_term: number
+  result_type: string
+  submitted_at: Date
 }
 
 interface LeadsColumn<T> {
@@ -26,117 +31,108 @@ interface LeadsColumn<T> {
   render?: (item: T) => JSX.Element
 }
 
-// Dummy leads data
-const leadsData: Lead[] = [
-  {
-    id: '1',
-    name: 'John Smith',
-    email: 'john.smith@email.com',
-    phone: '+1 (555) 123-4567',
-    source: 'Deal Analyzer',
-    dealAnalyzerResult: 'Great',
-    propertyAddress: '123 Main St, Austin, TX',
-    estimatedValue: 450000,
-    status: 'New',
-    createdAt: '2024-01-15T10:30:00Z',
-    lastContact: '2024-01-16T14:20:00Z',
-  },
-  {
-    id: '2',
-    name: 'Mike Wilson',
-    email: 'mike.wilson@yahoo.com',
-    phone: '+1 (555) 345-6789',
-    source: 'Deal Analyzer',
-    dealAnalyzerResult: 'Fair',
-    propertyAddress: '456 Oak Ave, Dallas, TX',
-    estimatedValue: 320000,
-    status: 'Qualified',
-    createdAt: '2024-01-13T16:45:00Z',
-    lastContact: '2024-01-17T10:30:00Z',
-  },
-  {
-    id: '3',
-    name: 'Robert Brown',
-    email: 'r.brown@hotmail.com',
-    phone: '+1 (555) 567-8901',
-    source: 'Deal Analyzer',
-    dealAnalyzerResult: 'Poor',
-    propertyAddress: '789 Pine St, Houston, TX',
-    estimatedValue: 180000,
-    status: 'Lost',
-    createdAt: '2024-01-11T08:30:00Z',
-    lastContact: '2024-01-12T15:15:00Z',
-  },
-  {
-    id: '4',
-    name: 'David Martinez',
-    email: 'david.m@gmail.com',
-    phone: '+1 (555) 789-0123',
-    source: 'Deal Analyzer',
-    dealAnalyzerResult: 'Great',
-    propertyAddress: '321 Elm St, San Antonio, TX',
-    estimatedValue: 520000,
-    status: 'Qualified',
-    createdAt: '2024-01-09T11:15:00Z',
-    lastContact: '2024-01-16T16:45:00Z',
-  },
-]
+interface Pagination {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
 
 const LeadsAnalyzer: React.FC = () => {
-  const [leads, setLeads] = useState<Lead[]>(leadsData)
-  const [filteredLeads, setFilteredLeads] = useState<Lead[]>(leadsData)
+  const [leads, setLeads] = useState<Lead[]>([])
+  const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState<Pagination>({
+    total: 0,
+    page: 1,
+    limit: 20,
+    totalPages: 1,
+  })
+
+  // Filter states
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [sourceFilter, setSourceFilter] = useState<string>('All')
   const [dealResultFilter, setDealResultFilter] = useState<string>('All')
   const [showFilters, setShowFilters] = useState(false)
 
-  // Filter leads based on search and filters
+  // Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
+  // Fetch leads from Supabase
+  const fetchLeads = async (page: number = 1) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const result = await getAnalyzerDealsList({
+        page,
+        limit: pagination.limit,
+        result_type:
+          dealResultFilter !== 'All'
+            ? (dealResultFilter as DealResultType)
+            : undefined,
+        source:
+          sourceFilter !== 'All' ? (sourceFilter as DealSourceType) : undefined,
+      })
+      console.log('result', result)
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
+      if (result.success && result.data) {
+        setLeads(result.data)
+        setFilteredLeads(result.data)
+        setPagination({
+          ...pagination,
+          page: result.pagination.page,
+          total: result.pagination.total,
+          totalPages: Math.ceil(result.pagination.total / pagination.limit),
+        })
+      }
+    } catch (err) {
+      setError('Failed to fetch leads')
+      console.error('Error fetching leads:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchLeads()
+  }, [])
+
+  useEffect(() => {
+    fetchLeads(1)
+  }, [sourceFilter, dealResultFilter])
+
   const filterLeads = () => {
     let filtered = leads
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         lead =>
-          lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          lead.phone.includes(searchTerm) ||
-          lead.propertyAddress
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()),
+          lead.ip_address?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
-
-    // Status filter
-    if (statusFilter !== 'All') {
-      filtered = filtered.filter(lead => lead.status === statusFilter)
-    }
-
-    // Source filter
-    if (sourceFilter !== 'All') {
-      filtered = filtered.filter(lead => lead.source === sourceFilter)
-    }
-
-    // Deal result filter
-    if (dealResultFilter !== 'All') {
-      filtered = filtered.filter(
-        lead => lead.dealAnalyzerResult === dealResultFilter,
-      )
-    }
-
     setFilteredLeads(filtered)
   }
 
-  // Apply filters whenever search term or filters change
+  // Apply client-side filters
   useEffect(() => {
     filterLeads()
-  }, [searchTerm, statusFilter, sourceFilter, dealResultFilter])
+  }, [searchTerm, statusFilter, leads])
 
   const columns: LeadsColumn<Lead>[] = [
     {
-      header: 'Name',
-      accessor: 'name',
+      header: 'IP Address',
+      accessor: 'ip_address',
+      render: (lead: Lead) => <span>{lead.ip_address}</span>,
     },
     {
       header: 'Email',
@@ -146,102 +142,61 @@ const LeadsAnalyzer: React.FC = () => {
       ),
     },
     {
-      header: 'Phone',
-      accessor: 'phone',
+      header: 'Interest Rate',
+      accessor: 'interest_rate',
+      render: (lead: Lead) => <span>{lead.interest_rate}</span>,
+    },
+    {
+      header: 'Loan Amount',
+      accessor: 'loan_amount',
+      render: (lead: Lead) => <span>{lead.loan_amount}</span>,
+    },
+    {
+      header: 'Loan Start Year',
+      accessor: 'loan_start_year',
+      render: (lead: Lead) => <span>{lead.loan_start_year}</span>,
+    },
+    {
+      header: 'Loan Start Month',
+      accessor: 'loan_start_month',
+      render: (lead: Lead) => <span>{lead.loan_start_month}</span>,
+    },
+    {
+      header: 'Loan Term',
+      accessor: 'loan_term',
+      render: (lead: Lead) => <span>{lead.loan_term}</span>,
+    },
+    {
+      header: 'Type',
+      accessor: 'result_type',
+      render: (lead: Lead) => <span>{lead.result_type}</span>,
     },
     {
       header: 'Source',
       accessor: 'source',
-      render: (lead: Lead) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            lead.source === 'Deal Analyzer'
-              ? 'bg-blue-100 text-blue-800'
-              : lead.source === 'Website Contact'
-                ? 'bg-green-100 text-green-800'
-                : lead.source === 'Referral'
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800'
-          }`}
-        >
-          {lead.source}
-        </span>
-      ),
+      render: (lead: Lead) => <span>{lead.source}</span>,
     },
+
     {
-      header: 'Deal Result',
-      accessor: 'dealAnalyzerResult',
-      render: (lead: Lead) => (
-        <span>
-          {lead.dealAnalyzerResult ? (
-            <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                lead.dealAnalyzerResult === 'Great'
-                  ? 'bg-green-100 text-green-800'
-                  : lead.dealAnalyzerResult === 'Fair'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-red-100 text-red-800'
-              }`}
-            >
-              {lead.dealAnalyzerResult}
-            </span>
-          ) : (
-            <span className="text-sm text-gray-400">N/A</span>
-          )}
-        </span>
-      ),
-    },
-    {
-      header: 'Property Value',
-      accessor: 'estimatedValue',
+      header: 'Submitted At',
+      accessor: 'submitted_at',
       render: (lead: Lead) => (
         <span className="text-sm text-gray-600">
-          {lead.estimatedValue
-            ? `$${lead.estimatedValue.toLocaleString()}`
-            : 'N/A'}
-        </span>
-      ),
-    },
-    {
-      header: 'Status',
-      accessor: 'status',
-      render: (lead: Lead) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            lead.status === 'New'
-              ? 'bg-blue-100 text-blue-800'
-              : lead.status === 'Contacted'
-                ? 'bg-yellow-100 text-yellow-800'
-                : lead.status === 'Qualified'
-                  ? 'bg-purple-100 text-purple-800'
-                  : lead.status === 'Converted'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {lead.status}
-        </span>
-      ),
-    },
-    {
-      header: 'Created',
-      accessor: 'createdAt',
-      render: (lead: Lead) => (
-        <span className="text-sm text-gray-600">
-          {new Date(lead.createdAt).toLocaleDateString()}
+          {new Date(lead.submitted_at).toLocaleDateString()}
         </span>
       ),
     },
   ]
 
-  const handleEdit = (lead: Lead) => {
-    console.log('Edit lead:', lead)
-    // Implement edit functionality
+  const handleDelete = (lead: Lead) => {
+    setLeadToDelete(lead)
+    setShowDeleteModal(true)
   }
 
-  const handleDelete = (lead: Lead) => {
-    console.log('Delete lead:', lead)
-    // Implement delete functionality
+  const handleDeleteSuccess = () => {
+    setLeads(prev => prev.filter(lead => lead.id !== leadToDelete?.id))
+    setShowDeleteModal(false)
+    setLeadToDelete(null)
   }
 
   const clearFilters = () => {
@@ -249,6 +204,10 @@ const LeadsAnalyzer: React.FC = () => {
     setStatusFilter('All')
     setSourceFilter('All')
     setDealResultFilter('All')
+  }
+
+  const handlePageChange = (newPage: number) => {
+    fetchLeads(newPage)
   }
 
   return (
@@ -263,7 +222,8 @@ const LeadsAnalyzer: React.FC = () => {
             <FiFilter className="text-lg" />
             Filters
           </button>
-          <CSVExport
+          <CSVExport<Lead>
+            columns={leadAnalyzerCSVColumns as CSVColumn<Lead>[]}
             data={filteredLeads}
             filename="leads-export"
             buttonText="Export CSV"
@@ -271,30 +231,63 @@ const LeadsAnalyzer: React.FC = () => {
         </div>
       </div>
 
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
       {/* Search and Filters */}
       <div className="mb-6 space-y-4">
         {/* Filters Panel */}
         {showFilters && (
           <LeadsFilter
-            leads={leads}
-            statusFilter={statusFilter}
+            searchTerm={searchTerm}
             sourceFilter={sourceFilter}
             dealResultFilter={dealResultFilter}
-            onStatusFilterChange={setStatusFilter}
+            onSearchTermChange={setSearchTerm}
             onSourceFilterChange={setSourceFilter}
             onDealResultFilterChange={setDealResultFilter}
             onClearFilters={clearFilters}
+            loading={loading}
           />
         )}
       </div>
 
       {/* Data Table */}
-      <DataTable
-        data={filteredLeads}
-        columns={columns}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        itemsPerPage={10}
+      {loading ? (
+        <DataTableSkeleton
+          columns={columns}
+          itemsPerPage={10}
+          showActions={!!handleDelete}
+        />
+      ) : filteredLeads.length > 0 ? (
+        <DataTable
+          data={filteredLeads}
+          columns={columns}
+          onDelete={handleDelete}
+          itemsPerPage={pagination.limit}
+          // Server-side pagination props
+          serverSide={true}
+          currentPage={pagination.page}
+          totalCount={pagination.total}
+          onPageChange={handlePageChange}
+        />
+      ) : (
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">No Leads data available.</div>
+        </div>
+      )}
+
+      {/* Delete Modal */}
+      <DeleteLeadModal
+        isOpen={showDeleteModal}
+        lead={leadToDelete}
+        onSuccess={handleDeleteSuccess}
+        onCancel={() => {
+          setShowDeleteModal(false)
+          setLeadToDelete(null)
+        }}
       />
     </div>
   )

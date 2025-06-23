@@ -61,6 +61,7 @@ export interface ContactLead {
 
 // --- DEAL ANALYZER LEADS ---
 export type DealResultType = 'Great' | 'Fair' | 'Poor'
+export type DealSourceType = 'DealAnalyzer' | 'HELOC'
 
 export interface DealAnalyzerLead {
   id: string // UUID
@@ -71,6 +72,7 @@ export interface DealAnalyzerLead {
   email?: string // optional email capture
   resultType: DealResultType
   submittedAt: string // ISO date/time string
+  source: DealSourceType
 }
 
 // --- HELOC LEADS ---
