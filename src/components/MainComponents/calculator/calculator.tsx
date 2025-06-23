@@ -82,7 +82,12 @@ export default function CalculatorsPage() {
                 <Card className="w-full max-w-md p-6 shadow-xl">
                   <CardHeader className="text-center pb-4">
                     <CardTitle className="text-lg">Loan Payment Calculator</CardTitle>
-                    <CardDescription>Calculate your monthly payment</CardDescription>
+                    <CardDescription>
+                      Calculate your estimated monthly payment.
+                      <span className="text-sm animate-pulse text-muted-foreground block mt-1">
+                        🚧 Note: This feature is coming soon.
+                      </span>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
