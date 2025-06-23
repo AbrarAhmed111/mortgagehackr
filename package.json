@@ -22,6 +22,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.5.0",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.456.0",
@@ -38,7 +39,8 @@
     "recharts": "^2.15.3",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.0",

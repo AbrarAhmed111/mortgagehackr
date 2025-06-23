@@ -186,23 +186,6 @@ export default function BlogDetailPage() {
               <div className="grid gap-8 lg:grid-cols-4">
                 {/* Main Content */}
                 <div className="lg:col-span-3">
-                  {/* Author Bio */}
-                  <div className="mt-12 p-6 bg-gray-50 rounded-lg">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">About {post.author}</h3>
-                        <p className="text-gray-600 mb-4">{post.authorBio}</p>
-                        <div className="flex space-x-4">
-                          <Button variant="outline" size="sm">
-                            View All Posts
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Follow Author
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Navigation */}
                   <div className="mt-12 flex justify-between items-center">
@@ -212,10 +195,7 @@ export default function BlogDetailPage() {
                         Back to Blog
                       </Button>
                     </Link>
-                    <Button variant="outline">
-                      <Share2 className="mr-2 h-4 w-4" />
-                      Share Article
-                    </Button>
+                    
                   </div>
                 </div>
 
@@ -223,43 +203,7 @@ export default function BlogDetailPage() {
                 <div className="lg:col-span-1">
                   <div className="sticky top-8 space-y-6">
                     {/* Table of Contents */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg flex items-center">
-                          <BookOpen className="h-5 w-5 mr-2" />
-                          In This Article
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2 text-sm">
-                          <li>
-                            <a href="#understanding-rate-surge" className="text-blue-600 hover:underline">
-                              Understanding the Rate Surge
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#impact-homebuyers" className="text-blue-600 hover:underline">
-                              Impact on Homebuyers
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#strategies-todays-market" className="text-blue-600 hover:underline">
-                              Strategies for Today's Market
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#looking-ahead" className="text-blue-600 hover:underline">
-                              Looking Ahead
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#bottom-line" className="text-blue-600 hover:underline">
-                              The Bottom Line
-                            </a>
-                          </li>
-                        </ul>
-                      </CardContent>
-                    </Card>
+                   
 
                     {/* Quick Tools */}
                     <Card>

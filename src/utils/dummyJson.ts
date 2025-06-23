@@ -67,43 +67,6 @@ export const lenderOffers = [
   },
 ];
 
-export const applyNowClicks = [
-  {
-    id: 'c1',
-    lender_offer_id: '1',
-    clicked_at: '2025-05-20T10:15:00Z',
-    user_ip: '192.168.0.12',
-    user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-  },
-  {
-    id: 'c2',
-    lender_offer_id: '2',
-    clicked_at: '2025-05-20T10:45:00Z',
-    user_ip: '192.168.0.14',
-    user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13.0)',
-  },
-  {
-    id: 'c3',
-    lender_offer_id: '3',
-    clicked_at: '2025-05-21T09:05:00Z',
-    user_ip: '192.168.0.15',
-    user_agent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0)',
-  },
-  {
-    id: 'c4',
-    lender_offer_id: '1',
-    clicked_at: '2025-05-21T14:25:00Z',
-    user_ip: '192.168.0.16',
-    user_agent: 'Mozilla/5.0 (Linux; Android 13)',
-  },
-  {
-    id: 'c5',
-    lender_offer_id: '5',
-    clicked_at: '2025-05-22T11:55:00Z',
-    user_ip: '192.168.0.18',
-    user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64)',
-  },
-];
 
 export const contactLeads = [
   {
@@ -148,63 +111,65 @@ export const contactLeads = [
   },
 ];
 
-export const dealAnalyzerLeads = [
+
+export const analyzerLeads = [
   {
-    id: 'd1',
-    loan_amount: 300000,
-    interest_rate: 3.8,
-    term_years: 30,
-    loan_start_month: '2025-05',
-    historical_avg_rate: 4.2,
-    result: 'Great',
-    email: 'john@example.com',
-    submitted_at: '2025-05-20T12:30:00Z',
+    "email": "alice.great@example.com",
+    "source": "DealAnalyzer",
+    "result_type": "Great",
+    "loan_start_month": 2,
+    "loan_start_year": 2023,
+    "loan_amount": 450000.00,
+    "interest_rate": 4.950,
+    "loan_term": 30,
+    "ip_address": "203.0.113.11"
   },
   {
-    id: 'd2',
-    loan_amount: 400000,
-    interest_rate: 4.1,
-    term_years: 30,
-    loan_start_month: '2025-03',
-    historical_avg_rate: 4.1,
-    result: 'Fair',
-    email: '',
-    submitted_at: '2025-05-20T14:00:00Z',
+    "email": "bob.fair@example.com",
+    "source": "DealAnalyzer",
+    "result_type": "Fair",
+    "loan_start_month": 6,
+    "loan_start_year": 2022,
+    "loan_amount": 320000.00,
+    "interest_rate": 6.200,
+    "loan_term": 15,
+    "ip_address": "203.0.113.12"
   },
   {
-    id: 'd3',
-    loan_amount: 250000,
-    interest_rate: 4.9,
-    term_years: 15,
-    loan_start_month: '2025-01',
-    historical_avg_rate: 4.2,
-    result: 'Poor',
-    email: 'pooruser@example.com',
-    submitted_at: '2025-05-21T09:00:00Z',
+    "email": "carol.poor@example.com",
+    "source": "DealAnalyzer",
+    "result_type": "Poor",
+    "loan_start_month": 11,
+    "loan_start_year": 2021,
+    "loan_amount": 275000.00,
+    "interest_rate": 7.150,
+    "loan_term": 30,
+    "ip_address": "203.0.113.13"
   },
   {
-    id: 'd4',
-    loan_amount: 350000,
-    interest_rate: 3.5,
-    term_years: 30,
-    loan_start_month: '2025-04',
-    historical_avg_rate: 4.1,
-    result: 'Great',
-    email: '',
-    submitted_at: '2025-05-22T10:15:00Z',
+    "email": "dave.heloc@example.com",
+    "source": "HELOC",
+    "result_type": "Great",
+    "loan_start_month": 2,
+    "loan_start_year": 2023,
+    "loan_amount": 450000.00,
+    "interest_rate": 4.950,
+    "loan_term": 30,
+    "ip_address": "203.0.113.21"
   },
   {
-    id: 'd5',
-    loan_amount: 500000,
-    interest_rate: 4.3,
-    term_years: 30,
-    loan_start_month: '2025-02',
-    historical_avg_rate: 4.0,
-    result: 'Poor',
-    email: 'alert@example.com',
-    submitted_at: '2025-05-22T11:00:00Z',
-  },
+    "email": "eve.heloc@example.com",
+    "source": "HELOC",
+    "result_type": "Great",
+    "loan_start_month": 4,
+    "loan_start_year": 2023,
+    "loan_amount": 390000.00,
+    "interest_rate": 4.850,
+    "loan_term": 15,
+    "ip_address": "203.0.113.22"
+  }
 ];
+
 
 export const blogs = [
   {

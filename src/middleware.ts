@@ -83,7 +83,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin-panel/:path*',
-    '/(api|trpc)/:path*',
+    // '/(api|trpc)/:path*',
     '/',
     '/signin',
     '/reset-password',
