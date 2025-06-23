@@ -4,6 +4,7 @@ import { DataTable } from '@/components/AdminComponents/DataTable'
 import CSVExport from '@/components/AdminComponents/ExportCSV'
 import { getContactLeads } from '@/lib/actions/contactLeads'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
+import { contactLeadCSVColumns } from '@/utils'
 
 interface ContactLeads {
   name: string
@@ -99,6 +100,7 @@ const ContactLeads: React.FC = () => {
         <h1 className="text-2xl font-semibold">Leads Management</h1>
         <div className="flex items-center gap-3">
           <CSVExport
+            columns={contactLeadCSVColumns}
             data={leads}
             filename="leads-export"
             buttonText="Export CSV"
