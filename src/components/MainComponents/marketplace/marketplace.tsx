@@ -128,7 +128,7 @@ const handleApplyClick = async (offer: Offer) => {
     if (data?.success === true) {
       toast.success(data.message || "Application submitted successfully.");
       setTimeout(() => {
-    router.push(offer.cta_link); // replace with your actual route
+      window.open(offer.cta_link, '_blank'); // replace with your actual route
   }, 2000);
 
     } else {
