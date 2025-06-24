@@ -90,6 +90,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/deal-analyzer" className="text-slate-600 hover:text-blue-600">
+                  Deal analyzer
+                </Link>
+              </li>
+              <li>
                 <Link href="/calculators" className="text-slate-600 hover:text-blue-600">
                   Calculators
                 </Link>
