@@ -15,6 +15,8 @@ import { UpdateOfferModal } from './Modals/UpdateOfferModal'
 import { DeleteOfferModal } from './Modals/DeleteOfferModal'
 import toast from 'react-hot-toast'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
+import CSVExport from '@/components/AdminComponents/ExportCSV'
+import { lenderOfferCSVColumns } from '@/utils'
 
 type LenderOffer = {
   id: string
@@ -167,7 +169,7 @@ const LendersOfferManagement: React.FC = () => {
     setSelectedOffer(offer)
     setIsUpdateModalOpen(true)
   }
-  // Updated handleUpdate function for your main component
+
   const handleUpdate = async (updatedData: {
     id: string
     lenderName: string
@@ -255,13 +257,21 @@ const LendersOfferManagement: React.FC = () => {
     <div className="w-full px-4 py-8">
       <div className="flex flex-row justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Lender Offers Management</h1>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          <FiPlus className="text-lg" />
-          Add Offer
-        </button>
+        <div className="flex items-center gap-3">
+          <CSVExport
+            data={offers}
+            columns={lenderOfferCSVColumns}
+            filename="lender-offers"
+            buttonText="Export CSV"
+          />
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <FiPlus className="text-lg" />
+            Add Offer
+          </button>
+        </div>
       </div>
       {loading ? (
         <DataTableSkeleton

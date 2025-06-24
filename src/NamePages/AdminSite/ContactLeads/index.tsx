@@ -1,17 +1,16 @@
 'use client'
 import { useState, JSX, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
-import { FiFilter } from 'react-icons/fi'
 import CSVExport from '@/components/AdminComponents/ExportCSV'
 import { getContactLeads } from '@/lib/actions/contactLeads'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
+import { contactLeadCSVColumns } from '@/utils'
 
 interface ContactLeads {
   name: string
   email: string
   message: string
   submitted_at: string
-  created_at: string
 }
 
 interface LeadsColumn<T> {
@@ -22,7 +21,6 @@ interface LeadsColumn<T> {
 
 const ContactLeads: React.FC = () => {
   const [leads, setLeads] = useState<ContactLeads[]>([])
-  const [showFilters, setShowFilters] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [total, setTotal] = useState(0)
@@ -94,15 +92,6 @@ const ContactLeads: React.FC = () => {
         </span>
       ),
     },
-    {
-      header: 'Created',
-      accessor: 'created_at',
-      render: lead => (
-        <span className="text-sm text-gray-600">
-          {new Date(lead.created_at).toLocaleDateString()}
-        </span>
-      ),
-    },
   ]
 
   return (
@@ -111,6 +100,7 @@ const ContactLeads: React.FC = () => {
         <h1 className="text-2xl font-semibold">Leads Management</h1>
         <div className="flex items-center gap-3">
           <CSVExport
+            columns={contactLeadCSVColumns}
             data={leads}
             filename="leads-export"
             buttonText="Export CSV"

@@ -27,6 +27,11 @@ export const navLinks: SidebarNavLinkType[] = [
     icon: <SiGoogleadsense size={20} />,
   },
   {
+    name: 'Leads Analyzer',
+    to: '/admin-panel/lead-analyzers',
+    icon: <SiGoogleadsense size={20} />,
+  },
+  {
     name: 'Contact Leads',
     to: '/admin-panel/contact-leads',
     icon: <SiGoogleadsense size={20} />,
