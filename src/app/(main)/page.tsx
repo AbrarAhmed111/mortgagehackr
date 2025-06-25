@@ -234,9 +234,7 @@ export default function HomePage() {
                     Try Deal Analyzer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                  <Button size="lg" variant="outline">
-                    See Example Analysis
-                  </Button>
+              
                 </div>
               </div>
 
