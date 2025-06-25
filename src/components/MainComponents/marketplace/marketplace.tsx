@@ -42,9 +42,9 @@ const trackApplyClick = (lender: string, offerId: number) => {
 }
 
 
- 
+
 export default function MarketplacePage() {
- 
+
   const [showInactive, setShowInactive] = useState(true)
   const [sortBy, setSortBy] = useState("rate")
   const [filterRate, setFilterRate] = useState({ min: 0, max: 20 })
@@ -55,8 +55,8 @@ export default function MarketplacePage() {
   const [loadingOfferId, setLoadingOfferId] = useState("")
   const [userIp, setuserIp] = useState("")
   const [userAgent, setUserAgent] = useState("")
-  const [noFilter,setNoFilter] = useState(true)
-const router = useRouter();
+  const [noFilter, setNoFilter] = useState(true)
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -67,83 +67,83 @@ const router = useRouter();
       lenderName: filterLender,
       loanTerm: parseInt(filterTerm, 10),
       status: showInactive
-          }
-
-   
-  const loadOffers = async () => {
-  try {
-    setLoading(true);
-    let data;
-
-    if (noFilter) {
-      data = await getOffers();
-      setNoFilter(false);
-    } else {
-      data = await getOffers(filters);
-      setNoFilter(false);
     }
 
-    // Apply sorting on the frontend
-    data.sort((a, b) => {
-      switch (sortBy) {
-        case "rate":
-          return a.interest_rate - b.interest_rate;
-        case "newest":
-          return b.id - a.id; // Assuming higher ID is newer
-        case "expiration":
-          return new Date(a.expiration_date).getTime() - new Date(b.expiration_date).getTime();
-        default:
-          return 0;
+
+    const loadOffers = async () => {
+      try {
+        setLoading(true);
+        let data;
+
+        if (noFilter) {
+          data = await getOffers();
+          setNoFilter(false);
+        } else {
+          data = await getOffers(filters);
+          setNoFilter(false);
+        }
+
+        // Apply sorting on the frontend
+        data.sort((a, b) => {
+          switch (sortBy) {
+            case "rate":
+              return a.interest_rate - b.interest_rate;
+            case "newest":
+              return b.id - a.id; // Assuming higher ID is newer
+            case "expiration":
+              return new Date(a.expiration_date).getTime() - new Date(b.expiration_date).getTime();
+            default:
+              return 0;
+          }
+        });
+
+        setOffers(data);
+      } catch (error) {
+        console.error("Failed to load offers:", error);
+      } finally {
+        setLoading(false);
+        setNoFilter(false);
       }
-    });
-
-    setOffers(data);
-  } catch (error) {
-    console.error("Failed to load offers:", error);
-  } finally {
-    setLoading(false);
-    setNoFilter(false);
-  }
-};
+    };
 
 
-  loadOffers();
-}, [showInactive,filterRate,filterTerm,filterLender,sortBy]);
+    loadOffers();
+  }, [showInactive, filterRate, filterTerm, filterLender, sortBy]);
 
 
 
-console.log("Market Data",offers)
+  console.log("Market Data", offers)
   //Apply Offer Functions
 
-const handleApplyClick = async (offer: Offer) => {
-  try {
-    setLoadingOfferId(offer.id); // Show loading spinner for the clicked offer
+  const handleApplyClick = async (offer: Offer) => {
+    try {
+      setLoadingOfferId(offer.id); // Show loading spinner for the clicked offer
 
-    trackApplyClick(offer.lender_name, parseInt(offer.id,10));
+      trackApplyClick(offer.lender_name, parseInt(offer.id, 10));
 
-    const lenderOfferId = offer.id;
+      const lenderOfferId = offer.id;
 
-    const data = await logApplyNowClick({ lenderOfferId, userIp, userAgent });
+      const data = await logApplyNowClick({ lenderOfferId, userIp, userAgent });
 
-    if (data?.success === true) {
-      toast.success(data.message || "Application submitted successfully.");
-      setTimeout(() => {
-      window.open(offer.cta_link, '_blank'); // replace with your actual route
-  }, 2000);
+      if (data?.success === true) {
+        toast.success(data.message || "Application submitted successfully.");
+        setTimeout(() => {
+          window.open(offer.cta_link, '_blank'); // replace with your actual route
+        }, 2000);
 
-    } else {
-      toast.error(data?.message || "Something went wrong while applying.");
+      } else {
+        toast.error(data?.message || "Something went wrong while applying.");
+      }
+    } catch (error: any) {
+      console.error("Error applying for offer:", error);
+      toast.error("An unexpected error occurred. Please try again later.");
+    } finally {
+      setLoadingOfferId(""); // Always reset loading state
     }
-  } catch (error: any) {
-    console.error("Error applying for offer:", error);
-    toast.error("An unexpected error occurred. Please try again later.");
-  } finally {
-    setLoadingOfferId(""); // Always reset loading state
-  }
-};
+  };
 
 
-   const getBrowserName = () => {
+  const getBrowserName = () => {
     const userAgent = navigator.userAgent;
     if (userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("OPR")) {
       return "Chrome";
@@ -173,11 +173,11 @@ const handleApplyClick = async (offer: Offer) => {
 
   useEffect(() => {
     console.log("Browser:", getBrowserName());
-      setUserAgent(getBrowserName())
+    setUserAgent(getBrowserName())
     getIpAddress();
   }, []);
 
-  
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -230,7 +230,7 @@ const handleApplyClick = async (offer: Offer) => {
                       onChange={(e) => setShowInactive(!showInactive)}
                       className="rounded"
                     />
-                    
+
                     <span>Show inactive offers</span>
                   </label>
                 </div>
@@ -311,11 +311,11 @@ const handleApplyClick = async (offer: Offer) => {
                   <Button
                     variant="outline"
                     onClick={() => {
-                        setFilterRate({ min: 0, max: 20 })
-                    setFilterTerm("0")
-                    setFilterLender("")
-                    setShowInactive(true)
-                    setNoFilter(true)
+                      setFilterRate({ min: 0, max: 20 })
+                      setFilterTerm("0")
+                      setFilterLender("")
+                      setShowInactive(true)
+                      setNoFilter(true)
                     }}
                     className="w-full"
                   >
@@ -330,129 +330,127 @@ const handleApplyClick = async (offer: Offer) => {
         {/* Mortgage Offers */}
         <section className="w-full py-16 md:py-24">
           <div className="container px-4 md:px-6">
-            {loading === true ? 
-            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-               {[...Array(6)].map((_, index) => (
-        <LenderCardSkeleton key={index} />
-      ))}
-            </div> : 
-            offers.length === 0 ? (
-              <div className="text-center py-12">
-                <h3 className="text-xl font-semibold mb-2">No offers match your criteria</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setFilterRate({ min: 0, max: 20 })
-                    setFilterTerm("0")
-                    setFilterLender("")
-                     setShowInactive(true)
-                    setNoFilter(true)
-                  }}
-                >
-                  Reset Filters
-                </Button>
-              </div>
-            ) : (
+            {loading === true ?
               <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                {offers.map((offer) => (
-                  <Card
-                    key={offer.id}
-                    className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg ${
-                      !offer.status ? "opacity-60 bg-gray-50" : ""
-                    }`}
-                  >
-                    {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
-                      {!offer.status ? (
-                        
-                        <></>
-                      ) : new Date(offer.expiration_date) < new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) ? (
-                        <Badge variant="destructive">Expires Soon</Badge>
-                      ) : (
-                        
-                        <></>
-                      )}
-                    </div>
-
-                    <CardHeader className="pb-4">
-                      {/* Lender Info */}
-                      <div className="flex items-center space-x-3 mb-4">
-                       
-                        <div className="flex-1">
-                          <CardTitle className="text-lg">{offer.lender_name}</CardTitle>
-                         
-                        </div>
-                      </div>
-
-                      {/* Rate Information */}
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="text-center p-3 bg-green-50 rounded-lg">
-                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.interest_rate}%</div>
-                          <div className="text-sm text-gray-600">Interest Rate</div>
-                        </div>
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.apr}%</div>
-                          <div className="text-sm text-gray-600">APR</div>
-                        </div>
-                      </div>
-
-                      {/* Loan Details */}
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Loan Term:</span>
-                          <span className="font-medium">{offer.loan_term} years</span>
-                        </div>
-                        {offer.eligibility && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">eligibility:</span>
-                            <span className="font-medium">{offer.eligibility}</span>
-                          </div>
-                        )}
-                       
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Expires:</span>
-                          <span className="font-medium flex items-center">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            {new Date(offer.expiration_date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-
-                      {/* Apply Button */}
-                     <Button
-  className={`w-full h-12 ${
-    offer.status ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
-  }`}
-  disabled={!offer.status || loadingOfferId === offer.id}
-  onClick={() => handleApplyClick(offer)}
->
-  {offer.status ? (
-    loadingOfferId === offer.id ? (
-      <Loader2Icon className="animate-spin" />
-    ) : (
-      <>
-        Apply Now
-        <ExternalLink className="ml-2 h-4 w-4" />
-      </>
-    )
-  ) : (
-    "Offer Expired"
-  )}
-</Button>
-
-
-                      <p className="text-xs text-gray-500 text-center">
-                        Clicking "Apply Now" will redirect to {offer.lender_name}'s website
-                      </p>
-                    </CardContent>
-                  </Card>
+                {[...Array(6)].map((_, index) => (
+                  <LenderCardSkeleton key={index} />
                 ))}
-              </div>
-            )
+              </div> :
+              offers.length === 0 ? (
+                <div className="text-center py-12">
+                  <h3 className="text-xl font-semibold mb-2">No offers match your criteria</h3>
+                  <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setFilterRate({ min: 0, max: 20 })
+                      setFilterTerm("0")
+                      setFilterLender("")
+                      setShowInactive(true)
+                      setNoFilter(true)
+                    }}
+                  >
+                    Reset Filters
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                  {offers.map((offer) => (
+                    <Card
+                      key={offer.id}
+                      className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg ${!offer.status ? "opacity-60 bg-gray-50" : ""
+                        }`}
+                    >
+                      {/* Status Badge */}
+                      <div className="absolute top-4 right-4">
+                        {!offer.status ? (
+
+                          <></>
+                        ) : new Date(offer.expiration_date) < new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) ? (
+                          <Badge variant="destructive">Expires Soon</Badge>
+                        ) : (
+
+                          <></>
+                        )}
+                      </div>
+
+                      <CardHeader className="pb-4">
+                        {/* Lender Info */}
+                        <div className="flex items-center space-x-3 mb-4">
+
+                          <div className="flex-1">
+                            <CardTitle className="text-lg">{offer.lender_name}</CardTitle>
+
+                          </div>
+                        </div>
+
+                        {/* Rate Information */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div className="text-center p-3 bg-green-50 rounded-lg">
+                            <div className="text-2xl font-bold text-[#8cc63f]">{offer.interest_rate}%</div>
+                            <div className="text-sm text-gray-600">Interest Rate</div>
+                          </div>
+                          <div className="text-center p-3 bg-blue-50 rounded-lg">
+                            <div className="text-2xl font-bold text-[#8cc63f]">{offer.apr}%</div>
+                            <div className="text-sm text-gray-600">APR</div>
+                          </div>
+                        </div>
+
+                        {/* Loan Details */}
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Loan Term:</span>
+                            <span className="font-medium">{offer.loan_term} years</span>
+                          </div>
+                          {offer.eligibility && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">eligibility:</span>
+                              <span className="font-medium">{offer.eligibility}</span>
+                            </div>
+                          )}
+
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Expires:</span>
+                            <span className="font-medium flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              {new Date(offer.expiration_date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+
+                        {/* Apply Button */}
+                        <Button
+                          className={`w-full h-12 ${offer.status ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
+                            }`}
+                          disabled={!offer.status || loadingOfferId === offer.id}
+                          onClick={() => handleApplyClick(offer)}
+                        >
+                          {offer.status ? (
+                            loadingOfferId === offer.id ? (
+                              <Loader2Icon className="animate-spin" />
+                            ) : (
+                              <>
+                                Apply Now
+                                <ExternalLink className="ml-2 h-4 w-4" />
+                              </>
+                            )
+                          ) : (
+                            "Offer Expired"
+                          )}
+                        </Button>
+
+
+                        <p className="text-xs text-gray-500 text-center">
+                          Clicking "Apply Now" will redirect to {offer.lender_name}'s website
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )
             }
           </div>
         </section>
