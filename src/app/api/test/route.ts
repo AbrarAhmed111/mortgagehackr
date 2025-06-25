@@ -1,7 +1,7 @@
-import {  saveAnalyzerLead } from "@/lib/actions/analyzerLeads"
+import {  saveAnalyzerLead, submitAnalyzerEmail } from "@/lib/actions/analyzerLeads"
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const result = await saveAnalyzerLead(body)
+  const result = await submitAnalyzerEmail(body)
   return Response.json(result)
 }
