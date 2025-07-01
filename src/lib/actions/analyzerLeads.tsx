@@ -6,7 +6,7 @@ import nodemailer from 'nodemailer'
 import { createClient } from '../supabase/server'
 import { z } from 'zod'
 
-const FRED_API_KEY = process.env.FRED_API_KEY!
+const FRED_API_KEY = process.env.NEXT_PUBLIC_FRED_API_KEY!
 
 const SaveAnalyzerLeadSchema = z.object({
   source: z.enum(['DealAnalyzer', 'HELOC']),
