@@ -99,7 +99,7 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
         loan_start_year,
         loan_term,
         loan_amount: rest.loan_amount,
-      },
+      }
     ])
     .select('id')
     .single()
