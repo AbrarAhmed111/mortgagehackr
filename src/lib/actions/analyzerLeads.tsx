@@ -26,6 +26,13 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
 
   const { source, ip_address, loan_start_month, loan_start_year, interest_rate, loan_term, ...rest } = parsed.data
 
+  // ❌ Future date check
+  const currentDate = new Date()
+  const loanStartDate = new Date(loan_start_year, loan_start_month - 1)
+
+  if (loanStartDate > currentDate) {
+    return { error: 'Loan start date cannot be in the future.' }
+  }
   // 1. Fetch FRED historical rate
   const startDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-01`
   const endDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-28`
