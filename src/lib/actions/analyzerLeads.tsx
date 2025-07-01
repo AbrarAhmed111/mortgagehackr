@@ -29,10 +29,17 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
   // ❌ Future date check
   const currentDate = new Date()
   const loanStartDate = new Date(loan_start_year, loan_start_month - 1)
+const now = new Date()
+const currentYear = now.getFullYear()
+const currentMonth = now.getMonth() // 0-based
 
-  if (loanStartDate > currentDate) {
-    return { error: 'Loan start date cannot be in the future.' }
-  }
+if (
+  loan_start_year > currentYear ||
+  (loan_start_year === currentYear && loan_start_month > currentMonth)
+) {
+  return { error: 'Loan start date must be from a past month (not current or future).' }
+}
+
   // 1. Fetch FRED historical rate
   const startDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-01`
   const endDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-28`
