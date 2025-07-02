@@ -155,12 +155,10 @@ const DealAnalyzer = () => {
     setUserAgent(getBrowserName())
     getIpAddress()
 
-    // Check for data from home page
     const storedQuickAnalysis = localStorage.getItem('quickAnalysisData')
     if (storedQuickAnalysis) {
       const quickData = JSON.parse(storedQuickAnalysis)
       if (quickData.fromHomePage) {
-        // Set form data from home page
         setFormData({
           loanStartDate: quickData.loanStartDate,
           loanAmount: quickData.loanAmount,
@@ -168,23 +166,19 @@ const DealAnalyzer = () => {
           loanTerm: quickData.loanTerm,
         })
 
-        // Set IP if available
         if (quickData.userIp) {
           setUserIp(quickData.userIp)
           setIpFetched(true)
         }
 
-        // Auto-submit the form after a short delay to ensure state is set
         setTimeout(() => {
           handleAutoSubmit(quickData)
         }, 500)
 
-        // Clear the stored data
         localStorage.removeItem('quickAnalysisData')
       }
     }
 
-    // Existing code for checking analyzer results
     const id = localStorage.getItem('analyzer_lead_id')
     const storedResult = localStorage.getItem('analyzer_result')
     if (storedResult) {

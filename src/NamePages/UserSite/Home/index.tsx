@@ -81,7 +81,6 @@ const HomePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validate required fields
     if (
       !formData.loanStartDate ||
       !formData.loanTerm ||
@@ -92,11 +91,9 @@ const HomePage = () => {
       return
     }
 
-    // Store form data AND user info for the deal analyzer
     const dataToStore = {
       ...formData,
       userIp: userIp || '0.0.0.0',
-      fromHomePage: true, // Flag to indicate this came from home page
     }
 
     localStorage.setItem('quickAnalysisData', JSON.stringify(dataToStore))
