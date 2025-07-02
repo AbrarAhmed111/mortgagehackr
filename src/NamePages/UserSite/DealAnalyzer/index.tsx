@@ -140,16 +140,147 @@ const DealAnalyzer = () => {
     return supabaseResult.toLowerCase() as 'great' | 'fair' | 'poor'
   }
 
+  // useEffect(() => {
+  //   console.log('Browser:', getBrowserName())
+  //   setUserAgent(getBrowserName())
+  //   getIpAddress()
+  //   const id = localStorage.getItem('analyzer_lead_id')
+  //   const storedResult = localStorage.getItem('analyzer_result')
+  //   if (storedResult) {
+  //     setResult(JSON.parse(storedResult))
+  //   }
+  // }, [])
   useEffect(() => {
     console.log('Browser:', getBrowserName())
     setUserAgent(getBrowserName())
     getIpAddress()
+
+    // Check for data from home page
+    const storedQuickAnalysis = localStorage.getItem('quickAnalysisData')
+    if (storedQuickAnalysis) {
+      const quickData = JSON.parse(storedQuickAnalysis)
+      if (quickData.fromHomePage) {
+        // Set form data from home page
+        setFormData({
+          loanStartDate: quickData.loanStartDate,
+          loanAmount: quickData.loanAmount,
+          interestRate: quickData.interestRate,
+          loanTerm: quickData.loanTerm,
+        })
+
+        // Set IP if available
+        if (quickData.userIp) {
+          setUserIp(quickData.userIp)
+          setIpFetched(true)
+        }
+
+        // Auto-submit the form after a short delay to ensure state is set
+        setTimeout(() => {
+          handleAutoSubmit(quickData)
+        }, 500)
+
+        // Clear the stored data
+        localStorage.removeItem('quickAnalysisData')
+      }
+    }
+
+    // Existing code for checking analyzer results
     const id = localStorage.getItem('analyzer_lead_id')
     const storedResult = localStorage.getItem('analyzer_result')
     if (storedResult) {
       setResult(JSON.parse(storedResult))
     }
   }, [])
+
+  const handleAutoSubmit = async (quickData: any) => {
+    setIsAnalyzing(true)
+
+    try {
+      const [year, month] = quickData.loanStartDate.split('-').map(Number)
+
+      const leadData = {
+        source: 'DealAnalyzer' as const,
+        loan_start_month: month,
+        loan_start_year: year,
+        loan_amount: Number.parseFloat(quickData.loanAmount),
+        interest_rate: Number.parseFloat(quickData.interestRate),
+        loan_term: Number.parseInt(quickData.loanTerm) as 15 | 30,
+        ip_address: quickData.userIp || '0.0.0.0',
+      }
+
+      const res = await fetch('/api/saveAnalyzerLeads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(leadData),
+        credentials: 'same-origin',
+      })
+
+      if (!res.ok) {
+        const errorText = await res.text()
+        console.error('HTTP Error Response:', errorText)
+        throw new Error(
+          `HTTP error! status: ${res.status}, message: ${errorText}`,
+        )
+      }
+
+      const response = await res.json()
+      if (response.error) {
+        toast.error(response.error)
+        setIsAnalyzing(false)
+        return
+      }
+
+      if (response.success) {
+        const { result_type, fredRate, id } = response
+        const userRate = Number.parseFloat(quickData.interestRate)
+        const rateComparison = userRate - fredRate
+
+        const dealType = mapResultType(result_type)
+
+        let explanation: string
+        let recommendation: string
+
+        if (dealType === 'great') {
+          explanation = `Your rate is ${Math.abs(rateComparison).toFixed(2)}% ${rateComparison <= 0 ? 'below' : 'above'} the historical average of ${fredRate.toFixed(2)}%. Excellent deal!`
+          recommendation =
+            'Consider exploring HELOC options to leverage your great rate.'
+        } else if (dealType === 'fair') {
+          explanation = `Your rate is ${rateComparison >= 0 ? rateComparison.toFixed(2) + '% above' : Math.abs(rateComparison).toFixed(2) + '% below'} the historical average of ${fredRate.toFixed(2)}%. This is a fair deal.`
+          recommendation =
+            'Your rate is competitive. Learn about refinancing options to potentially improve your terms.'
+        } else {
+          explanation = `Your rate is ${rateComparison.toFixed(2)}% above the historical average of ${fredRate.toFixed(2)}%. You may be overpaying.`
+          recommendation =
+            'Consider refinancing to get a better rate and save money over the life of your loan.'
+        }
+
+        const analysisResult: AnalysisResult = {
+          dealType,
+          rateComparison,
+          historicalAverage: fredRate,
+          explanation,
+          recommendation,
+          leadId: id,
+        }
+
+        setResult(analysisResult)
+        localStorage.setItem('analyzer_result', JSON.stringify(analysisResult))
+        localStorage.setItem('analyzer_lead_id', id)
+      }
+    } catch (error) {
+      console.error('Analysis error:', error)
+      if (error instanceof Error) {
+        toast.error(error?.message || 'An unexpected error occurred.')
+      } else {
+        toast.error('An unexpected error occurred. Try again!')
+      }
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
