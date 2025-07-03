@@ -140,25 +140,16 @@ const DealAnalyzer = () => {
     return supabaseResult.toLowerCase() as 'great' | 'fair' | 'poor'
   }
 
-  // useEffect(() => {
-  //   console.log('Browser:', getBrowserName())
-  //   setUserAgent(getBrowserName())
-  //   getIpAddress()
-  //   const id = localStorage.getItem('analyzer_lead_id')
-  //   const storedResult = localStorage.getItem('analyzer_result')
-  //   if (storedResult) {
-  //     setResult(JSON.parse(storedResult))
-  //   }
-  // }, [])
   useEffect(() => {
     console.log('Browser:', getBrowserName())
     setUserAgent(getBrowserName())
     getIpAddress()
 
     const storedQuickAnalysis = localStorage.getItem('quickAnalysisData')
+    console.log('Stored Quick Analysis:', storedQuickAnalysis)
     if (storedQuickAnalysis) {
       const quickData = JSON.parse(storedQuickAnalysis)
-      if (quickData.fromHomePage) {
+      if (quickData.fromHomePage === true) {
         setFormData({
           loanStartDate: quickData.loanStartDate,
           loanAmount: quickData.loanAmount,

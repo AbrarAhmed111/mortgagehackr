@@ -94,6 +94,7 @@ const HomePage = () => {
     const dataToStore = {
       ...formData,
       userIp: userIp || '0.0.0.0',
+      fromHomePage: true,
     }
 
     localStorage.setItem('quickAnalysisData', JSON.stringify(dataToStore))
