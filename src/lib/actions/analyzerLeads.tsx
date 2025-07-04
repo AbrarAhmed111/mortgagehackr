@@ -12,10 +12,7 @@ const SaveAnalyzerLeadSchema = z.object({
   source: z.enum(['DealAnalyzer', 'HELOC']),
   loan_start_month: z.number().min(1).max(12),
   loan_start_year: z.number().min(1900),
-  loan_amount: z
-    .number()
-    .min(1000, { message: 'Loan amount must be at least $1,000' })
-    .max(1_000_000, { message: 'Loan amount must be less than or equal to $1,000,000' }),
+  loan_amount: z.number().positive(),
   interest_rate: z.number().positive(),
   loan_term: z.union([z.literal(15), z.literal(30)]),
   ip_address: z.string().optional(),
@@ -25,27 +22,30 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
   const supabase = await createClient()
   const parsed = SaveAnalyzerLeadSchema.safeParse(input)
 
-  if (!parsed.success) {
-    const firstError = parsed.error.errors[0]?.message || 'Invalid input'
-    return { error: firstError }
-  }
+  if (!parsed.success) return { error: 'Invalid input' }
 
   const { source, ip_address, loan_start_month, loan_start_year, interest_rate, loan_term, ...rest } = parsed.data
 
-  const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth() // 0-based
+  // ❌ Future date check
+  const currentDate = new Date()
+  const loanStartDate = new Date(loan_start_year, loan_start_month - 1)
+const now = new Date()
+const currentYear = now.getFullYear()
+const currentMonth = now.getMonth() // 0-based
 
-  if (
-    loan_start_year > currentYear ||
-    (loan_start_year === currentYear && loan_start_month > currentMonth)
-  ) {
-    return { error: 'Loan start date must be from a past month (not current or future).' }
-  }
+if (
+  loan_start_year > currentYear ||
+  (loan_start_year === currentYear && loan_start_month > currentMonth)
+) {
+  return { error: 'Loan start date must be from a past month (not current or future).' }
+}
 
+  // 1. Fetch FRED historical rate
   const startDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-01`
   const endDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-28`
+
   const seriesId = loan_term === 30 ? 'MORTGAGE30US' : 'MORTGAGE15US'
+
   const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&observation_start=${startDate}&observation_end=${endDate}`
 
   let fredRate = null
@@ -54,21 +54,17 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     const response = await fetch(url)
     const fredData = await response.json()
 
-   const observations = fredData?.observations || []
-const firstValid = observations.find((o: any) => o.value && o.value !== ".")
+    fredRate = parseFloat(fredData?.observations?.[0]?.value)
 
-if (!firstValid) {
-  console.error('No valid rate found in FRED data:', fredData)
-  return { error: 'No historical interest rate found for this month. Try an earlier month.' }
-}
-
-fredRate = parseFloat(firstValid.value)
-
+    if (isNaN(fredRate)) {
+      throw new Error('Invalid FRED data')
+    }
   } catch (error) {
     console.error('FRED API error:', error)
     return { error: 'Failed to fetch historical rate from FRED.' }
   }
 
+  // 2. Determine result_type
   const rateDiff = interest_rate - fredRate
 
   let result_type: 'Great' | 'Fair' | 'Poor'
@@ -81,10 +77,12 @@ fredRate = parseFloat(firstValid.value)
     result_type = 'Poor'
   }
 
+  // 3. HELOC validation
   if (source === 'HELOC' && result_type !== 'Great') {
     return { error: 'HELOC leads must be rated Great.' }
   }
 
+  // 4. Rate limiting
   if (ip_address) {
     const oneHourAgo = new Date(Date.now() - 3600000).toISOString()
     const { count, error: rateError } = await supabase
@@ -101,6 +99,7 @@ fredRate = parseFloat(firstValid.value)
     if ((count || 0) >= 3) return { error: 'Rate limit exceeded' }
   }
 
+  // 5. Save lead
   const { data, error: insertError } = await supabase
     .from('analyzer_leads')
     .insert([
