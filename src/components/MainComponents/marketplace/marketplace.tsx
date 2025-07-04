@@ -20,6 +20,7 @@ import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
 import toast from "react-hot-toast"
 import { Offer } from "@/utils/types"
 import { useRouter } from "next/navigation";
+import Link from "next/link"
 
 // Mock data for mortgage offers
 
@@ -196,17 +197,24 @@ export default function MarketplacePage() {
                 apply directly through our marketplace.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
+                {/* <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
                   View Current Rates
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-black hover:bg-white hover:text-blue-900 h-14 px-8"
+                </Button> */}
+                <a
+                  href={`mailto:Mania@westcapitallending.com?subject=Pre-Qualification Request&body=Hi Mania,%0D%0A%0D%0AI would like to get pre-qualified. Please let me know the next steps.%0D%0A%0D%0AThanks!`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Get Pre-Qualified
-                </Button>
+
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-black hover:bg-white hover:text-blue-900 h-14 px-8"
+                  >
+                    Get Pre-Qualified
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
@@ -508,17 +516,28 @@ export default function MarketplacePage() {
                 Compare rates from top lenders and find the mortgage that fits your needs and budget.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
-                  Get Pre-Qualified Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
+                <a
+                  href={`mailto:Mania@westcapitallending.com?subject=Pre-Qualification Request&body=Hi Mania,%0D%0A%0D%0AI would like to get pre-qualified. Please let me know the next steps.%0D%0A%0D%0AThanks!`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Learn More
-                </Button>
+
+                  <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
+                    Get Pre-Qualified Now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </a>
+
+                <Link href={`/about`}>
+
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
+                  >
+                    Learn More
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

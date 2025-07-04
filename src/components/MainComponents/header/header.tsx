@@ -46,9 +46,12 @@ export default function Header() {
                 <span>info@MortgageHackr.com</span>
               </div>
             </div>
-            <Button size="sm" className="hidden sm:block bg-blue-600 hover:bg-blue-700">
-              Start Analysis
-            </Button>
+           <Link href="/deal-analyzer">
+  <Button size="sm" className="hidden sm:block bg-blue-600 hover:bg-blue-700">
+    Start Analysis
+  </Button>
+</Link>
+
             <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
               <Menu className="h-4 w-4" />
             </Button>

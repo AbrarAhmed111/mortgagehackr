@@ -18,6 +18,8 @@ import {
   ArrowRight,
   CheckCircle,
   Star,
+  PhoneCall,
+  BarChart2,
 } from 'lucide-react'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +27,7 @@ import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import Link from 'next/link'
 
 const HomePage = () => {
   const [ipFetched, setIpFetched] = useState(false)
@@ -130,6 +133,7 @@ const HomePage = () => {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
+                   <Link href={`/deal-analyzer`} >
                   <Button
                     size="lg"
                     className="h-14 px-8 bg-green-500 hover:bg-green-600 text-white font-semibold"
@@ -137,13 +141,17 @@ const HomePage = () => {
                     Analyze My Loan Options
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-14 px-8 border-white text-black hover:bg-white hover:text-blue-900"
-                  >
-                    See How It Works
-                  </Button>
+                   </Link>
+
+                  <Link href={`/about`} >
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="h-14 px-8 border-white text-black hover:bg-white hover:text-blue-900"
+                    >
+                      See How It Works
+                    </Button>
+                  </Link>
                 </div>
                 <div className="flex items-center space-x-6 text-sm text-blue-100">
                   <div className="flex items-center space-x-2">
@@ -208,73 +216,83 @@ const HomePage = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <DollarSign className="h-8 w-8 text-[#8cc63f]" />
-                  </div>
-                  <CardTitle className="text-lg">Personal Loans</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    Compare rates from top lenders for debt consolidation, home
-                    improvement, and more.
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              {/* Mortgages Card – unchanged */}
+              <Link href="/marketplace">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                      <Home className="h-8 w-8 text-[#8cc63f]" />
+                    </div>
+                    <CardTitle className="text-lg">Mortgages</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription>
+                      Find the best mortgage rates and calculate payments for your dream home.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </Link>
 
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <Home className="h-8 w-8 text-[#8cc63f]" />
-                  </div>
-                  <CardTitle className="text-lg">Mortgages</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    Find the best mortgage rates and calculate payments for your
-                    dream home.
-                  </CardDescription>
-                </CardContent>
-              </Card>
 
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <Car className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <CardTitle className="text-lg">Auto Loans</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    Get pre-qualified for auto financing and compare dealer vs.
-                    bank rates.
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              {/* Loan Calculator Card – unchanged */}
+              <Link href="/calculators">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                      <Calculator className="h-8 w-8 text-orange-600" />
+                    </div>
+                    <CardTitle className="text-lg">Loan Calculator</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription>
+                      Calculate payments, interest, and total costs for any loan scenario.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </Link>
 
-              <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                    <Calculator className="h-8 w-8 text-orange-600" />
-                  </div>
-                  <CardTitle className="text-lg">Loan Calculator</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    Calculate payments, interest, and total costs for any loan
-                    scenario.
-                  </CardDescription>
-                </CardContent>
-              </Card>
+
+              {/* Contact Card – replaces Personal Loans */}
+              <Link href="/contact">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardHeader className="pb-4">
+                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                      <PhoneCall className="h-8 w-8 text-[#8cc63f]" />
+                    </div>
+                    <CardTitle className="text-lg">Contact</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription>
+                      Reach out to us for personalized support and answers to your questions.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Deal Analyzer Card – replaces Auto Loans */}
+              <Link href="/deal-analyzer">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardHeader className="pb-4">
+                    <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <BarChart2 className="h-8 w-8 text-[#8cc63f]" />
+                    </div>
+                    <CardTitle className="text-lg">Deal Analyzer</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription>
+                      Instantly analyze how your mortgage compares to market trends.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                 Explore All Tools
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -313,10 +331,12 @@ const HomePage = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
+                      <Link href={`/deal-analyzer`} >
                   <Button size="lg" className="bg-green-500 hover:bg-green-600">
                     Try Deal Analyzer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
+                      </Link>
                 </div>
               </div>
 
@@ -590,20 +610,25 @@ const HomePage = () => {
                 confidence with our loan analysis tools.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                 <Link href="/deal-analyzer">
                 <Button
                   size="lg"
                   className="bg-green-500 hover:bg-green-600 h-14 px-8"
-                >
+                  >
                   Start Your Free Analysis
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
+                  </Link>
+
+                   <Link href="/about">
                 <Button
                   size="lg"
                   variant="outline"
                   className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
-                >
+                  >
                   Learn More
                 </Button>
+                  </Link>
               </div>
               <div className="flex items-center justify-center space-x-6 text-sm text-blue-100">
                 <div className="flex items-center space-x-2">

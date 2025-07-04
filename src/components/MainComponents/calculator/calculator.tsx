@@ -14,6 +14,7 @@ import {
   Calendar,
   PiggyBank,
 } from "lucide-react"
+import Link from "next/link"
 
 export default function CalculatorsPage() {
   return (
@@ -124,17 +125,19 @@ export default function CalculatorsPage() {
                 your specific situation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link href={`/deal-analyzer`} >
                 <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
                   Try Deal Analyzer
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button
+                    </Link>
+                {/* <Button
                   size="lg"
                   variant="outline"
                   className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
                 >
                   View All Tools
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>

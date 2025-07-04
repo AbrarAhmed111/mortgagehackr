@@ -55,7 +55,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Mail className="h-4 w-4" />
-                <span>info@loananalyzer.com</span>
+                <span>info@mortgagehackr.com</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <MapPin className="h-4 w-4" />
@@ -160,7 +160,7 @@ export default function Footer() {
         {/* Bottom Footer */}
         <div className="mt-8 pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-center items-center">
           <p className="text-xs text-slate-500">
-            © 2024 LoanAnalyzer Pro. All rights reserved. | Licensed Financial Services Provider
+            © 2024 mortgageHackr. All rights reserved. | Licensed Financial Services Provider
           </p>
         </div>
       </div>
