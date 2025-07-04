@@ -117,7 +117,7 @@ export async function getLeadsBySource() {
 
   // Fetch deal analyzer leads
   const { data: dealAnalyzerData, error: dealAnalyzerError } = await supabase
-    .from('deal_analyzer_leads')
+    .from('analyzer_leads')
     .select('result_type, id')
 
   if (dealAnalyzerError) {
