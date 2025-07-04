@@ -46,11 +46,11 @@ export default function Header() {
                 <span>info@MortgageHackr.com</span>
               </div>
             </div>
-           <Link href="/deal-analyzer">
-  <Button size="sm" className="hidden sm:block bg-blue-600 hover:bg-blue-700">
-    Start Analysis
-  </Button>
-</Link>
+            <Link href="/deal-analyzer">
+              <Button size="sm" className="hidden sm:block bg-blue-600 hover:bg-blue-700">
+                Start Analysis
+              </Button>
+            </Link>
 
             <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
               <Menu className="h-4 w-4" />
@@ -76,7 +76,7 @@ export default function Header() {
               </Button>
             </div>
             <nav className="flex flex-col space-y-4">
-              {["Home", "Marketplace", "Deal analyzer", "Calculators", "About", "Contact"].map((label, idx) => {
+              {["Home", "Marketplace", "Deal-analyzer", "Calculators", "About", "Contact"].map((label, idx) => {
                 const path = label.toLowerCase() === "home" ? "/" : `/${label.toLowerCase()}`
                 return (
                   <Link
