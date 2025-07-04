@@ -54,11 +54,16 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     const response = await fetch(url)
     const fredData = await response.json()
 
-    fredRate = parseFloat(fredData?.observations?.[0]?.value)
+   const observations = fredData?.observations || []
+const firstValid = observations.find((o: any) => o.value && o.value !== ".")
 
-    if (isNaN(fredRate)) {
-      throw new Error('Invalid FRED data')
-    }
+if (!firstValid) {
+  console.error('No valid rate found in FRED data:', fredData)
+  return { error: 'No historical interest rate found for this month. Try an earlier month.' }
+}
+
+fredRate = parseFloat(firstValid.value)
+
   } catch (error) {
     console.error('FRED API error:', error)
     return { error: 'Failed to fetch historical rate from FRED.' }
