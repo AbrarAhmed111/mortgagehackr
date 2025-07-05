@@ -10,7 +10,6 @@ import { CSVColumn, leadAnalyzerCSVColumns } from '@/utils'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
 import { DealResultType, DealSourceType } from '@/lib/database.types'
 
-// Lead type definition
 interface Lead {
   id: string
   email?: string
@@ -50,19 +49,15 @@ const LeadsAnalyzer: React.FC = () => {
     totalPages: 1,
   })
 
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [sourceFilter, setSourceFilter] = useState<string>('All')
   const [dealResultFilter, setDealResultFilter] = useState<string>('All')
   const [showFilters, setShowFilters] = useState(false)
 
-  // Delete modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null)
-  const [deleting, setDeleting] = useState(false)
 
-  // Fetch leads from Supabase
   const fetchLeads = async (page: number = 1) => {
     setLoading(true)
     setError(null)
@@ -123,7 +118,6 @@ const LeadsAnalyzer: React.FC = () => {
     setFilteredLeads(filtered)
   }
 
-  // Apply client-side filters
   useEffect(() => {
     filterLeads()
   }, [searchTerm, statusFilter, leads])
@@ -186,6 +180,7 @@ const LeadsAnalyzer: React.FC = () => {
         </span>
       ),
     },
+
   ]
 
   const handleDelete = (lead: Lead) => {
@@ -213,7 +208,7 @@ const LeadsAnalyzer: React.FC = () => {
   return (
     <div className="px-4 py-8">
       <div className="flex flex-row justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Leads Management</h1>
+        <h1 className="text-2xl font-semibold">Leads Analyzer</h1>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowFilters(!showFilters)}
