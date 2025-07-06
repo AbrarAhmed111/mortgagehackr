@@ -194,7 +194,7 @@ export default function FAQPage() {
                                         <CardTitle className="text-lg">Phone Support</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-lg font-semibold mb-2">(555) 123-4567</p>
+                                        {/* <p className="text-lg font-semibold mb-2">(555) 123-4567</p> */}
                                         <p className="text-sm text-gray-600 mb-4">Mon-Fri, 8AM-8PM EST</p>
                                         <Button variant="outline" className="w-full">
                                             Call Now

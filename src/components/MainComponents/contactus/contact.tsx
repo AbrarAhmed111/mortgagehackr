@@ -221,7 +221,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <h3 className="font-semibold">Phone Support</h3>
-                        <p className="text-gray-600">(555) 123-4567</p>
+                        {/* <p className="text-gray-600">(555) 123-4567</p> */}
                         <p className="text-sm text-gray-500">Mon-Fri, 8AM-8PM EST</p>
                       </div>
                     </div>

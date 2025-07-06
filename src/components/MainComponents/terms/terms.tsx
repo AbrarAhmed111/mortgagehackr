@@ -133,7 +133,7 @@ export default function TermsPage() {
                 </p>
                 <ul>
                   <li>Email: legal@mortgagehackr.net</li>
-                  <li>Phone: (555) 123-4567</li>
+                  {/* <li>Phone: (555) 123-4567</li> */}
                   <li>Address: 123 Financial District, Suite 456, New York, NY 10004</li>
                 </ul>
               </div>
