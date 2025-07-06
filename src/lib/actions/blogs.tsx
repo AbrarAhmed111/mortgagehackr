@@ -1,8 +1,16 @@
 'use server'
 
 import { createClient } from '../supabase/server'
+import { cacheUtils, performanceMonitor } from '../utils/performance'
 
 export async function getAllBlogs(page = 1, limit = 10, searchQuery = '') {
+  const monitor = performanceMonitor.start('getAllBlogs')
+  const cacheKey = cacheUtils.generateKey('blogs', { page, limit, searchQuery })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient();
   const from = (page - 1) * limit;
   const to = from + limit - 1;
@@ -23,14 +31,24 @@ export async function getAllBlogs(page = 1, limit = 10, searchQuery = '') {
     return { data: [], total: 0 };
   }
 
-  return {
+  const result = {
     data,
     total: count ?? 0,
-  };
+  }
+  cacheUtils.set(cacheKey, result, 2 * 60 * 1000)
+  monitor.end()
+  return result
 }
 
 
 export async function getBlogBySlug(slug: string) {
+  const monitor = performanceMonitor.start('getBlogBySlug')
+  const cacheKey = cacheUtils.generateKey('blog', { slug })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -43,7 +61,8 @@ export async function getBlogBySlug(slug: string) {
     console.error(error)
     return null
   }
-
+  cacheUtils.set(cacheKey, data, 2 * 60 * 1000)
+  monitor.end()
   return data
 }
 
@@ -59,7 +78,7 @@ export async function deleteBlogById(blogId: string) {
     console.error(error)
     return { error: error.message }
   }
-
+  cacheUtils.invalidate('blogs')
   return { success: 'Blog deleted successfully' }
 }
 

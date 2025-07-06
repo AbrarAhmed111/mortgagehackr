@@ -1,10 +1,18 @@
 'use server'
 
 import { createClient } from '../supabase/server'
+import { cacheUtils, performanceMonitor } from '../utils/performance'
 
 
 // Table or Card Layout
 export async function getTopOffers() {
+  const monitor = performanceMonitor.start('getTopOffers')
+  const cacheKey = cacheUtils.generateKey('topOffers', {})
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   // Select lender offers with count of clicks from apply_now_clicks
@@ -35,12 +43,21 @@ export async function getTopOffers() {
     .sort((a, b) => b.click_count - a.click_count)
     .slice(0, 5)
 
+  cacheUtils.set(cacheKey, top5, 60 * 1000) // 1 minute cache
+  monitor.end()
   return top5
 }
 
 
 // Line Chart
 export async function getClicksOverTime(timeframe: 'day' | 'week' | 'month' = 'day') {
+  const monitor = performanceMonitor.start('getClicksOverTime')
+  const cacheKey = cacheUtils.generateKey('clicksOverTime', { timeframe })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   const { data, error } = await supabase.rpc('get_clicks_over_time', { period: timeframe })
@@ -50,6 +67,8 @@ export async function getClicksOverTime(timeframe: 'day' | 'week' | 'month' = 'd
     return { error: error.message }
   }
 
+  cacheUtils.set(cacheKey, data, 60 * 1000) // 1 minute cache
+  monitor.end()
   return data
 }
 
@@ -57,6 +76,13 @@ export async function getClicksOverTime(timeframe: 'day' | 'week' | 'month' = 'd
 // PIE CHART
 
 export async function getOfferStatusCounts() {
+  const monitor = performanceMonitor.start('getOfferStatusCounts')
+  const cacheKey = cacheUtils.generateKey('offerStatusCounts', {})
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   // Count active offers
@@ -81,10 +107,13 @@ export async function getOfferStatusCounts() {
     return { error: inactiveError.message }
   }
 
-  return {
+  const result = {
     active: activeCount ?? 0,
     inactive: inactiveCount ?? 0,
   }
+  cacheUtils.set(cacheKey, result, 60 * 1000) // 1 minute cache
+  monitor.end()
+  return result
 }
 
 
@@ -92,6 +121,13 @@ export async function getOfferStatusCounts() {
 type ResultType = 'Great' | 'Fair' | 'Poor'
 
 export async function getLeadsBySource() {
+  const monitor = performanceMonitor.start('getLeadsBySource')
+  const cacheKey = cacheUtils.generateKey('leadsBySource', {})
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   // Count contact leads (excluding spam)
@@ -140,10 +176,13 @@ export async function getLeadsBySource() {
     }
   }
 
-  return {
+  const result = {
     contactLeads: contactCount ?? 0,
     helocLeads: helocCount ?? 0,
     dealAnalyzerLeads: dealCounts,
   }
+  cacheUtils.set(cacheKey, result, 60 * 1000) // 1 minute cache
+  monitor.end()
+  return result
 }
 

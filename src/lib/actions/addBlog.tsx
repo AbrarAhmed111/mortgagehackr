@@ -2,6 +2,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
+import { cacheUtils } from '../utils/performance'
 
 type BlogContentBlock = {
   image?: string
@@ -92,5 +93,7 @@ export async function addBlog({
     return { error: error.message }
   }
 
+  // Invalidate blogs cache
+  cacheUtils.invalidate('blogs')
   return { success: 'Blog added successfully' }
 }

@@ -1,5 +1,5 @@
 'use client'
-import { useState, JSX, useEffect } from 'react'
+import { useState, JSX, useEffect, useCallback } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
 import { FiFilter } from 'react-icons/fi'
 import { getAnalyzerDealsList } from '@/lib/actions/analyzerLeads'
@@ -57,6 +57,20 @@ const LeadsAnalyzer: React.FC = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null)
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout
+      return (value: string) => {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => {
+          setSearchTerm(value)
+        }, 300)
+      }
+    })(),
+    []
+  )
 
   const fetchLeads = async (page: number = 1) => {
     setLoading(true)
@@ -189,9 +203,13 @@ const LeadsAnalyzer: React.FC = () => {
   }
 
   const handleDeleteSuccess = () => {
+    // Optimistic update - remove from both leads and filteredLeads
     setLeads(prev => prev.filter(lead => lead.id !== leadToDelete?.id))
+    setFilteredLeads(prev => prev.filter(lead => lead.id !== leadToDelete?.id))
     setShowDeleteModal(false)
     setLeadToDelete(null)
+    // Refresh data to ensure consistency
+    setTimeout(() => fetchLeads(pagination.page), 500)
   }
 
   const clearFilters = () => {
@@ -240,7 +258,7 @@ const LeadsAnalyzer: React.FC = () => {
             searchTerm={searchTerm}
             sourceFilter={sourceFilter}
             dealResultFilter={dealResultFilter}
-            onSearchTermChange={setSearchTerm}
+            onSearchTermChange={debouncedSearch}
             onSourceFilterChange={setSourceFilter}
             onDealResultFilterChange={setDealResultFilter}
             onClearFilters={clearFilters}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -54,6 +54,20 @@ export default function FAQPage() {
     const [searchTerm, setSearchTerm] = useState("")
     const [openItems, setOpenItems] = useState<number[]>([])
 
+    // Debounced search function
+    const debouncedSearch = useCallback(
+        (() => {
+            let timeoutId: NodeJS.Timeout
+            return (value: string) => {
+                clearTimeout(timeoutId)
+                timeoutId = setTimeout(() => {
+                    setSearchTerm(value)
+                }, 300)
+            }
+        })(),
+        []
+    )
+
     const toggleItem = (index: number) => {
         setOpenItems((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]))
     }
@@ -91,8 +105,8 @@ export default function FAQPage() {
                                 <input
                                     type="text"
                                     placeholder="Search frequently asked questions..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    defaultValue={searchTerm}
+                                    onChange={(e) => debouncedSearch(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                             </div>

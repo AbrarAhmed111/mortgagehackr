@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '../supabase/server'
+import { cacheUtils, performanceMonitor } from '../utils/performance'
 
 export async function getOffers(filters?: {
   interestRateMin?: number
@@ -9,6 +10,13 @@ export async function getOffers(filters?: {
   loanTerm?: number
   status?: boolean
 }) {
+  const monitor = performanceMonitor.start('getOffers')
+  const cacheKey = cacheUtils.generateKey('offers', { filters })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
   let query = supabase.from('lender_offers').select('*')
 
@@ -31,7 +39,8 @@ export async function getOffers(filters?: {
     console.error(error)
     return []
   }
-
+  cacheUtils.set(cacheKey, data, 2 * 60 * 1000)
+  monitor.end()
   return data
 }
 
@@ -83,6 +92,8 @@ export async function logApplyNowClick({
     console.error('Error logging Apply Now click:', error)
     return { error: error.message }
   }
+  cacheUtils.invalidate('topOffers')
+  cacheUtils.invalidate('clicksOverTime')
   return { success: true, message: 'Applied Successfully' }
 }
 
@@ -115,11 +126,21 @@ export async function createOffer(offerData: {
     console.error('Error creating offer:', error)
     return { error: error.message }
   }
-
+  cacheUtils.invalidate('offers')
+  cacheUtils.invalidate('offersWithLink')
+  cacheUtils.invalidate('topOffers')
+  cacheUtils.invalidate('offerStatusCounts')
   return data?.[0]
 }
 
 export async function getOffersWithLink() {
+  const monitor = performanceMonitor.start('getOffersWithLink')
+  const cacheKey = cacheUtils.generateKey('offersWithLink', {})
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   // Get all lender offers ordered by interest_rate ascending
@@ -153,6 +174,8 @@ export async function getOffersWithLink() {
     }),
   )
 
+  cacheUtils.set(cacheKey, offersWithClicks, 2 * 60 * 1000)
+  monitor.end()
   return offersWithClicks
 }
 
@@ -209,7 +232,10 @@ export async function updateLenderOffer(input: UpdateLenderOfferInput) {
       message: 'Lender offer not found',
     }
   }
-
+  cacheUtils.invalidate('offers')
+  cacheUtils.invalidate('offersWithLink')
+  cacheUtils.invalidate('topOffers')
+  cacheUtils.invalidate('offerStatusCounts')
   return {
     status: 200,
     message: 'Lender offer updated successfully',
@@ -258,8 +284,11 @@ export async function toggleOfferStatus(
     console.error('Error toggling offer status:', error)
     return { error: error.message }
   }
-
-  return data
+  cacheUtils.invalidate('offers')
+  cacheUtils.invalidate('offersWithLink')
+  cacheUtils.invalidate('topOffers')
+  cacheUtils.invalidate('offerStatusCounts')
+  return { success: true }
 }
 
 export async function deleteOffer(offerId: string) {
@@ -276,6 +305,9 @@ export async function deleteOffer(offerId: string) {
     console.error('Error deleting offer:', error)
     return { error: error.message }
   }
-
+  cacheUtils.invalidate('offers')
+  cacheUtils.invalidate('offersWithLink')
+  cacheUtils.invalidate('topOffers')
+  cacheUtils.invalidate('offerStatusCounts')
   return { success: 'Offer deleted successfully', deletedOffer: data }
 }

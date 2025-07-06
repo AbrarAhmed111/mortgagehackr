@@ -47,7 +47,7 @@ const LeadsFilter: React.FC<LeadsFilterProps> = ({
           <input
             type="text"
             placeholder="Search by email or IP address..."
-            value={searchTerm}
+            defaultValue={searchTerm}
             onChange={e => onSearchTermChange(e.target.value)}
             disabled={loading}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:cursor-not-allowed"

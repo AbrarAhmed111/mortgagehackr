@@ -1,10 +1,9 @@
-
-
 'use server'
 
 import nodemailer from 'nodemailer'
 import { createClient } from '../supabase/server'
 import { z } from 'zod'
+import { cacheUtils, performanceMonitor } from '../utils/performance'
 
 const FRED_API_KEY = process.env.NEXT_PUBLIC_FRED_API_KEY!
 
@@ -123,7 +122,8 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     console.error('Insert error:', insertError)
     return { error: 'Failed to store lead.' }
   }
-
+  cacheUtils.invalidate('analyzerLeads')
+  cacheUtils.invalidate('leadsBySource')
   return { success: true, id: data.id, result_type, fredRate }
 }
 
@@ -164,6 +164,7 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
     console.error('Email update failed:', updateError)
     return { error: 'Failed to update email.' }
   }
+  cacheUtils.invalidate('analyzerLeads')
 
   // Setup mailer
   const transporter = nodemailer.createTransport({
@@ -187,7 +188,7 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
   const userHtml = `
     <h2>Thanks for using Mortgage Deal Analyzer</h2>
     <p>Your result was: <strong>${lead.result_type}</strong>.</p>
-    <p>We’ll reach out if needed. Thank you!</p>
+    <p>We'll reach out if needed. Thank you!</p>
     <p>– MortgageHackr Team</p>
   `
 
@@ -231,6 +232,13 @@ export async function getAnalyzerDealsList({
   result_type,
   source,
 }: Params = {}) {
+  const monitor = performanceMonitor.start('getAnalyzerDealsList')
+  const cacheKey = cacheUtils.generateKey('analyzerLeads', { page, limit, result_type, source })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
 
   const from = (page - 1) * limit
@@ -257,7 +265,7 @@ export async function getAnalyzerDealsList({
     return { error: 'Failed to fetch data' }
   }
 
-  return {
+  const result = {
     success: true,
     data,
     pagination: {
@@ -267,6 +275,9 @@ export async function getAnalyzerDealsList({
       totalPages: count ? Math.ceil(count / limit) : 1,
     },
   }
+  cacheUtils.set(cacheKey, result, 2 * 60 * 1000)
+  monitor.end()
+  return result
 }
 
 
@@ -292,6 +303,6 @@ export async function deleteAnalyzerLead(input: z.infer<typeof DeleteAnalyzerLea
     console.error('Failed to delete analyzer lead:', error)
     return { error: 'Failed to delete analyzer lead.' }
   }
-
+  cacheUtils.invalidate('analyzerLeads')
   return { success: true }
 }

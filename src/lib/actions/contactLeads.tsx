@@ -1,6 +1,7 @@
 'use server'
 import { createClient } from '../supabase/server'
 import nodemailer from 'nodemailer'
+import { cacheUtils, performanceMonitor } from '../utils/performance'
 
 export async function createLead(
   name: string,
@@ -93,11 +94,19 @@ export async function createLead(
     console.error('Email sending error:', mailError)
     return { error: 'Lead saved, but failed to send confirmation email.' }
   }
-
+  cacheUtils.invalidate('contactLeads')
+  cacheUtils.invalidate('leadsBySource')
   return { success: 'Lead created and emails sent successfully.' }
 }
 
 export async function getContactLeads(page = 1, limit = 10) {
+  const monitor = performanceMonitor.start('getContactLeads')
+  const cacheKey = cacheUtils.generateKey('contactLeads', { page, limit })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
   const from = (page - 1) * limit
   const to = from + limit - 1
@@ -115,7 +124,10 @@ export async function getContactLeads(page = 1, limit = 10) {
     return { data: [], total: 0 }
   }
 
-  return { data, total: count ?? 0 }
+  const result = { data, total: count ?? 0 }
+  cacheUtils.set(cacheKey, result, 2 * 60 * 1000)
+  monitor.end()
+  return result
 }
 
 export async function exportLeads(format: 'csv' | 'json') {
