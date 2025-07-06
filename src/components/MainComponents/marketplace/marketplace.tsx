@@ -21,6 +21,7 @@ import toast from "react-hot-toast"
 import { Offer } from "@/utils/types"
 import { useRouter } from "next/navigation";
 import Link from "next/link"
+import PreQualificationModal from "@/components/MainComponents/Modals/PreQualificationModal"
 
 // Mock data for mortgage offers
 
@@ -57,6 +58,7 @@ export default function MarketplacePage() {
   const [userIp, setuserIp] = useState("")
   const [userAgent, setUserAgent] = useState("")
   const [noFilter, setNoFilter] = useState(true)
+  const [showPreQualModal, setShowPreQualModal] = useState(false)
   const router = useRouter();
 
 
@@ -201,20 +203,14 @@ export default function MarketplacePage() {
                   View Current Rates
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button> */}
-                <a
-                  href={`mailto:Mania@westcapitallending.com?subject=Pre-Qualification Request&body=Hi Mania,%0D%0A%0D%0AI would like to get pre-qualified. Please let me know the next steps.%0D%0A%0D%0AThanks!`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-black hover:bg-white hover:text-blue-900 h-14 px-8"
+                  onClick={() => setShowPreQualModal(true)}
                 >
-
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white text-black hover:bg-white hover:text-blue-900 h-14 px-8"
-                  >
-                    Get Pre-Qualified
-                  </Button>
-                </a>
+                  Get Pre-Qualified
+                </Button>
               </div>
             </div>
           </div>
@@ -516,20 +512,16 @@ export default function MarketplacePage() {
                 Compare rates from top lenders and find the mortgage that fits your needs and budget.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href={`mailto:Mania@westcapitallending.com?subject=Pre-Qualification Request&body=Hi Mania,%0D%0A%0D%0AI would like to get pre-qualified. Please let me know the next steps.%0D%0A%0D%0AThanks!`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button 
+                  size="lg" 
+                  className="bg-green-500 hover:bg-green-600 h-14 px-8"
+                  onClick={() => setShowPreQualModal(true)}
                 >
-
-                  <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
-                    Get Pre-Qualified Now
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </a>
+                  Get Pre-Qualified Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
 
                 <Link href={`/about`}>
-
                   <Button
                     size="lg"
                     variant="outline"
@@ -544,6 +536,11 @@ export default function MarketplacePage() {
         </section>
       </main>
 
+      {/* Pre-Qualification Modal */}
+      <PreQualificationModal 
+        isOpen={showPreQualModal} 
+        onClose={() => setShowPreQualModal(false)} 
+      />
     </div>
   )
 }

@@ -168,12 +168,12 @@ export default function AboutPage() {
                       </div>
                     </div>
 
-                        <Link href={`/deal-analyzer`} className="w-full relative top-5">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Try Deal Analyzer
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                        </Link>
+                    <Link href={`/deal-analyzer`} className="w-full relative top-5">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                        Try Deal Analyzer
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
 
@@ -218,10 +218,12 @@ export default function AboutPage() {
                       </div>
                     </div>
 
-                    <Button variant="outline" className="w-full">
-                      Join Community
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                    <Link href={`/contact`}  className="w-full relative top-5">
+                      <Button variant="outline" className="w-full">
+                        Join Community
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </div>
@@ -326,23 +328,23 @@ export default function AboutPage() {
                 control of their mortgage costs.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                 <Link href={`/deal-analyzer`} >
+                <Link href={`/deal-analyzer`} >
 
-                <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
-                  Analyze Your Deal
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                  </Link>
+                  <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
+                    Analyze Your Deal
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
 
-                   <Link href={`/contact`} >
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
-                >
-                  Join Our Community
-                </Button>
-                    </Link>
+                <Link href={`/contact`} >
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
+                  >
+                    Join Our Community
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

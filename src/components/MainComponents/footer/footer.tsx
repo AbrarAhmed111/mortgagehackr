@@ -49,18 +49,12 @@ export default function Footer() {
               and expert insights in minutes.
             </p>
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm text-slate-600">
-                <Phone className="h-4 w-4" />
-                <span>(555) 123-4567</span>
-              </div>
+              
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Mail className="h-4 w-4" />
                 <span>info@mortgagehackr.com</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-slate-600">
-                <MapPin className="h-4 w-4" />
-                <span>123 Financial District, Suite 456, New York, NY 10004</span>
-              </div>
+             
             </div>
             <div className="flex space-x-4">
               <Link href="#" className="text-slate-400 hover:text-blue-600">
@@ -127,6 +121,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/how-deal-analyzer-works" className="text-slate-600 hover:text-blue-600">
+                  How Deal Analyzer Works
+                </Link>
+              </li>
+              <li>
                 <Link href="/privacy-terms" className="text-slate-600 hover:text-blue-600">
                   Privacy Terms
                 </Link>
@@ -138,10 +137,6 @@ export default function Footer() {
           <div className="space-y-4">
             <h4 className="text-sm font-semibold text-slate-900">Contact Info</h4>
             <div className="space-y-3">
-              <div className="flex items-center space-x-2 text-sm text-slate-600">
-                <Phone className="h-4 w-4" />
-                <span>(555) 123-4567</span>
-              </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Mail className="h-4 w-4" />
                 <span>support@mortgagehackr.net</span>

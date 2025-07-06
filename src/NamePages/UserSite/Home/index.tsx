@@ -143,7 +143,7 @@ const HomePage = () => {
                   </Button>
                    </Link>
 
-                  <Link href={`/about`} >
+                  <Link href={`/how-deal-analyzer-works`} >
                     <Button
                       size="lg"
                       variant="outline"

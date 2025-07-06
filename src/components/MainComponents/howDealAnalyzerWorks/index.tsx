@@ -58,7 +58,7 @@ export default function HowDealAnalyzerWorks() {
               </div>
 
               <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                <p className="text-xl mb-8">
+                <p className="text-xl mb-8 text-center">
                   When you submit your mortgage details, our system doesn't just guess—it pulls actual historical 
                   interest rate data from the Federal Reserve Economic Data (FRED) database. This gives you a 
                   data-driven comparison that's based on real market conditions from your loan's start date.
@@ -476,7 +476,7 @@ export default function HowDealAnalyzerWorks() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white text-white hover:bg-white hover:text-blue-700 h-14 px-8"
+                    className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
                   >
                     Learn More About Us
                   </Button>
