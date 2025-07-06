@@ -87,7 +87,7 @@ export default function MarketplacePage() {
         }
 
         // Apply sorting on the frontend
-        data.sort((a, b) => {
+        data.sort((a : any, b : any) => {
           switch (sortBy) {
             case "rate":
               return a.interest_rate - b.interest_rate;
