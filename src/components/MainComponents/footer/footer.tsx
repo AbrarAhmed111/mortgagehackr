@@ -164,21 +164,7 @@ export default function Footer() {
               </div>
             </div>
             
-            {/* Newsletter Signup */}
-            <div className="space-y-4">
-              <h5 className="font-semibold text-slate-900">Stay Updated</h5>
-              <p className="text-sm text-slate-600">Get the latest mortgage insights and tips</p>
-              <div className="flex space-x-2">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#73a334] focus:border-transparent"
-                />
-                <Button size="sm" className="bg-[#73a334] hover:bg-[#5a8a2a] transition-colors duration-300">
-                  <Zap className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+          
           </div>
         </div>
 
