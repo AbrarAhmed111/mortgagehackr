@@ -103,7 +103,7 @@ export default function PreQualificationModal({ isOpen, onClose }: PreQualificat
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <Card className="w-full max-w-[600px] max-h-[90vh] overflow-y-auto">
         <CardHeader className="relative">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">Get Pre-Qualified</CardTitle>

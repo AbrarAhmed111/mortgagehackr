@@ -2,6 +2,8 @@
 import { createClient } from '../supabase/server'
 import nodemailer from 'nodemailer'
 import { z } from 'zod'
+import { revalidateTag } from 'next/cache'
+import { cacheUtils, queryOptimizer, performanceMonitor } from '../utils/performance'
 
 const PreQualificationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -72,6 +74,12 @@ export async function submitPreQualification(input: z.infer<typeof PreQualificat
     console.error('Error creating pre-qualification lead:', insertError)
     return { error: 'Failed to submit your request. Please try again.' }
   }
+
+  // Invalidate cache for immediate updates
+  revalidateTag('pre-qualification')
+  
+  // Clear related cache entries
+  cacheUtils.invalidate('preQualificationLeads')
 
   // Setup email transporter
   const transporter = nodemailer.createTransport({
@@ -172,6 +180,12 @@ export async function updatePreQualificationStatus(input: z.infer<typeof UpdateS
     return { error: 'Failed to update status.' }
   }
 
+  // Invalidate cache for immediate updates
+  revalidateTag('pre-qualification')
+  
+  // Clear related cache entries
+  cacheUtils.invalidate('preQualificationLeads')
+
   // Setup email transporter
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -266,19 +280,26 @@ export async function updatePreQualificationStatus(input: z.infer<typeof UpdateS
 }
 
 export async function getPreQualificationLeads(page = 1, limit = 20, status?: string) {
-  const supabase = await createClient()
-  const from = (page - 1) * limit
-  const to = from + limit - 1
+  const monitor = performanceMonitor.start('getPreQualificationLeads')
+  
+  // Check cache first
+  const cacheKey = cacheUtils.generateKey('preQualificationLeads', { page, limit, status })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
 
+  const supabase = await createClient()
+  
   let query = supabase
     .from('pre_qualification_leads')
     .select('*', { count: 'exact' })
-    .order('submitted_at', { ascending: false })
-    .range(from, to)
 
-  if (status) {
-    query = query.eq('status', status)
-  }
+  // Apply optimizations
+  query = queryOptimizer.withSorting(query, 'submitted_at', false)
+  query = queryOptimizer.withPagination(query, page, limit)
+  query = queryOptimizer.withFilter(query, 'status', status)
 
   const { data, count, error } = await query
 
@@ -287,7 +308,7 @@ export async function getPreQualificationLeads(page = 1, limit = 20, status?: st
     return { error: 'Failed to fetch data' }
   }
 
-  return {
+  const result = {
     success: true,
     data,
     pagination: {
@@ -297,4 +318,13 @@ export async function getPreQualificationLeads(page = 1, limit = 20, status?: st
       totalPages: count ? Math.ceil(count / limit) : 1,
     },
   }
+
+  // Cache the result
+  cacheUtils.set(cacheKey, result, 2 * 60 * 1000) // 2 minutes cache
+  
+  // Add cache tag for this data
+  revalidateTag('pre-qualification')
+  
+  monitor.end()
+  return result
 } 

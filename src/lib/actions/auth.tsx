@@ -3,53 +3,157 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '../supabase/server'
 
+// Utility function to validate and refresh session
+async function validateSession(supabase: any) {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
+    
+    if (error) {
+      console.error('Session validation error:', error)
+      return { valid: false, error }
+    }
+    
+    if (!session) {
+      return { valid: false, error: 'No session found' }
+    }
+    
+    // Check if session is expired or about to expire
+    const expiresAt = session.expires_at
+    const now = Math.floor(Date.now() / 1000)
+    const timeUntilExpiry = expiresAt - now
+    
+    // If session expires in less than 5 minutes, refresh it
+    if (timeUntilExpiry < 300) {
+      const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
+      
+      if (refreshError) {
+        console.error('Session refresh error:', refreshError)
+        return { valid: false, error: refreshError }
+      }
+      
+      if (!refreshedSession) {
+        return { valid: false, error: 'Failed to refresh session' }
+      }
+      
+      return { valid: true, session: refreshedSession }
+    }
+    
+    return { valid: true, session }
+  } catch (error) {
+    console.error('Session validation unexpected error:', error)
+    return { valid: false, error }
+  }
+}
+
 export async function adminSignin(formData: FormData) {
-  const supabase = await createClient()
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  try {
+    const supabase = await createClient()
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
-  if (!email || !password) {
-    return {
-      ok: false,
-      status: 400, // Bad Request
-      error: 'Email and password are required',
+    if (!email || !password) {
+      return {
+        ok: false,
+        status: 400, // Bad Request
+        error: 'Email and password are required',
+      }
     }
-  }
 
-  // Sign in user
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+    // Sign in user with retry logic
+    let signInResult
+    let retryCount = 0
+    const maxRetries = 3
 
-  if (signInError) {
-    return {
-      ok: false,
-      status: 401, // Unauthorized
-      error: signInError.message,
+    while (retryCount < maxRetries) {
+      try {
+        signInResult = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+        
+        if (!signInResult.error) {
+          break // Success, exit retry loop
+        }
+        
+        // If it's an auth error (wrong credentials), don't retry
+        if (signInResult.error.message.includes('Invalid login credentials')) {
+          break
+        }
+        
+        retryCount++
+        if (retryCount < maxRetries) {
+          console.log(`Sign in attempt ${retryCount} failed, retrying...`)
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)) // Exponential backoff
+        }
+      } catch (error) {
+        retryCount++
+        console.error(`Sign in attempt ${retryCount} error:`, error)
+        if (retryCount >= maxRetries) {
+          throw error
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
+      }
     }
-  }
 
-  // Delay to ensure session cookie is set
-  await new Promise(resolve => setTimeout(resolve, 100))
+    if (signInResult?.error) {
+      return {
+        ok: false,
+        status: 401, // Unauthorized
+        error: signInResult.error.message,
+      }
+    }
 
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession()
+    // Verify session with retry logic
+    let sessionResult
+    retryCount = 0
 
-  if (sessionError || !session) {
+    while (retryCount < maxRetries) {
+      try {
+        // Wait a bit for session to be properly set
+        await new Promise(resolve => setTimeout(resolve, 200))
+        
+        sessionResult = await supabase.auth.getSession()
+        
+        if (sessionResult.data.session && !sessionResult.error) {
+          break // Success, exit retry loop
+        }
+        
+        retryCount++
+        if (retryCount < maxRetries) {
+          console.log(`Session verification attempt ${retryCount} failed, retrying...`)
+          await new Promise(resolve => setTimeout(resolve, 500 * retryCount))
+        }
+      } catch (error) {
+        retryCount++
+        console.error(`Session verification attempt ${retryCount} error:`, error)
+        if (retryCount >= maxRetries) {
+          throw error
+        }
+        await new Promise(resolve => setTimeout(resolve, 500 * retryCount))
+      }
+    }
+
+    if (sessionResult?.error || !sessionResult?.data.session) {
+      console.error('Session creation failed after retries:', sessionResult?.error)
+      return {
+        ok: false,
+        status: 500, // Server Error
+        error: 'Session creation failed. Please try again.',
+      }
+    }
+
+    return {
+      ok: true,
+      status: 200, // OK
+      success: 'Signed in successfully',
+    }
+  } catch (error) {
+    console.error('Unexpected error during sign in:', error)
     return {
       ok: false,
       status: 500, // Server Error
-      error: 'Failed to create session',
+      error: 'An unexpected error occurred. Please try again.',
     }
-  }
-
-  return {
-    ok: true,
-    status: 200, // OK
-    success: 'Signed in successfully',
   }
 }
 

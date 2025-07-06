@@ -56,13 +56,41 @@ export async function middleware(request: NextRequest) {
     }
 
     const supabase = await createClient()
-    const {
-      data: { user },
-      error: useError,
-    } = await supabase.auth.getUser()
+    
+    // Try to get user with retry logic
+    let user = null
+    let useError = null
+    let retryCount = 0
+    const maxRetries = 2
+
+    while (retryCount < maxRetries) {
+      try {
+        const result = await supabase.auth.getUser()
+        user = result.data.user
+        useError = result.error
+        
+        if (user && !useError) {
+          break // Success, exit retry loop
+        }
+        
+        retryCount++
+        if (retryCount < maxRetries) {
+          console.log(`User verification attempt ${retryCount} failed, retrying...`)
+          await new Promise(resolve => setTimeout(resolve, 500 * retryCount))
+        }
+      } catch (error) {
+        retryCount++
+        console.error(`User verification attempt ${retryCount} error:`, error)
+        if (retryCount >= maxRetries) {
+          useError = error
+          break
+        }
+        await new Promise(resolve => setTimeout(resolve, 500 * retryCount))
+      }
+    }
 
     if (useError || !user) {
-      console.log('No session found, redirecting to /signin')
+      console.log('No valid session found after retries, redirecting to /signin')
       const redirectUrl = new URL('/signin', request.url)
       redirectUrl.searchParams.set(
         'returnUrl',

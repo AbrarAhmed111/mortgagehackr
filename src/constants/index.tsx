@@ -5,6 +5,7 @@ import { SiGoogleadsense } from 'react-icons/si'
 import { MdDashboard } from 'react-icons/md'
 import { TbAnalyze } from "react-icons/tb";
 import { IoMdContacts } from "react-icons/io";
+import { FaUserCheck } from "react-icons/fa";
 
 // 1 -  For Sidebar
 export const navLinks: SidebarNavLinkType[] = [
@@ -32,6 +33,11 @@ export const navLinks: SidebarNavLinkType[] = [
     name: 'Contact Leads',
     to: '/admin-panel/contact-leads',
     icon: <IoMdContacts size={20} />,
+  },
+  {
+    name: 'Pre-Qualification Leads',
+    to: '/admin-panel/pre-qualification-leads',
+    icon: <FaUserCheck size={20} />,
   },
 ]
 
