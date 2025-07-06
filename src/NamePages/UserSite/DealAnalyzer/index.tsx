@@ -524,6 +524,7 @@ const DealAnalyzer = () => {
       console.error('Error submitting analysis:', error)
       toast.error('Failed to analyze deal. Please try again.')
       setIsAnalyzing(false)
+      setIsSubmitting(false)
       setAnalysisProgress(0)
     }
   }
@@ -684,6 +685,10 @@ const DealAnalyzer = () => {
     setShowEmailForm(false)
     setEmailSubmitted(false)
     setEmail('')
+    setIsSubmitting(false)
+    setIsAnalyzing(false)
+    setAnalysisProgress(0)
+    setFormErrors({})
     clearAnalysisData()
     // Reset form data
     setFormData({

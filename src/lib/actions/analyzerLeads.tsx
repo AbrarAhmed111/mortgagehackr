@@ -6,19 +6,17 @@ import { z } from 'zod'
 import { cacheUtils, performanceMonitor } from '../utils/performance'
 
 const FRED_API_KEY = process.env.NEXT_PUBLIC_FRED_API_KEY!
-
 const SaveAnalyzerLeadSchema = z.object({
   source: z.enum(['DealAnalyzer', 'HELOC']),
   loan_start_month: z.number().min(1).max(12),
   loan_start_year: z.number().min(1900),
   loan_amount: z
     .number()
-    .min(1000, { message: 'Loan amount must be at least $1,000' })
-    .max(1_000_000, { message: 'Loan amount must be less than or equal to $1,000,000' }),
+    .min(1000, { message: 'Loan amount must be at least $1,000' }),
   interest_rate: z.number().positive(),
   loan_term: z.union([z.literal(15), z.literal(30)]),
   ip_address: z.string().optional(),
-})
+});
 
 export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSchema>) {
   const supabase = await createClient()
@@ -42,15 +40,25 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     return { error: 'Loan start date must be from a past month (not current or future).' }
   }
 
+  if (rest.loan_amount > 9999999999.99) {
+  return { error: 'Loan amount exceeds supported limit.' }
+}
+
+
   const startDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-01`
   const endDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-28`
   const seriesId = loan_term === 30 ? 'MORTGAGE30US' : 'MORTGAGE15US'
   const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&observation_start=${startDate}&observation_end=${endDate}`
 
-  let fredRate = null
+    let fredRate = null
 
   try {
-    const response = await fetch(url)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000) // 10 seconds timeout
+
+    const response = await fetch(url, { signal: controller.signal })
+    clearTimeout(timeout)
+
     const fredData = await response.json()
 
     const observations = fredData?.observations || []
@@ -63,10 +71,15 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
 
     fredRate = parseFloat(firstValid.value)
 
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('FRED API fetch aborted due to timeout.')
+      return { error: 'FRED API timed out. Please try again later.' }
+    }
     console.error('FRED API error:', error)
     return { error: 'Failed to fetch historical rate from FRED.' }
   }
+
 
   const rateDiff = interest_rate - fredRate
 
