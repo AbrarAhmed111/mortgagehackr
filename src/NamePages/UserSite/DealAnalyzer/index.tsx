@@ -748,7 +748,7 @@ const DealAnalyzer = () => {
                   <Sparkles className="w-3 h-3 mr-1" /> Deal Analyzer
                 </Badge>
               </div>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
+              <h1 className="text-4xl font-bold text-white relative z-10 tracking-tight sm:text-5xl animate-fade-in-up">
                 Is Your Mortgage a Good Deal?
               </h1>
               <p className="text-xl text-blue-100 animate-fade-in-up delay-200">

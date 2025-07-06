@@ -223,7 +223,7 @@ export default function MarketplacePage() {
               <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
                 <Sparkles className="w-3 h-3 mr-1" /> Mortgage Marketplace
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
+              <h1 className="text-4xl capitalize relative z-10 font-bold tracking-tight sm:text-5xl animate-fade-in-up">
                 Compare mortgage rates from top lenders
               </h1>
               <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
@@ -283,16 +283,7 @@ export default function MarketplacePage() {
                   <Zap className="mr-2 h-4 w-4" />
                   Get Pre-Qualified
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    console.log('Testing filter with status=true only')
-                    setShowInactive(false)
-                  }}
-                  className="text-xs"
-                >
-                  Test Active Only
-                </Button>
+             
               </div>
             </div>
 

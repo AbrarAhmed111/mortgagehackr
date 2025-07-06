@@ -36,7 +36,7 @@ export default function AboutPage() {
               <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
                 <Sparkles className="w-3 h-3 mr-1" /> About MortgageHackr.net
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
+              <h1 className="text-4xl relative z-10  font-bold tracking-tight sm:text-5xl animate-fade-in-up">
                 Unlock Better Deals
               </h1>
               <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
