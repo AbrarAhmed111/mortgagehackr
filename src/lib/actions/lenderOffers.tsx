@@ -11,41 +11,24 @@ export async function getOffers(filters?: {
   status?: boolean
 }) {
   const monitor = performanceMonitor.start('getOffers')
-  
-  // Temporarily disable caching to debug
-  // const cacheKey = cacheUtils.generateKey('offers', { filters })
-  // const cached = cacheUtils.get(cacheKey)
-  // if (cached) {
-  //   monitor.end()
-  //   return cached
-  // }
-  
-  console.log('Server: getOffers called with filters:', filters)
-  
+  const cacheKey = cacheUtils.generateKey('offers', { filters })
+  const cached = cacheUtils.get(cacheKey)
+  if (cached) {
+    monitor.end()
+    return cached
+  }
   const supabase = await createClient()
   let query = supabase.from('lender_offers').select('*')
 
   if (filters) {
-    if (filters.interestRateMin !== undefined) {
+    if (filters.interestRateMin !== undefined)
       query = query.gte('interest_rate', filters.interestRateMin)
-      console.log('Server: Applied interestRateMin filter:', filters.interestRateMin)
-    }
-    if (filters.interestRateMax !== undefined) {
+    if (filters.interestRateMax !== undefined)
       query = query.lte('interest_rate', filters.interestRateMax)
-      console.log('Server: Applied interestRateMax filter:', filters.interestRateMax)
-    }
-    if (filters.lenderName) {
+    if (filters.lenderName)
       query = query.ilike('lender_name', `%${filters.lenderName}%`)
-      console.log('Server: Applied lenderName filter:', filters.lenderName)
-    }
-    if (filters.loanTerm) {
-      query = query.eq('loan_term', filters.loanTerm)
-      console.log('Server: Applied loanTerm filter:', filters.loanTerm)
-    }
-    if (filters.status !== undefined) {
-      query = query.eq('status', filters.status)
-      console.log('Server: Applied status filter:', filters.status)
-    }
+    if (filters.loanTerm) query = query.eq('loan_term', filters.loanTerm)
+    if (filters.status) query = query.eq('status', filters.status)
   }
 
   const { data, error } = await query.order('interest_rate', {
@@ -53,15 +36,10 @@ export async function getOffers(filters?: {
   })
 
   if (error) {
-    console.error('Server: Database error:', error)
+    console.error(error)
     return []
   }
-  
-  console.log('Server: Query returned', data?.length || 0, 'results')
-  console.log('Server: Sample data:', data?.slice(0, 2))
-  
-  // Temporarily disable caching
-  // cacheUtils.set(cacheKey, data, 2 * 60 * 1000)
+  cacheUtils.set(cacheKey, data, 2 * 60 * 1000)
   monitor.end()
   return data
 }
