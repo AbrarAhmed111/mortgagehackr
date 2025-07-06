@@ -1,8 +1,10 @@
 import { LeadAttribution, SidebarNavLinkType } from '@/utils/types'
 import { FaMicroblog } from 'react-icons/fa'
-import { BiSolidOffer, BiSolidReport } from 'react-icons/bi'
-import { SiGoogleadsense, SiGoogleads } from 'react-icons/si'
+import { BiSolidOffer } from 'react-icons/bi'
+import { SiGoogleadsense } from 'react-icons/si'
 import { MdDashboard } from 'react-icons/md'
+import { TbAnalyze } from "react-icons/tb";
+import { IoMdContacts } from "react-icons/io";
 
 // 1 -  For Sidebar
 export const navLinks: SidebarNavLinkType[] = [
@@ -22,29 +24,14 @@ export const navLinks: SidebarNavLinkType[] = [
     icon: <BiSolidOffer size={20} />,
   },
   {
-    name: 'Leads',
-    to: '/admin-panel/leads-managment',
-    icon: <SiGoogleadsense size={20} />,
-  },
-  {
     name: 'Leads Analyzer',
     to: '/admin-panel/lead-analyzers',
-    icon: <SiGoogleadsense size={20} />,
+    icon: <TbAnalyze size={20} />,
   },
   {
     name: 'Contact Leads',
     to: '/admin-panel/contact-leads',
-    icon: <SiGoogleadsense size={20} />,
-  },
-  {
-    name: 'Leads Reporting ',
-    to: '/admin-panel/leads-reporting',
-    icon: <BiSolidReport size={20} />,
-  },
-  {
-    name: 'HELOC Leads',
-    to: '/admin-panel/heloc-leads',
-    icon: <SiGoogleads size={20} />,
+    icon: <IoMdContacts size={20} />,
   },
 ]
 

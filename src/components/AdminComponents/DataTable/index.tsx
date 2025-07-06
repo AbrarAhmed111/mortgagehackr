@@ -11,10 +11,12 @@ import Image from 'next/image'
 type Column<T> = {
   header: string
   accessor: keyof T | ((item: T) => React.ReactNode)
+  render?: (item: T) => React.ReactNode
   isImage?: boolean
   imageWidth?: number
   imageHeight?: number
 }
+
 
 type TableProps<T> = {
   data: T[]
@@ -109,7 +111,26 @@ export function DataTable<T>({
               <tr key={rowIndex}>
                 {columns.map((column, colIndex) => (
                   <td key={colIndex} className="px-6 py-4 whitespace-nowrap">
-                    {column.isImage && typeof column.accessor === 'string' ? (
+                    {/* {column.isImage && typeof column.accessor === 'string' ? (
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <Image
+                          src={item[column.accessor] as string}
+                          alt=""
+                          width={column.imageWidth || 50}
+                          height={column.imageHeight || 50}
+                          className="rounded-full w-14 h-10 object-cover"
+                        />
+                      </div>
+                    ) : typeof column.accessor === 'function' ? (
+                      column.accessor(item)
+                    ) : (
+                      <div className="text-sm text-gray-900">
+                        {item[column.accessor] as React.ReactNode}
+                      </div>
+                    )} */}
+                    {column.render ? (
+                      column.render(item)
+                    ) : column.isImage && typeof column.accessor === 'string' ? (
                       <div className="flex-shrink-0 h-10 w-10">
                         <Image
                           src={item[column.accessor] as string}
@@ -126,6 +147,7 @@ export function DataTable<T>({
                         {item[column.accessor] as React.ReactNode}
                       </div>
                     )}
+
                   </td>
                 ))}
                 {(onEdit || onDelete) && (
@@ -186,11 +208,10 @@ export function DataTable<T>({
                     <button
                       key={page}
                       onClick={() => goToPage(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        activePage === page
-                          ? 'z-10 bg-blue-50 border-blue-500 text-[#8cc63f]'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${activePage === page
+                        ? 'z-10 bg-blue-50 border-blue-500 text-[#8cc63f]'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        }`}
                     >
                       {page}
                     </button>

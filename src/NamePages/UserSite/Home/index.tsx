@@ -100,7 +100,12 @@ const HomePage = () => {
       fromHomePage: true,
     }
 
-    localStorage.setItem('quickAnalysisData', JSON.stringify(dataToStore))
+    // localStorage.setItem('quickAnalysisData', JSON.stringify(dataToStore))
+    const expiryTime = Date.now() + (5 * 60 * 1000)
+    localStorage.setItem('quickAnalysisData', JSON.stringify({
+      data: dataToStore,
+      expiry: expiryTime
+    }))
     console.log('formData', formData)
     console.log('quickAnalysisData', localStorage.getItem('quickAnalysisData'))
     router.push('/deal-analyzer')
@@ -133,15 +138,15 @@ const HomePage = () => {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                   <Link href={`/deal-analyzer`} >
-                  <Button
-                    size="lg"
-                    className="h-14 px-8 bg-green-500 hover:bg-green-600 text-white font-semibold"
-                  >
-                    Analyze My Loan Options
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                   </Link>
+                  <Link href={`/deal-analyzer`} >
+                    <Button
+                      size="lg"
+                      className="h-14 px-8 bg-green-500 hover:bg-green-600 text-white font-semibold"
+                    >
+                      Analyze My Loan Options
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
 
                   <Link href={`/how-deal-analyzer-works`} >
                     <Button
@@ -331,12 +336,12 @@ const HomePage = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                      <Link href={`/deal-analyzer`} >
-                  <Button size="lg" className="bg-green-500 hover:bg-green-600">
-                    Try Deal Analyzer
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                      </Link>
+                  <Link href={`/deal-analyzer`} >
+                    <Button size="lg" className="bg-green-500 hover:bg-green-600">
+                      Try Deal Analyzer
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
 
@@ -610,25 +615,25 @@ const HomePage = () => {
                 confidence with our loan analysis tools.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                 <Link href="/deal-analyzer">
-                <Button
-                  size="lg"
-                  className="bg-green-500 hover:bg-green-600 h-14 px-8"
+                <Link href="/deal-analyzer">
+                  <Button
+                    size="lg"
+                    className="bg-green-500 hover:bg-green-600 h-14 px-8"
                   >
-                  Start Your Free Analysis
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                  </Link>
+                    Start Your Free Analysis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
 
-                   <Link href="/about">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
+                <Link href="/about">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
                   >
-                  Learn More
-                </Button>
-                  </Link>
+                    Learn More
+                  </Button>
+                </Link>
               </div>
               <div className="flex items-center justify-center space-x-6 text-sm text-blue-100">
                 <div className="flex items-center space-x-2">

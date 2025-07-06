@@ -146,17 +146,19 @@ const DealAnalyzer = () => {
     getIpAddress()
 
     const storedQuickAnalysis = localStorage.getItem('quickAnalysisData')
-    console.log('Stored Quick Analysis:', storedQuickAnalysis)
     if (storedQuickAnalysis) {
-      const quickData = JSON.parse(storedQuickAnalysis)
-      if (quickData.fromHomePage === true) {
-        setFormData({
-          loanStartDate: quickData.loanStartDate,
-          loanAmount: quickData.loanAmount,
-          interestRate: quickData.interestRate,
-          loanTerm: quickData.loanTerm,
-        })
+      const parsed = JSON.parse(storedQuickAnalysis)
+      if (Date.now() < parsed.expiry) {
+        const quickData = parsed.data
+        if (quickData.fromHomePage === true) {
 
+          setFormData({
+            loanStartDate: quickData.loanStartDate,
+            loanAmount: quickData.loanAmount,
+            interestRate: quickData.interestRate,
+            loanTerm: quickData.loanTerm,
+          })
+        }
         if (quickData.userIp) {
           setUserIp(quickData.userIp)
           setIpFetched(true)
@@ -170,10 +172,37 @@ const DealAnalyzer = () => {
       }
     }
 
-    const id = localStorage.getItem('analyzer_lead_id')
+    // const storedResult = localStorage.getItem('analyzer_result')
+    // if (storedResult) {
+    //   setResult(JSON.parse(storedResult))
+    // }
+    // const storedResult = localStorage.getItem('analyzer_result')
+    // if (storedResult) {
+    //   const parsed = JSON.parse(storedResult)
+    //   if (Date.now() < parsed.expiry) {
+    //     setResult(parsed.data)
+    //   } else {
+    //     localStorage.removeItem('analyzer_result')
+    //     localStorage.removeItem('analyzer_lead_id')
+    //   }
+    // }
     const storedResult = localStorage.getItem('analyzer_result')
     if (storedResult) {
-      setResult(JSON.parse(storedResult))
+      const parsed = JSON.parse(storedResult)
+      const currentTime = Date.now()
+      const timeLeft = parsed.expiry - currentTime
+
+      console.log('Current time:', currentTime)
+      console.log('Expiry time:', parsed.expiry)
+      console.log('Time left (minutes):', timeLeft / (1000 * 60))
+
+      if (currentTime < parsed.expiry) {
+        setResult(parsed.data)
+      } else {
+        console.log('Data expired, removing...')
+        localStorage.removeItem('analyzer_result')
+        localStorage.removeItem('analyzer_lead_id')
+      }
     }
   }, [])
 
@@ -252,8 +281,18 @@ const DealAnalyzer = () => {
         }
 
         setResult(analysisResult)
-        localStorage.setItem('analyzer_result', JSON.stringify(analysisResult))
-        localStorage.setItem('analyzer_lead_id', id)
+        // localStorage.setItem('analyzer_result', JSON.stringify(analysisResult))
+        // localStorage.setItem('analyzer_lead_id', id)
+        const expiryTime = Date.now() + (5 * 60 * 1000) // 5 minutes from now
+        localStorage.setItem('analyzer_result', JSON.stringify({
+          data: analysisResult,
+          expiry: expiryTime
+        }))
+        localStorage.setItem('analyzer_lead_id', JSON.stringify({
+          data: id,
+          expiry: expiryTime
+        }))
+
       }
     } catch (error) {
       console.error('Analysis error:', error)
@@ -348,9 +387,19 @@ const DealAnalyzer = () => {
           leadId: id,
         }
 
+        // setResult(analysisResult)
+        // localStorage.setItem('analyzer_result', JSON.stringify(analysisResult))
+        // localStorage.setItem('analyzer_lead_id', id)
         setResult(analysisResult)
-        localStorage.setItem('analyzer_result', JSON.stringify(analysisResult))
-        localStorage.setItem('analyzer_lead_id', id)
+        const expiryTime = Date.now() + (5 * 60 * 1000) // 5 minutes from now
+        localStorage.setItem('analyzer_result', JSON.stringify({
+          data: analysisResult,
+          expiry: expiryTime
+        }))
+        localStorage.setItem('analyzer_lead_id', JSON.stringify({
+          data: id,
+          expiry: expiryTime
+        }))
         setFormData({
           loanStartDate: '',
           loanAmount: '',
@@ -373,15 +422,31 @@ const DealAnalyzer = () => {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const id = localStorage.getItem('analyzer_lead_id')
-    if (!id) {
+    // const id = localStorage.getItem('analyzer_lead_id')
+    // if (!id) {
+    //   toast.error('You need to analyze your deal first.')
+    //   return
+    // }
+    const storedId = localStorage.getItem('analyzer_lead_id')
+    if (!storedId) {
       toast.error('You need to analyze your deal first.')
       return
     }
 
+    const parsed = JSON.parse(storedId)
+    if (Date.now() >= parsed.expiry) {
+      toast.error('Your session has expired. Please analyze your deal again.')
+      localStorage.removeItem('analyzer_lead_id')
+      localStorage.removeItem('analyzer_result')
+      return
+    }
+
+    const id = parsed.data
+
     try {
       setLoading(true)
-      const res = await submitAnalyzerEmail({ analyzer_id: id, email })
+      // const res = await submitAnalyzerEmail({ analyzer_id: id, email })
+      const res = await submitAnalyzerEmail({ analyzer_id: parsed.data, email })
 
       if (res.error) {
         toast.error(res.error)
