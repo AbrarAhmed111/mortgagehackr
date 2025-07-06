@@ -15,23 +15,31 @@ import {
   ArrowRight,
   Eye,
   Compass,
+  Heart,
+  ThumbsUp,
+  Globe,
+  Sparkles,
 } from "lucide-react"
 import Link from "next/link"
 
 export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen">
-
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
+        <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute top-10 left-10 w-20 h-20 bg-green-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
           <div className="container px-4 md:px-6">
-            <div className="max-w-3xl mx-auto text-center space-y-6">
-              <Badge variant="secondary" className="bg-green-500 text-white border-0">
-                About MortgageHackr.net
+            <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
+              <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
+                <Sparkles className="w-3 h-3 mr-1" /> About MortgageHackr.net
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Unlock Better Deals</h1>
-              <p className="text-xl text-blue-100">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
+                Unlock Better Deals
+              </h1>
+              <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
                 We're former automotive executives who bring data-driven deal-making expertise to the mortgage industry,
                 helping homeowners get the agility that car shoppers enjoy.
               </p>
@@ -42,11 +50,10 @@ export default function AboutPage() {
         {/* Our Story */}
         <section className="w-full py-16 md:py-24">
           <div className="container px-4 md:px-6">
-            <div className="max-w-4xl mx-auto space-y-12">
+            <div className="max-w-4xl mx-auto space-y-12 animate-fade-in-up">
               <div className="text-center">
                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">About Us</h2>
               </div>
-
               <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
                 <p className="text-xl mb-8">
                   We're a group of former automotive executives who mastered data-driven deal-making and negotiations.
@@ -61,7 +68,7 @@ export default function AboutPage() {
         </section>
 
         {/* Mission & Vision */}
-        <section className="w-full py-16 bg-gray-50">
+        <section className="w-full py-16 bg-gray-50 animate-fade-in-up">
           <div className="container px-4 md:px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
@@ -70,10 +77,9 @@ export default function AboutPage() {
                   Driving our commitment to empowering borrowers with data and insights.
                 </p>
               </div>
-
               <div className="grid gap-8 lg:grid-cols-2">
                 {/* Vision */}
-                <Card className="p-8 hover:shadow-lg transition-shadow border-2 border-blue-100">
+                <Card className="p-8 hover:shadow-xl hover:scale-[1.03] transition-all border-2 border-blue-100 animate-fade-in-up">
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -90,9 +96,8 @@ export default function AboutPage() {
                     </p>
                   </CardContent>
                 </Card>
-
                 {/* Mission */}
-                <Card className="p-8 hover:shadow-lg transition-shadow border-2 border-green-100">
+                <Card className="p-8 hover:shadow-xl hover:scale-[1.03] transition-all border-2 border-green-100 animate-fade-in-up delay-200">
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -115,7 +120,7 @@ export default function AboutPage() {
         </section>
 
         {/* What We Built */}
-        <section className="w-full py-16">
+        <section className="w-full py-16 animate-fade-in-up">
           <div className="container px-4 md:px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
@@ -124,10 +129,9 @@ export default function AboutPage() {
                   Powerful tools that give you the data and community support you need to get better mortgage deals.
                 </p>
               </div>
-
               <div className="grid gap-8 lg:grid-cols-2">
                 {/* Mortgage Deal Analyzer */}
-                <Card className="p-8 hover:shadow-lg transition-shadow">
+                <Card className="p-8 hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up">
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -145,7 +149,6 @@ export default function AboutPage() {
                           <p className="text-gray-600">Pulls daily rate data going back to 1971</p>
                         </div>
                       </div>
-
                       <div className="flex items-start space-x-3">
                         <BarChart3 className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                         <div>
@@ -155,7 +158,6 @@ export default function AboutPage() {
                           </p>
                         </div>
                       </div>
-
                       <div className="flex items-start space-x-3">
                         <DollarSign className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
                         <div>
@@ -167,7 +169,6 @@ export default function AboutPage() {
                         </div>
                       </div>
                     </div>
-
                     <Link href={`/deal-analyzer`} className="w-full relative top-5">
                       <Button className="w-full bg-blue-600 hover:bg-blue-700">
                         Try Deal Analyzer
@@ -176,9 +177,8 @@ export default function AboutPage() {
                     </Link>
                   </CardContent>
                 </Card>
-
                 {/* Independent Consumer Forum */}
-                <Card className="p-8 hover:shadow-lg transition-shadow">
+                <Card className="p-8 hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up delay-200">
                   <CardHeader className="pb-6">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -196,34 +196,87 @@ export default function AboutPage() {
                           <p className="text-gray-600">No ads, no sponsored content—just honest discussions</p>
                         </div>
                       </div>
-
                       <div className="flex items-start space-x-3">
                         <Users className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                         <div>
-                          <h4 className="font-semibold">Real Stories & Strategies</h4>
-                          <p className="text-gray-600">
-                            Homeowners share actual experiences and successful negotiation tactics
-                          </p>
+                          <h4 className="font-semibold">Peer Insights</h4>
+                          <p className="text-gray-600">Learn from real borrowers' experiences and tips</p>
                         </div>
                       </div>
-
                       <div className="flex items-start space-x-3">
-                        <Target className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
+                        <Award className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
                         <div>
-                          <h4 className="font-semibold">Success Tips</h4>
-                          <p className="text-gray-600">
-                            Learn from others who've successfully saved thousands on their mortgages
-                          </p>
+                          <h4 className="font-semibold">Expert Moderation</h4>
+                          <p className="text-gray-600">Financial experts ensure accuracy and civility</p>
                         </div>
                       </div>
                     </div>
-
-                    <Link href={`/contact`}  className="w-full relative top-5">
-                      <Button variant="outline" className="w-full">
-                        Join Community
+                    <Link href={`/faq`} className="w-full relative top-5">
+                      <Button className="w-full bg-green-500 hover:bg-green-600">
+                        Visit FAQ
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Our Values Section */}
+        <section className="w-full py-16 bg-gradient-to-r from-green-50 to-blue-50 animate-fade-in-up">
+          <div className="container px-4 md:px-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Our Values</h2>
+                <p className="text-xl text-gray-600">
+                  The principles that guide every tool, feature, and interaction at MortgageHackr.
+                </p>
+              </div>
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up">
+                  <CardHeader className="flex flex-col items-center pb-4">
+                    <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                      <Heart className="h-7 w-7 text-[#8cc63f]" />
+                    </div>
+                    <CardTitle className="text-lg">Empathy</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">We put borrowers first, always listening and learning from your needs.</p>
+                  </CardContent>
+                </Card>
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up delay-100">
+                  <CardHeader className="flex flex-col items-center pb-4">
+                    <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                      <ThumbsUp className="h-7 w-7 text-blue-500" />
+                    </div>
+                    <CardTitle className="text-lg">Integrity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">Honest, unbiased advice—no ads, no hidden agendas.</p>
+                  </CardContent>
+                </Card>
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up delay-200">
+                  <CardHeader className="flex flex-col items-center pb-4">
+                    <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                      <Globe className="h-7 w-7 text-purple-500" />
+                    </div>
+                    <CardTitle className="text-lg">Transparency</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">Clear, accessible data and explanations at every step.</p>
+                  </CardContent>
+                </Card>
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up delay-300">
+                  <CardHeader className="flex flex-col items-center pb-4">
+                    <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                      <Sparkles className="h-7 w-7 text-yellow-500" />
+                    </div>
+                    <CardTitle className="text-lg">Innovation</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">Constantly improving tools and features to serve you better.</p>
                   </CardContent>
                 </Card>
               </div>
@@ -329,7 +382,6 @@ export default function AboutPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href={`/deal-analyzer`} >
-
                   <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
                     Analyze Your Deal
                     <ArrowRight className="ml-2 h-5 w-5" />

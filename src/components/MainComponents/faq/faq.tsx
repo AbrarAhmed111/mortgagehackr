@@ -4,8 +4,10 @@ import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChevronDown, ChevronUp, Search, HelpCircle, Phone, Mail, MessageSquare, Calculator, Home } from "lucide-react"
-
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ChevronDown, ChevronUp, Search, HelpCircle, Phone, Mail, MessageSquare, Calculator, Home, Sparkles, Zap, Users } from "lucide-react"
+import Link from "next/link"
 
 const faqs = [
     {
@@ -26,7 +28,7 @@ const faqs = [
     {
       question: "Is MortgageHackr a lender or broker?",
       answer:
-        "No. We’re an independent marketplace. When you choose an offer, you apply directly with that lender. MortgageHackr simply connects you."
+        "No. We're an independent marketplace. When you choose an offer, you apply directly with that lender. MortgageHackr simply connects you."
     },
     {
       question: "Why do you show rates weekly instead of daily?",
@@ -34,14 +36,14 @@ const faqs = [
         "Freddie Mac publishes its benchmark mortgage average every Thursday, which is the industry standard for historical comparisons. Partner-lender rates update more frequently and display a timestamp."
     },
     {
-      question: "I got a “Poor Deal.” What should I do next?",
+      question: `I got a "Poor Deal." What should I do next?`,
       answer:
-        "Click “Check Your Options” on your results screen. We’ll show current refinance offers and, if you opt in, a specialist lender will reach out to discuss saving you money."
+        `Click "Check Your Options" on your results screen. We'll show current refinance offers and, if you opt in, a specialist lender will reach out to discuss saving you money.`
     },
     {
-      question: "I got a “Great Deal.” Why suggest a HELOC?",
+      question: `I got a "Great Deal." Why suggest a HELOC?`,
       answer:
-        "A low mortgage rate usually means you’ve built equity. A HELOC lets you tap that equity for renovations, tuition, or debt consolidation—without sacrificing your excellent mortgage rate."
+        "A low mortgage rate usually means you've built equity. A HELOC lets you tap that equity for renovations, tuition, or debt consolidation—without sacrificing your excellent mortgage rate."
     },
     {
       question: "How do I contact support or give feedback?",
@@ -82,14 +84,19 @@ export default function FAQPage() {
         <div className="flex flex-col min-h-screen">
             <main className="flex-1">
                 {/* Hero Section */}
-                <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
+                <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute top-10 left-10 w-20 h-20 bg-green-400/20 rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
                     <div className="container px-4 md:px-6">
-                        <div className="max-w-3xl mx-auto text-center space-y-6">
-                            <Badge variant="secondary" className="bg-green-500 text-white border-0">
-                                Help Center
+                        <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
+                            <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
+                                <Sparkles className="w-3 h-3 mr-1" /> Help Center
                             </Badge>
-                            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Frequently Asked Questions</h1>
-                            <p className="text-xl text-blue-100">
+                            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
+                                Frequently Asked Questions
+                            </h1>
+                            <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
                                 Find answers to common questions about our mortgage marketplace, loan calculators, and services.
                             </p>
                         </div>
@@ -97,12 +104,12 @@ export default function FAQPage() {
                 </section>
 
                 {/* Search Section */}
-                <section className="w-full py-12 bg-gray-50">
+                <section className="w-full py-12 bg-gray-50 animate-fade-in-up">
                     <div className="container px-4 md:px-6">
                         <div className="max-w-2xl mx-auto">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                <input
+                                <Input
                                     type="text"
                                     placeholder="Search frequently asked questions..."
                                     defaultValue={searchTerm}
@@ -118,7 +125,7 @@ export default function FAQPage() {
                 <section className="w-full py-16 md:py-24">
                     <div className="container px-4 md:px-6">
                         <div className="max-w-4xl mx-auto">
-                            <div className="text-center mb-12">
+                            <div className="text-center mb-12 animate-fade-in-up">
                                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Common Questions</h2>
                                 <p className="text-xl text-gray-600">
                                     Everything you need to know about using our mortgage marketplace and tools.
@@ -129,7 +136,7 @@ export default function FAQPage() {
                             </div>
 
                             {filteredFAQs.length === 0 ? (
-                                <div className="text-center py-12">
+                                <div className="text-center py-12 animate-fade-in-up">
                                     <HelpCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                                     <h3 className="text-xl font-semibold mb-2">No results found</h3>
                                     <p className="text-gray-600 mb-4">
@@ -146,7 +153,7 @@ export default function FAQPage() {
                                         const isOpen = openItems.includes(originalIndex)
 
                                         return (
-                                            <Card key={originalIndex} className="overflow-hidden">
+                                            <Card key={originalIndex} className="overflow-hidden hover:shadow-lg transition-all duration-300 animate-fade-in-up">
                                                 <CardHeader
                                                     className="cursor-pointer hover:bg-gray-50 transition-colors"
                                                     onClick={() => toggleItem(originalIndex)}
@@ -154,14 +161,14 @@ export default function FAQPage() {
                                                     <div className="flex items-center justify-between">
                                                         <CardTitle className="text-lg font-medium text-left pr-4">{faq.question}</CardTitle>
                                                         {isOpen ? (
-                                                            <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                                                            <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0 transition-transform" />
                                                         ) : (
-                                                            <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                                                            <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0 transition-transform" />
                                                         )}
                                                     </div>
                                                 </CardHeader>
                                                 {isOpen && (
-                                                    <CardContent className="pt-0">
+                                                    <CardContent className="pt-0 animate-fade-in">
                                                         <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
                                                     </CardContent>
                                                 )}
@@ -175,7 +182,7 @@ export default function FAQPage() {
                 </section>
 
                 {/* Contact Support Section */}
-                <section className="w-full py-16 bg-gray-50">
+                <section className="w-full py-16 bg-gradient-to-r from-green-50 to-blue-50 animate-fade-in-up">
                     <div className="container px-4 md:px-6">
                         <div className="max-w-4xl mx-auto">
                             <div className="text-center mb-12">
@@ -186,109 +193,129 @@ export default function FAQPage() {
                             </div>
 
                             <div className="grid gap-6 md:grid-cols-3">
-                                <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+                                <Card className="text-center p-6 hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up">
                                     <CardHeader>
                                         <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                                            <Phone className="h-8 w-8 text-[#8cc63f]" />
-                                        </div>
-                                        <CardTitle className="text-lg">Phone Support</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {/* <p className="text-lg font-semibold mb-2">(555) 123-4567</p> */}
-                                        <p className="text-sm text-gray-600 mb-4">Mon-Fri, 8AM-8PM EST</p>
-                                        <Button variant="outline" className="w-full">
-                                            Call Now
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-                                    <CardHeader>
-                                        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                                             <Mail className="h-8 w-8 text-[#8cc63f]" />
                                         </div>
                                         <CardTitle className="text-lg">Email Support</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-lg font-semibold mb-2">support @MortgageHackr.com</p>
-                                        <p className="text-sm text-gray-600 mb-4">Response within 24 hours</p>
-                                        <Button variant="outline" className="w-full">
-                                            Send Email
-                                        </Button>
+                                        <p className="text-sm text-gray-600 mb-4">Get detailed responses within 24 hours</p>
+                                        <Link href="/contact">
+                                            <Button variant="outline" className="w-full">
+                                                Send Email
+                                            </Button>
+                                        </Link>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+                                <Card className="text-center p-6 hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up delay-100">
                                     <CardHeader>
-                                        <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                                            <MessageSquare className="h-8 w-8 text-purple-600" />
+                                        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                            <MessageSquare className="h-8 w-8 text-[#8cc63f]" />
                                         </div>
                                         <CardTitle className="text-lg">Live Chat</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-lg font-semibold mb-2">Available Now</p>
-                                        <p className="text-sm text-gray-600 mb-4">Average response: 2 minutes</p>
+                                        <p className="text-sm text-gray-600 mb-4">Chat with our support team</p>
                                         <Button variant="outline" className="w-full">
                                             Start Chat
                                         </Button>
                                     </CardContent>
                                 </Card>
+
+                                <Card className="text-center p-6 hover:shadow-xl hover:scale-[1.03] transition-all animate-fade-in-up delay-200">
+                                    <CardHeader>
+                                        <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                                            <Users className="h-8 w-8 text-purple-600" />
+                                        </div>
+                                        <CardTitle className="text-lg">Community</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-gray-600 mb-4">Connect with other homeowners</p>
+                                        <Link href="/contact">
+                                            <Button variant="outline" className="w-full">
+                                                Join Forum
+                                            </Button>
+                                        </Link>
+                                    </CardContent>
+                                </Card>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Popular Resources */}
-                <section className="w-full py-16 md:py-24">
+                {/* Quick Actions Section */}
+                <section className="w-full py-16 bg-gray-50 animate-fade-in-up">
                     <div className="container px-4 md:px-6">
                         <div className="max-w-4xl mx-auto">
                             <div className="text-center mb-12">
-                                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Popular Resources</h2>
+                                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Ready to get started?</h2>
                                 <p className="text-xl text-gray-600">
-                                    Explore our most helpful tools and guides for your mortgage journey.
+                                    Explore our tools and find the best mortgage options for your situation.
                                 </p>
                             </div>
 
-                            <div className="grid gap-6 md:grid-cols-2">
-                                <Card className="p-6 hover:shadow-lg transition-shadow">
-                                    <CardHeader className="pb-4">
-                                        <div className="flex items-center space-x-3">
-                                            <Calculator className="h-6 w-6 text-[#8cc63f]" />
-                                            <CardTitle className="text-lg">Mortgage Calculator</CardTitle>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-gray-600 mb-4">
-                                            Calculate your monthly mortgage payments including principal, interest, taxes, and insurance.
-                                        </p>
-                                        <Button variant="outline" className="w-full">
-                                            Use Calculator
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                            <div className="grid gap-6 md:grid-cols-3">
+                                <Link href="/deal-analyzer">
+                                    <Card className="text-center p-6 hover:shadow-xl hover:scale-[1.03] transition-all cursor-pointer animate-fade-in-up">
+                                        <CardHeader>
+                                            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                                <Calculator className="h-8 w-8 text-[#8cc63f]" />
+                                            </div>
+                                            <CardTitle className="text-lg">Deal Analyzer</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-gray-600 mb-4">Analyze your current mortgage deal</p>
+                                            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                                                <Zap className="mr-2 h-4 w-4" />
+                                                Start Analysis
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
 
-                                <Card className="p-6 hover:shadow-lg transition-shadow">
-                                    <CardHeader className="pb-4">
-                                        <div className="flex items-center space-x-3">
-                                            <Home className="h-6 w-6 text-[#8cc63f]" />
-                                            <CardTitle className="text-lg">Mortgage Marketplace</CardTitle>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-gray-600 mb-4">
-                                            Compare current mortgage rates from top lenders and find the best deal for your situation.
-                                        </p>
-                                        <Button variant="outline" className="w-full">
-                                            Browse Offers
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                                <Link href="/marketplace">
+                                    <Card className="text-center p-6 hover:shadow-xl hover:scale-[1.03] transition-all cursor-pointer animate-fade-in-up delay-100">
+                                        <CardHeader>
+                                            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                                <Home className="h-8 w-8 text-[#8cc63f]" />
+                                            </div>
+                                            <CardTitle className="text-lg">Marketplace</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-gray-600 mb-4">Compare mortgage offers</p>
+                                            <Button className="w-full bg-green-500 hover:bg-green-600">
+                                                <Zap className="mr-2 h-4 w-4" />
+                                                Browse Offers
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+
+                                <Link href="/calculators">
+                                    <Card className="text-center p-6 hover:shadow-xl hover:scale-[1.03] transition-all cursor-pointer animate-fade-in-up delay-200">
+                                        <CardHeader>
+                                            <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                                                <Calculator className="h-8 w-8 text-orange-600" />
+                                            </div>
+                                            <CardTitle className="text-lg">Calculators</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-gray-600 mb-4">Calculate payments and costs</p>
+                                            <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                                                <Zap className="mr-2 h-4 w-4" />
+                                                Use Calculator
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
                             </div>
                         </div>
                     </div>
                 </section>
             </main>
-
         </div>
     )
 }

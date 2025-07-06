@@ -84,21 +84,21 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     return { error: 'HELOC leads must be rated Great.' }
   }
 
-  if (ip_address) {
-    const oneHourAgo = new Date(Date.now() - 3600000).toISOString()
-    const { count, error: rateError } = await supabase
-      .from('analyzer_leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('ip_address', ip_address)
-      .gte('submitted_at', oneHourAgo)
+  // if (ip_address) {
+  //   const oneHourAgo = new Date(Date.now() - 3600000).toISOString()
+  //   const { count, error: rateError } = await supabase
+  //     .from('analyzer_leads')
+  //     .select('id', { count: 'exact', head: true })
+  //     .eq('ip_address', ip_address)
+  //     .gte('submitted_at', oneHourAgo)
 
-    if (rateError) {
-      console.error('Rate limit check failed:', rateError)
-      return { error: 'Rate limit check failed' }
-    }
+  //   if (rateError) {
+  //     console.error('Rate limit check failed:', rateError)
+  //     return { error: 'Rate limit check failed' }
+  //   }
 
-    if ((count || 0) >= 3) return { error: 'Rate limit exceeded' }
-  }
+  //   if ((count || 0) >= 3) return { error: 'Rate limit exceeded, try again later!' }
+  // }
 
   const { data, error: insertError } = await supabase
     .from('analyzer_leads')
@@ -138,7 +138,10 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
   const supabase = await createClient()
   const parsed = EmailSchema.safeParse(input)
 
-  if (!parsed.success) return { error: 'Invalid input' }
+  if (!parsed.success) {
+    console.error('Email submission validation failed:', parsed.error.errors)
+    return { error: `Invalid input: ${parsed.error.errors[0]?.message || 'Validation failed'}` }
+  }
 
   const { analyzer_id, email } = parsed.data
 

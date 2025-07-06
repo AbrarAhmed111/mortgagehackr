@@ -20,6 +20,11 @@ import {
   Copy,
   Info,
   AlertCircle,
+  Sparkles,
+  Zap,
+  BarChart3,
+  CreditCard,
+  Home,
 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
@@ -105,8 +110,10 @@ export default function CalculatorsPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (loanAmount > 0 && interestRate > 0 && loanTerm > 0) {
+        setIsCalculating(true)
         const result = calculateLoan()
         setCalculation(result)
+        setIsCalculating(false)
       }
     }, 300)
     return () => clearTimeout(timer)
@@ -170,16 +177,19 @@ export default function CalculatorsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
+        <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute top-10 left-10 w-20 h-20 bg-green-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
           <div className="container px-4 md:px-6">
-            <div className="max-w-3xl mx-auto text-center space-y-6">
-              <Badge variant="secondary" className="bg-green-500 text-white border-0">
-                Financial Calculators
+            <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
+              <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
+                <Sparkles className="w-3 h-3 mr-1" /> Financial Calculators
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
                 Powerful calculators for every financial decision
               </h1>
-              <p className="text-xl text-blue-100">
+              <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
                 From loan payments to savings goals, our comprehensive suite of calculators helps you plan your
                 financial future with confidence.
               </p>
@@ -190,355 +200,225 @@ export default function CalculatorsPage() {
         <section className="w-full py-16 bg-gradient-to-r from-green-50 to-blue-50">
           <div className="container px-4 md:px-6">
             <div className="grid gap-8 lg:grid-cols-2 items-start">
-              <div className="space-y-6">
+              <div className="space-y-6 animate-fade-in-up">
                 <div className="space-y-4">
-                  <Badge className="bg-green-500 text-white">Interactive Calculator</Badge>
+                  <Badge className="bg-green-500 text-white">
+                    <Zap className="w-3 h-3 mr-1" /> Interactive Calculator
+                  </Badge>
                   <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Loan Payment Calculator</h2>
                   <p className="text-lg text-gray-600">
                     Calculate monthly payments, total interest, and amortization schedules for any loan.
                   </p>
                 </div>
 
-                <Card className="p-6">
+                <Card className="p-6 shadow-xl hover:shadow-2xl transition-shadow">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="h-5 w-5" />
+                    <CardTitle className="flex items-center">
+                      <Calculator className="mr-2 h-5 w-5 text-[#8cc63f]" />
                       Loan Details
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="loanAmount">Home Price</Label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="loanAmount"
-                          type="number"
-                          value={loanAmount}
-                          onChange={(e) => setLoanAmount(Number(e.target.value))}
-                          className="pl-10"
-                          placeholder="250,000"
-                        />
-                      </div>
-                      <Slider
-                        value={[loanAmount]}
-                        onValueChange={([value]: number[]) => setLoanAmount(value)}
-                        max={1000000}
-                        min={50000}
-                        step={1000}
-                        className="w-full"
-                      />
-                      <p className="text-sm text-gray-500">${loanAmount.toLocaleString()}</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="downPayment">Down Payment</Label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="downPayment"
-                          type="number"
-                          value={downPayment}
-                          onChange={(e) => setDownPayment(Number(e.target.value))}
-                          className="pl-10"
-                          placeholder="50,000"
-                        />
-                      </div>
-                      <Slider
-                        value={[downPayment]}
-                        onValueChange={([value]: number[]) => setDownPayment(value)}
-                        max={loanAmount}
-                        min={0}
-                        step={1000}
-                        className="w-full"
-                      />
-                      <p className="text-sm text-gray-500">
-                        ${downPayment.toLocaleString()} ({((downPayment / loanAmount) * 100).toFixed(1)}%)
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="interestRate">Interest Rate (%)</Label>
-                      <div className="relative">
-                        <Percent className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="interestRate"
-                          type="number"
-                          value={interestRate}
-                          onChange={(e) => setInterestRate(Number(e.target.value))}
-                          className="pl-10"
-                          placeholder="5.5"
-                          step="0.1"
-                        />
-                      </div>
-                      <Slider
-                        value={[interestRate]}
-                        onValueChange={([value]: number[]) => setInterestRate(value)}
-                        max={15}
-                        min={1}
-                        step={0.1}
-                        className="w-full"
-                      />
-                      <p className="text-sm text-gray-500">{interestRate}%</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="loanTerm">Loan Term (years)</Label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[15, 20, 30].map((term) => (
-                          <Button
-                            key={term}
-                            variant={loanTerm === term ? "default" : "outline"}
-                            onClick={() => setLoanTerm(term)}
-                            className="w-full"
-                          >
-                            {term} years
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 pt-4 border-t">
-                      <h4 className="font-semibold">Additional Monthly Costs</h4>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="propertyTax">Property Tax (annual)</Label>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="propertyTax"
-                              type="number"
-                              value={propertyTax}
-                              onChange={(e) => setPropertyTax(Number(e.target.value))}
-                              className="pl-10"
-                              placeholder="3,000"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="insurance">Insurance (annual)</Label>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="insurance"
-                              type="number"
-                              value={insurance}
-                              onChange={(e) => setInsurance(Number(e.target.value))}
-                              className="pl-10"
-                              placeholder="1,200"
-                            />
-                          </div>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="loanAmount" className="text-sm font-medium">Loan Amount</Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="loanAmount"
+                            type="number"
+                            value={loanAmount}
+                            onChange={(e) => setLoanAmount(Number(e.target.value))}
+                            className="pl-10"
+                            placeholder="250000"
+                          />
                         </div>
                       </div>
 
-                      {isPMIRequired && (
-                        <div className="space-y-2">
-                          <Label htmlFor="pmi" className="flex items-center gap-2">
-                            PMI (annual)
-                            <AlertCircle className="h-4 w-4 text-orange-500" />
-                          </Label>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="pmi"
-                              type="number"
-                              value={pmi}
-                              onChange={(e) => setPmi(Number(e.target.value))}
-                              className="pl-10"
-                              placeholder="0"
-                            />
-                          </div>
-                          <p className="text-sm text-orange-600">
-                            PMI is typically required when down payment is less than 20%
-                          </p>
+                      <div>
+                        <Label htmlFor="interestRate" className="text-sm font-medium">Interest Rate (%)</Label>
+                        <div className="relative">
+                          <Percent className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="interestRate"
+                            type="number"
+                            step="0.1"
+                            value={interestRate}
+                            onChange={(e) => setInterestRate(Number(e.target.value))}
+                            className="pl-10"
+                            placeholder="5.5"
+                          />
                         </div>
-                      )}
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium">Loan Term</Label>
+                        <Slider
+                          value={[loanTerm]}
+                          onValueChange={(value) => setLoanTerm(value[0])}
+                          max={30}
+                          min={15}
+                          step={5}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-sm text-gray-500 mt-1">
+                          <span>15 years</span>
+                          <span>30 years</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="downPayment" className="text-sm font-medium">Down Payment</Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="downPayment"
+                            type="number"
+                            value={downPayment}
+                            onChange={(e) => setDownPayment(Number(e.target.value))}
+                            className="pl-10"
+                            placeholder="50000"
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                      <Button 
-                        onClick={handleReset}
-                        variant="outline"
-                        className="flex-1"
-                      >
+                    <div className="flex space-x-2">
+                      <Button onClick={handleReset} variant="outline" className="flex-1">
+                        <RefreshCw className="mr-2 h-4 w-4" />
                         Reset
+                      </Button>
+                      <Button onClick={handleCopyResults} variant="outline" className="flex-1">
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              <div className="space-y-6">
-                {calculation ? (
-                  <>
-                    <Card className="p-6">
+              <div className="space-y-6 animate-fade-in-up delay-200">
+                <div className="space-y-4">
+                  <Badge className="bg-blue-500 text-white">
+                    <BarChart3 className="w-3 h-3 mr-1" /> Results
+                  </Badge>
+                  <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Payment Summary</h2>
+                  <p className="text-lg text-gray-600">
+                    See your complete payment breakdown and total costs.
+                  </p>
+                </div>
+
+                {isCalculating ? (
+                  <Card className="p-6 shadow-xl">
+                    <CardContent className="flex items-center justify-center py-8">
+                      <div className="text-center">
+                        <RefreshCw className="h-8 w-8 animate-spin text-[#8cc63f] mx-auto mb-2" />
+                        <p className="text-gray-600">Calculating...</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : calculation ? (
+                  <div className="space-y-6">
+                    <Card className="p-6 shadow-xl hover:shadow-2xl transition-shadow">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <TrendingUp className="h-5 w-5 text-green-500" />
-                          Payment Summary
+                        <CardTitle className="flex items-center">
+                          <DollarSign className="mr-2 h-5 w-5 text-[#8cc63f]" />
+                          Monthly Payment
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="text-center p-4 bg-green-50 rounded-lg">
-                            <div className="text-2xl font-bold text-green-600">
-                              {formatCurrency(calculation.monthlyPayment)}
-                            </div>
-                            <div className="text-sm text-gray-600">Principal & Interest</div>
-                          </div>
-                          <div className="text-center p-4 bg-blue-50 rounded-lg">
-                            <div className="text-2xl font-bold text-blue-600">
-                              {formatCurrency(totalMonthlyPayment)}
-                            </div>
-                            <div className="text-sm text-gray-600">Total Monthly Payment</div>
-                          </div>
+                      <CardContent>
+                        <div className="text-3xl font-bold text-[#8cc63f] mb-2">
+                          {formatCurrency(calculation.monthlyPayment)}
                         </div>
-
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span>Principal & Interest:</span>
-                            <span className="font-semibold">{formatCurrency(calculation.monthlyPayment)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Property Tax:</span>
-                            <span className="font-semibold">{formatCurrency(propertyTax / 12)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Insurance:</span>
-                            <span className="font-semibold">{formatCurrency(insurance / 12)}</span>
-                          </div>
-                          {pmi > 0 && (
-                            <div className="flex justify-between">
-                              <span>PMI:</span>
-                              <span className="font-semibold">{formatCurrency(pmi / 12)}</span>
-                            </div>
-                          )}
-                          <div className="border-t pt-2">
-                            <div className="flex justify-between font-bold">
-                              <span>Total Monthly Payment:</span>
-                              <span>{formatCurrency(totalMonthlyPayment)}</span>
-                            </div>
-                          </div>
-                        </div>
+                        <p className="text-sm text-gray-600">Principal & Interest</p>
                       </CardContent>
                     </Card>
 
-                    <Card className="p-6">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Card className="p-4 shadow-lg hover:shadow-xl transition-shadow">
+                        <CardContent>
+                          <div className="text-2xl font-bold text-blue-600 mb-1">
+                            {formatCurrency(totalMonthlyPayment)}
+                          </div>
+                          <p className="text-sm text-gray-600">Total Monthly Payment</p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="p-4 shadow-lg hover:shadow-xl transition-shadow">
+                        <CardContent>
+                          <div className="text-2xl font-bold text-purple-600 mb-1">
+                            {formatCurrency(calculation.totalInterest)}
+                          </div>
+                          <p className="text-sm text-gray-600">Total Interest</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <Card className="p-6 shadow-xl">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Info className="h-5 w-5 text-blue-500" />
-                          Loan Details
+                        <CardTitle className="flex items-center">
+                          <Info className="mr-2 h-5 w-5 text-[#8cc63f]" />
+                          Additional Costs
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="flex justify-between">
-                          <span>Loan Amount:</span>
-                          <span className="font-semibold">{formatCurrency(calculation.principal)}</span>
+                          <span className="text-gray-600">Property Tax (monthly)</span>
+                          <span className="font-medium">{formatCurrency(propertyTax / 12)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Interest Rate:</span>
-                          <span className="font-semibold">{calculation.interestRate.toFixed(2)}%</span>
+                          <span className="text-gray-600">Insurance (monthly)</span>
+                          <span className="font-medium">{formatCurrency(insurance / 12)}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Loan Term:</span>
-                          <span className="font-semibold">{calculation.term} years</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Loan-to-Value (LTV):</span>
-                          <span className="font-semibold">{ltv.toFixed(1)}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total Interest:</span>
-                          <span className="font-semibold">{formatCurrency(calculation.totalInterest)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total Payment:</span>
-                          <span className="font-semibold">{formatCurrency(calculation.totalPayment)}</span>
+                        {isPMIRequired && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">PMI (monthly)</span>
+                            <span className="font-medium">{formatCurrency(pmi / 12)}</span>
+                          </div>
+                        )}
+                        <div className="border-t pt-3">
+                          <div className="flex justify-between font-semibold">
+                            <span>Total Monthly Payment</span>
+                            <span>{formatCurrency(totalMonthlyPayment)}</span>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <Button 
-                        onClick={() => setShowAmortization(!showAmortization)}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        {showAmortization ? 'Hide' : 'Show'} Amortization Schedule
-                      </Button>
-                      <Button 
-                        onClick={handleCopyResults}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copy Results
-                      </Button>
-                      <Button 
-                        onClick={handleExportCSV}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Export CSV
-                      </Button>
-                    </div>
-
-                    {showAmortization && (
-                      <Card className="p-6">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5 text-purple-500" />
-                            Amortization Schedule
-                          </CardTitle>
-                          <CardDescription>
-                            First 12 payments of your loan
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="overflow-x-auto">
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>Payment #</TableHead>
-                                  <TableHead>Payment</TableHead>
-                                  <TableHead>Principal</TableHead>
-                                  <TableHead>Interest</TableHead>
-                                  <TableHead>Remaining Balance</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {calculation.amortizationSchedule.slice(0, 12).map((row) => (
-                                  <TableRow key={row.payment}>
-                                    <TableCell>{row.payment}</TableCell>
-                                    <TableCell>{formatCurrency(row.principal + row.interest)}</TableCell>
-                                    <TableCell>{formatCurrency(row.principal)}</TableCell>
-                                    <TableCell>{formatCurrency(row.interest)}</TableCell>
-                                    <TableCell>{formatCurrency(row.remainingBalance)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
+                    {isPMIRequired && (
+                      <Card className="p-4 border-orange-200 bg-orange-50">
+                        <CardContent className="flex items-start space-x-3">
+                          <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-orange-800">PMI Required</h4>
+                            <p className="text-sm text-orange-700">
+                              Your loan-to-value ratio is {ltv.toFixed(1)}%. You'll need to pay Private Mortgage Insurance (PMI) until your LTV drops below 80%.
+                            </p>
                           </div>
                         </CardContent>
                       </Card>
                     )}
-                  </>
+
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={() => setShowAmortization(!showAmortization)}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {showAmortization ? 'Hide' : 'Show'} Amortization
+                      </Button>
+                      <Button onClick={handleExportCSV} variant="outline" className="flex-1">
+                        <Download className="mr-2 h-4 w-4" />
+                        Export CSV
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
-                  <Card className="p-6">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Calculator className="h-5 w-5" />
-                        Enter Loan Details
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center py-12">
-                      <Calculator className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">
-                        Fill in the loan details on the left to see your payment calculations.
-                      </p>
+                  <Card className="p-6 shadow-xl">
+                    <CardContent className="text-center py-8">
+                      <Calculator className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Enter loan details to see your payment breakdown</p>
                     </CardContent>
                   </Card>
                 )}
@@ -547,22 +427,115 @@ export default function CalculatorsPage() {
           </div>
         </section>
 
-        <section className="w-full py-16 md:py-24 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-          <div className="container px-4 md:px-6">
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Need personalized analysis?</h2>
-              <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                Our Deal Analyzer goes beyond basic calculations to provide personalized loan recommendations based on
-                your specific situation.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/deal-analyzer">
-                  <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
-                    Try Deal Analyzer
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
+        {/* Amortization Schedule */}
+        {showAmortization && calculation && (
+          <section className="w-full py-16 bg-gray-50 animate-fade-in-up">
+            <div className="container px-4 md:px-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Amortization Schedule</h2>
+                  <p className="text-lg text-gray-600">
+                    See how your payments are applied to principal and interest over time.
+                  </p>
+                </div>
+
+                <Card className="shadow-xl">
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Payment #</TableHead>
+                            <TableHead>Payment</TableHead>
+                            <TableHead>Principal</TableHead>
+                            <TableHead>Interest</TableHead>
+                            <TableHead>Remaining Balance</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {calculation.amortizationSchedule.slice(0, 12).map((row) => (
+                            <TableRow key={row.payment}>
+                              <TableCell className="font-medium">{row.payment}</TableCell>
+                              <TableCell>{formatCurrency(row.principal + row.interest)}</TableCell>
+                              <TableCell>{formatCurrency(row.principal)}</TableCell>
+                              <TableCell>{formatCurrency(row.interest)}</TableCell>
+                              <TableCell>{formatCurrency(row.remainingBalance)}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* Additional Tools */}
+        <section className="w-full py-16 animate-fade-in-up">
+          <div className="container px-4 md:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">More Financial Tools</h2>
+              <p className="text-xl text-gray-600">
+                Explore our complete suite of mortgage and financial calculators.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <Link href="/deal-analyzer">
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all cursor-pointer animate-fade-in-up">
+                  <CardHeader>
+                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                      <BarChart3 className="h-8 w-8 text-[#8cc63f]" />
+                    </div>
+                    <CardTitle className="text-lg">Deal Analyzer</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">Analyze your current mortgage deal</p>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Zap className="mr-2 h-4 w-4" />
+                      Start Analysis
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/marketplace">
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all cursor-pointer animate-fade-in-up delay-100">
+                  <CardHeader>
+                    <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <Home className="h-8 w-8 text-[#8cc63f]" />
+                    </div>
+                    <CardTitle className="text-lg">Marketplace</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">Compare mortgage offers</p>
+                    <Button className="w-full bg-green-500 hover:bg-green-600">
+                      <Zap className="mr-2 h-4 w-4" />
+                      Browse Offers
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/contact">
+                <Card className="p-6 text-center hover:shadow-xl hover:scale-[1.03] transition-all cursor-pointer animate-fade-in-up delay-200">
+                  <CardHeader>
+                    <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                      <CreditCard className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <CardTitle className="text-lg">Get Help</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">Contact our experts</p>
+                    <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                      <Zap className="mr-2 h-4 w-4" />
+                      Contact Us
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
           </div>
         </section>

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -20,11 +20,19 @@ import {
   Star,
   PhoneCall,
   BarChart2,
+  Loader2,
+  Zap,
+  Users,
+  Award,
+  Eye,
+  Lock,
+  Sparkles,
 } from 'lucide-react'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
@@ -32,6 +40,8 @@ import Link from 'next/link'
 const HomePage = () => {
   const [ipFetched, setIpFetched] = useState(false)
   const [userIp, setUserIp] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isFormValid, setIsFormValid] = useState<any>(false)
 
   const router = useRouter()
   const [formData, setFormData] = useState({
@@ -63,6 +73,7 @@ const HomePage = () => {
       setIpFetched(true)
     }
   }
+
   const getBrowserName = () => {
     const userAgent = navigator.userAgent
     if (userAgent.includes('Chrome')) return 'Chrome'
@@ -77,119 +88,178 @@ const HomePage = () => {
     getIpAddress()
   }, [])
 
-  const handleInputChange = (field: any, value: any) => {
+  // Validate form in real-time
+  useEffect(() => {
+    const isValid = formData.loanStartDate && 
+                   formData.loanAmount && 
+                   formData.interestRate &&
+                   parseFloat(formData.loanAmount) > 0 &&
+                   parseFloat(formData.interestRate) > 0
+    setIsFormValid(isValid)
+  }, [formData])
+
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (
-      !formData.loanStartDate ||
-      !formData.loanTerm ||
-      !formData.loanAmount ||
-      !formData.interestRate
-    ) {
-      toast.error('Please fill in all required fields')
+    if (!isFormValid) {
+      toast.error('Please fill in all required fields with valid values')
       return
     }
 
-    const dataToStore = {
-      ...formData,
-      userIp: userIp || '0.0.0.0',
-      fromHomePage: true,
-    }
+    setIsLoading(true)
 
-    // localStorage.setItem('quickAnalysisData', JSON.stringify(dataToStore))
-    const expiryTime = Date.now() + (5 * 60 * 1000)
-    localStorage.setItem('quickAnalysisData', JSON.stringify({
-      data: dataToStore,
-      expiry: expiryTime
-    }))
-    console.log('formData', formData)
-    console.log('quickAnalysisData', localStorage.getItem('quickAnalysisData'))
-    router.push('/deal-analyzer')
+    try {
+      const dataToStore = {
+        ...formData,
+        userIp: userIp || '0.0.0.0',
+        fromHomePage: true,
+      }
+
+      const expiryTime = Date.now() + (5 * 60 * 1000)
+      localStorage.setItem('quickAnalysisData', JSON.stringify({
+        data: dataToStore,
+        expiry: expiryTime
+      }))
+
+      toast.success('Redirecting to analysis...')
+      
+      // Simulate loading for better UX
+      setTimeout(() => {
+        router.push('/deal-analyzer')
+      }, 1000)
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.')
+      setIsLoading(false)
+    }
+  }
+
+  const formatCurrency = (value: string) => {
+    if (!value) return ''
+    const num = parseFloat(value.replace(/[^0-9.]/g, ''))
+    return num.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+  }
+
+  const handleCurrencyInput = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '')
+    handleInputChange('loanAmount', numericValue)
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* Hero Section - Enhanced */}
         <section className="relative w-full py-16 md:py-24 lg:py-32 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
+          {/* Animated background elements */}
           <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute top-10 left-10 w-20 h-20 bg-green-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
+          
           <div className="container relative px-4 md:px-6">
             <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="flex flex-col space-y-6">
                 <div className="space-y-4">
                   <Badge
                     variant="secondary"
-                    className="w-fit bg-green-500 text-white border-0"
+                    className="w-fit bg-green-500 text-white border-0 animate-fade-in"
                   >
-                    ✓ Free Analysis • No Credit Impact
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    AI-Powered Analysis • No Credit Impact
                   </Badge>
-                  <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl">
-                    Where smart loans meet confident decisions
+                  <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl animate-fade-in-up">
+                    Where smart loans meet{' '}
+                    <span className="text-green-400">confident decisions</span>
                   </h1>
-                  <p className="text-xl text-blue-100 max-w-[600px]">
+                  <p className="text-xl text-blue-100 max-w-[600px] animate-fade-in-up delay-200">
                     Get personalized loan insights, compare rates, and make
                     informed financial decisions. Our AI-powered analysis helps
                     you find the best loan options without affecting your credit
                     score.
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href={`/deal-analyzer`} >
+                
+                <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-300">
+                  <Link href="/deal-analyzer">
                     <Button
                       size="lg"
-                      className="h-14 px-8 bg-green-500 hover:bg-green-600 text-white font-semibold"
+                      className="h-14 px-8 bg-green-500 hover:bg-green-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                     >
+                      <Zap className="mr-2 h-5 w-5" />
                       Analyze My Loan Options
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
 
-                  <Link href={`/how-deal-analyzer-works`} >
+                  <Link href="/how-deal-analyzer-works">
                     <Button
                       size="lg"
                       variant="outline"
-                      className="h-14 px-8 border-white text-black hover:bg-white hover:text-blue-900"
+                      className="h-14 px-8 border-white text-black hover:bg-white hover:text-blue-900 transition-all duration-300"
                     >
+                      <Eye className="mr-2 h-5 w-5" />
                       See How It Works
                     </Button>
                   </Link>
                 </div>
-                <div className="flex items-center space-x-6 text-sm text-blue-100">
+                
+                <div className="flex items-center space-x-6 text-sm text-blue-100 animate-fade-in-up delay-400">
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-400" />
                     <span>Always free</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <Lock className="h-4 w-4 text-green-400" />
                     <span>No credit check</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <Zap className="h-4 w-4 text-green-400" />
                     <span>Instant results</span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center invisible justify-center lg:justify-end">
+              
+              <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
-                  <Image
-                    src="/placeholder.svg?height=500&width=300"
-                    width="300"
-                    height="500"
-                    alt="Loan Analysis Dashboard"
-                    className="rounded-2xl shadow-2xl"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent rounded-2xl"></div>
+                  <div className="w-80 h-96 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-sm">
+                    <div className="p-6 text-center">
+                      <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <BarChart2 className="h-8 w-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Smart Analysis</h3>
+                      <p className="text-blue-100 text-sm">
+                        AI-powered insights in seconds
+                      </p>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Market Rate:</span>
+                          <span className="text-green-400">6.25%</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Your Rate:</span>
+                          <span className="text-yellow-400">6.75%</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-semibold">
+                          <span>Potential Savings:</span>
+                          <span className="text-green-400">$45,000</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Trust Indicators */}
+        {/* Enhanced Trust Indicators */}
         <section className="w-full py-12 bg-gray-50">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-8">
@@ -206,10 +276,11 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Main Services Section */}
+        {/* Enhanced Services Section */}
         <section className="w-full py-16 md:py-24">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-12">
+              <Badge className="mb-4 bg-blue-100 text-blue-800">Our Tools</Badge>
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
                 Everything you need to make smart loan decisions
               </h2>
@@ -221,12 +292,11 @@ const HomePage = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
-              {/* Mortgages Card – unchanged */}
               <Link href="/marketplace">
-                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardHeader className="pb-4">
-                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                      <Home className="h-8 w-8 text-[#8cc63f]" />
+                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+                      <Home className="h-8 w-8 text-[#8cc63f] group-hover:scale-110 transition-transform" />
                     </div>
                     <CardTitle className="text-lg">Mortgages</CardTitle>
                   </CardHeader>
@@ -238,13 +308,11 @@ const HomePage = () => {
                 </Card>
               </Link>
 
-
-              {/* Loan Calculator Card – unchanged */}
               <Link href="/calculators">
-                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardHeader className="pb-4">
-                    <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                      <Calculator className="h-8 w-8 text-orange-600" />
+                    <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+                      <Calculator className="h-8 w-8 text-orange-600 group-hover:scale-110 transition-transform" />
                     </div>
                     <CardTitle className="text-lg">Loan Calculator</CardTitle>
                   </CardHeader>
@@ -256,13 +324,11 @@ const HomePage = () => {
                 </Card>
               </Link>
 
-
-              {/* Contact Card – replaces Personal Loans */}
               <Link href="/contact">
-                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardHeader className="pb-4">
-                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                      <PhoneCall className="h-8 w-8 text-[#8cc63f]" />
+                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+                      <PhoneCall className="h-8 w-8 text-[#8cc63f] group-hover:scale-110 transition-transform" />
                     </div>
                     <CardTitle className="text-lg">Contact</CardTitle>
                   </CardHeader>
@@ -274,12 +340,11 @@ const HomePage = () => {
                 </Card>
               </Link>
 
-              {/* Deal Analyzer Card – replaces Auto Loans */}
               <Link href="/deal-analyzer">
-                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                <Card className="text-center md:min-h-[300px] p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardHeader className="pb-4">
-                    <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                      <BarChart2 className="h-8 w-8 text-[#8cc63f]" />
+                    <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+                      <BarChart2 className="h-8 w-8 text-[#8cc63f] group-hover:scale-110 transition-transform" />
                     </div>
                     <CardTitle className="text-lg">Deal Analyzer</CardTitle>
                   </CardHeader>
@@ -291,23 +356,17 @@ const HomePage = () => {
                 </Card>
               </Link>
             </div>
-
-            {/* <div className="text-center">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                Explore All Tools
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div> */}
           </div>
         </section>
 
-        {/* Deal Analyzer CTA Section */}
+        {/* Enhanced Deal Analyzer CTA Section */}
         <section className="w-full py-16 bg-gradient-to-r from-green-50 to-blue-50">
           <div className="container px-4 md:px-6">
             <div className="grid gap-8 lg:grid-cols-2 items-center">
               <div className="space-y-6">
                 <div className="space-y-4">
                   <Badge className="bg-green-500 text-white">
+                    <Zap className="w-3 h-3 mr-1" />
                     Featured Tool
                   </Badge>
                   <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -336,8 +395,9 @@ const HomePage = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href={`/deal-analyzer`} >
+                  <Link href="/deal-analyzer">
                     <Button size="lg" className="bg-green-500 hover:bg-green-600">
+                      <Zap className="mr-2 h-4 w-4" />
                       Try Deal Analyzer
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -348,7 +408,10 @@ const HomePage = () => {
               <div className="flex justify-center">
                 <Card className="w-full max-w-md p-6 shadow-xl">
                   <CardHeader className="text-center pb-4">
-                    <CardTitle className="text-lg">Quick Analysis</CardTitle>
+                    <CardTitle className="text-lg flex items-center justify-center">
+                      <BarChart2 className="mr-2 h-5 w-5 text-green-500" />
+                      Quick Analysis
+                    </CardTitle>
                     <CardDescription>
                       Get started with basic loan info
                     </CardDescription>
@@ -356,62 +419,57 @@ const HomePage = () => {
                   <CardContent className="space-y-4">
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">
+                        <Label htmlFor="loanStartDate" className="text-sm font-medium">
                           Loan Start Date
-                        </label>
-                        <input
+                        </Label>
+                        <Input
+                          id="loanStartDate"
                           type="month"
                           value={formData.loanStartDate}
-                          onChange={e =>
-                            handleInputChange('loanStartDate', e.target.value)
-                          }
-                          className="w-full p-2 border rounded-md"
+                          onChange={e => handleInputChange('loanStartDate', e.target.value)}
+                          className="w-full"
                           required
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">
+                        <Label htmlFor="loanAmount" className="text-sm font-medium">
                           Loan Amount
-                        </label>
-                        <input
-                          type="number"
-                          value={formData.loanAmount}
-                          onChange={e =>
-                            handleInputChange('loanAmount', e.target.value)
-                          }
-                          className="w-full p-2 border rounded-md"
-                          placeholder="400000"
+                        </Label>
+                        <Input
+                          id="loanAmount"
+                          type="text"
+                          value={formData.loanAmount ? formatCurrency(formData.loanAmount) : ''}
+                          onChange={e => handleCurrencyInput(e.target.value)}
+                          className="w-full"
+                          placeholder="$400,000"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Interest Rate
-                        </label>
-                        <input
+                        <Label htmlFor="interestRate" className="text-sm font-medium">
+                          Interest Rate (%)
+                        </Label>
+                        <Input
+                          id="interestRate"
                           type="number"
                           step="0.01"
                           value={formData.interestRate}
-                          onChange={e =>
-                            handleInputChange('interestRate', e.target.value)
-                          }
-                          className="w-full p-2 border rounded-md"
+                          onChange={e => handleInputChange('interestRate', e.target.value)}
+                          className="w-full"
                           placeholder="6.75"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Loan Term</label>
+                        <Label className="text-sm font-medium">Loan Term</Label>
                         <div className="flex space-x-4">
                           <label className="flex items-center space-x-2 cursor-pointer">
                             <input
                               type="radio"
                               value="15"
                               checked={formData.loanTerm === '15'}
-                              onChange={e =>
-                                handleInputChange('loanTerm', e.target.value)
-                              }
+                              onChange={e => handleInputChange('loanTerm', e.target.value)}
                               className="text-blue-600"
                             />
                             <span>15 years</span>
@@ -421,9 +479,7 @@ const HomePage = () => {
                               type="radio"
                               value="30"
                               checked={formData.loanTerm === '30'}
-                              onChange={e =>
-                                handleInputChange('loanTerm', e.target.value)
-                              }
+                              onChange={e => handleInputChange('loanTerm', e.target.value)}
                               className="text-blue-600"
                             />
                             <span>30 years</span>
@@ -433,9 +489,20 @@ const HomePage = () => {
 
                       <Button
                         type="submit"
-                        className="w-full bg-green-500 hover:bg-green-600"
+                        disabled={!isFormValid || isLoading}
+                        className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50"
                       >
-                        Analyze My Deal
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <BarChart2 className="mr-2 h-4 w-4" />
+                            Analyze My Deal
+                          </>
+                        )}
                       </Button>
                     </form>
                   </CardContent>
@@ -445,10 +512,11 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Why Choose Us Section */}
+        {/* Enhanced Why Choose Us Section */}
         <section className="w-full py-16 md:py-24">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-12">
+              <Badge className="mb-4 bg-blue-100 text-blue-800">Why Choose Us</Badge>
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
                 Why millions trust our loan analysis
               </h2>
@@ -459,9 +527,9 @@ const HomePage = () => {
             </div>
 
             <div className="grid gap-8 md:grid-cols-3">
-              <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Shield className="h-8 w-8 text-[#8cc63f]" />
+              <div className="text-center space-y-4 group">
+                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                  <Shield className="h-8 w-8 text-[#8cc63f] group-hover:scale-110 transition-transform" />
                 </div>
                 <h3 className="text-xl font-semibold">Bank-Level Security</h3>
                 <p className="text-gray-600">
@@ -470,9 +538,9 @@ const HomePage = () => {
                 </p>
               </div>
 
-              <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                  <TrendingUp className="h-8 w-8 text-[#8cc63f]" />
+              <div className="text-center space-y-4 group">
+                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                  <TrendingUp className="h-8 w-8 text-[#8cc63f] group-hover:scale-110 transition-transform" />
                 </div>
                 <h3 className="text-xl font-semibold">AI-Powered Insights</h3>
                 <p className="text-gray-600">
@@ -481,9 +549,9 @@ const HomePage = () => {
                 </p>
               </div>
 
-              <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Clock className="h-8 w-8 text-purple-600" />
+              <div className="text-center space-y-4 group">
+                <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                  <Clock className="h-8 w-8 text-purple-600 group-hover:scale-110 transition-transform" />
                 </div>
                 <h3 className="text-xl font-semibold">Instant Results</h3>
                 <p className="text-gray-600">
@@ -495,10 +563,11 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Enhanced Testimonials Section */}
         <section className="w-full py-16 bg-gray-50">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-12">
+              <Badge className="mb-4 bg-yellow-100 text-yellow-800">Testimonials</Badge>
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
                 Real stories from real borrowers
               </h2>
@@ -516,7 +585,7 @@ const HomePage = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="p-6">
+              <Card className="p-6 hover:shadow-lg transition-shadow">
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => (
@@ -544,7 +613,7 @@ const HomePage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 hover:shadow-lg transition-shadow">
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => (
@@ -572,7 +641,7 @@ const HomePage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 hover:shadow-lg transition-shadow">
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => (
@@ -603,7 +672,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Final CTA Section */}
+        {/* Enhanced Final CTA Section */}
         <section className="w-full py-16 md:py-24 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
           <div className="container px-4 md:px-6">
             <div className="text-center space-y-6">
@@ -618,8 +687,9 @@ const HomePage = () => {
                 <Link href="/deal-analyzer">
                   <Button
                     size="lg"
-                    className="bg-green-500 hover:bg-green-600 h-14 px-8"
+                    className="bg-green-500 hover:bg-green-600 h-14 px-8 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
+                    <Zap className="mr-2 h-5 w-5" />
                     Start Your Free Analysis
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -629,8 +699,9 @@ const HomePage = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8"
+                    className="border-white text-black hover:bg-white hover:text-blue-700 h-14 px-8 transition-all duration-300"
                   >
+                    <Users className="mr-2 h-5 w-5" />
                     Learn More
                   </Button>
                 </Link>
@@ -641,11 +712,11 @@ const HomePage = () => {
                   <span>100% Free</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-green-400" />
+                  <Lock className="h-4 w-4 text-green-400" />
                   <span>No Credit Impact</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-green-400" />
+                  <Zap className="h-4 w-4 text-green-400" />
                   <span>Instant Results</span>
                 </div>
               </div>
