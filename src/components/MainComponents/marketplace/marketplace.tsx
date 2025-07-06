@@ -3,6 +3,10 @@ import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
 import {
   Star,
   Shield,
@@ -14,6 +18,12 @@ import {
   ExternalLink,
   Calendar,
   Loader2Icon,
+  Sparkles,
+  Zap,
+  TrendingUp,
+  CheckCircle,
+  AlertCircle,
+  Search,
 } from "lucide-react"
 import { getOffers, logApplyNowClick } from "@/lib/actions/lenderOffers"
 import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
@@ -43,10 +53,7 @@ const trackApplyClick = (lender: string, offerId: number) => {
   console.log("Click tracked:", clickData)
 }
 
-
-
 export default function MarketplacePage() {
-
   const [showInactive, setShowInactive] = useState(true)
   const [sortBy, setSortBy] = useState("rate")
   const [filterRate, setFilterRate] = useState({ min: 0, max: 20 })
@@ -57,42 +64,52 @@ export default function MarketplacePage() {
   const [loadingOfferId, setLoadingOfferId] = useState("")
   const [userIp, setuserIp] = useState("")
   const [userAgent, setUserAgent] = useState("")
-  const [noFilter, setNoFilter] = useState(true)
+
   const [showPreQualModal, setShowPreQualModal] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const router = useRouter();
 
-
   useEffect(() => {
-    const filters =
-    {
-      interestRateMin: filterRate.min,
-      interestRateMax: filterRate.max,
-      lenderName: filterLender,
-      loanTerm: parseInt(filterTerm, 10),
-      status: showInactive
-    }
-
-
     const loadOffers = async () => {
       try {
         setLoading(true);
-        let data;
-
-        if (noFilter) {
-          data = await getOffers();
-          setNoFilter(false);
-        } else {
-          data = await getOffers(filters);
-          setNoFilter(false);
+        
+        // Build filters object
+        const filters: any = {}
+        
+        // Only add filters if they have meaningful values
+        if (filterRate.min > 0 || filterRate.max < 20) {
+          filters.interestRateMin = filterRate.min
+          filters.interestRateMax = filterRate.max
+        }
+        
+        if (filterLender.trim()) {
+          filters.lenderName = filterLender.trim()
+        }
+        
+        if (filterTerm !== "0") {
+          filters.loanTerm = parseInt(filterTerm, 10)
+        }
+        
+        // Status filter - showInactive controls whether to show inactive offers
+        // If showInactive is true, we want to show ALL offers (both active and inactive)
+        // If showInactive is false, we only want to show active offers (status: true)
+        if (!showInactive) {
+          filters.status = true
         }
 
+        let data = await getOffers(filters);
+        
+        console.log('Filters applied:', filters);
+        console.log('Data received:', data);
+
         // Apply sorting on the frontend
-        data.sort((a : any, b : any) => {
+        data.sort((a: any, b: any) => {
           switch (sortBy) {
             case "rate":
               return a.interest_rate - b.interest_rate;
             case "newest":
-              return b.id - a.id; // Assuming higher ID is newer
+              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
             case "expiration":
               return new Date(a.expiration_date).getTime() - new Date(b.expiration_date).getTime();
             default:
@@ -103,21 +120,18 @@ export default function MarketplacePage() {
         setOffers(data);
       } catch (error) {
         console.error("Failed to load offers:", error);
+        toast.error("Failed to load mortgage offers. Please try again.");
       } finally {
         setLoading(false);
-        setNoFilter(false);
       }
     };
-
 
     loadOffers();
   }, [showInactive, filterRate, filterTerm, filterLender, sortBy]);
 
-
-
   console.log("Market Data", offers)
-  //Apply Offer Functions
 
+  //Apply Offer Functions
   const handleApplyClick = async (offer: Offer) => {
     try {
       setLoadingOfferId(offer.id); // Show loading spinner for the clicked offer
@@ -144,7 +158,6 @@ export default function MarketplacePage() {
       setLoadingOfferId(""); // Always reset loading state
     }
   };
-
 
   const getBrowserName = () => {
     const userAgent = navigator.userAgent;
@@ -180,241 +193,240 @@ export default function MarketplacePage() {
     getIpAddress();
   }, []);
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
-
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
+        <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute top-10 left-10 w-20 h-20 bg-green-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
           <div className="container px-4 md:px-6">
-            <div className="max-w-3xl mx-auto text-center space-y-6">
-              <Badge variant="secondary" className="bg-green-500 text-white border-0">
-                Mortgage Marketplace
+            <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
+              <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
+                <Sparkles className="w-3 h-3 mr-1" /> Mortgage Marketplace
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Compare mortgage rates from top lenders</h1>
-              <p className="text-xl text-blue-100">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl animate-fade-in-up">
+                Compare mortgage rates from top lenders
+              </h1>
+              <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
                 Find the best mortgage deals with competitive rates and terms. Compare offers from trusted lenders and
                 apply directly through our marketplace.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                {/* <Button size="lg" className="bg-green-500 hover:bg-green-600 h-14 px-8">
-                  View Current Rates
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button> */}
+            </div>
+          </div>
+        </section>
+
+        {/* Filters Section */}
+        <section className="w-full py-8 bg-gray-50 border-b animate-fade-in-up">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex items-center space-x-4">
                 <Button
-                  size="lg"
                   variant="outline"
-                  className="border-white text-black hover:bg-white hover:text-blue-900 h-14 px-8"
-                  onClick={() => setShowPreQualModal(true)}
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2"
                 >
+                  <Filter className="h-4 w-4" />
+                  <span>Filters</span>
+                </Button>
+                
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rate">Lowest Rate</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="expiration">Expiring Soon</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="showInactive"
+                    checked={showInactive}
+                    onChange={(e) => setShowInactive(e.target.checked)}
+                    className="rounded border-gray-300"
+                  />
+                  <Label htmlFor="showInactive" className="text-sm">
+                    Show inactive offers
+                  </Label>
+                </div>
+                <Badge variant="outline">
+                  {offers.length} offers available
+                </Badge>
+                <Button
+                  onClick={() => setShowPreQualModal(true)}
+                  className="bg-green-500 hover:bg-green-600"
+                >
+                  <Zap className="mr-2 h-4 w-4" />
                   Get Pre-Qualified
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    console.log('Testing filter with status=true only')
+                    setShowInactive(false)
+                  }}
+                  className="text-xs"
+                >
+                  Test Active Only
                 </Button>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Filters & Search Section */}
-        <section className="w-full py-8 bg-gray-50 border-b">
-          <div className="container px-4 md:px-6">
-            <div className="space-y-6">
-              {/* Search and Toggle */}
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <h2 className="text-xl font-semibold">Mortgage Offers</h2>
-                  <Badge variant="outline">{offers.length} offers available</Badge>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center space-x-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={!showInactive}
-                      onChange={(e) => setShowInactive(!showInactive)}
-                      className="rounded"
-                    />
+            {/* Expanded Filters */}
+            {showFilters && (
+              <div className="mt-6 p-6 bg-white rounded-lg shadow-lg animate-fade-in">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label>Interest Rate Range (%)</Label>
+                    <div className="space-y-2">
+                      <Slider
+                        value={[filterRate.min, filterRate.max]}
+                        onValueChange={(value) => setFilterRate({ min: value[0], max: value[1] })}
+                        max={20}
+                        min={0}
+                        step={0.1}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm text-gray-500">
+                        <span>{filterRate.min}%</span>
+                        <span>{filterRate.max}%</span>
+                      </div>
+                    </div>
+                  </div>
 
-                    <span>Show inactive offers</span>
-                  </label>
-                </div>
-              </div>
+                  <div className="space-y-2">
+                    <Label>Loan Term</Label>
+                    <Select value={filterTerm} onValueChange={setFilterTerm}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select term" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">All Terms</SelectItem>
+                        <SelectItem value="15">15 Years</SelectItem>
+                        <SelectItem value="20">20 Years</SelectItem>
+                        <SelectItem value="30">30 Years</SelectItem>
+                        <SelectItem value="360">30 Years (360 months)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              {/* Filters */}
-              <div className="grid gap-4 md:grid-cols-5">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center">
-                    <Filter className="h-4 w-4 mr-1" />
-                    Interest Rate Range
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={filterRate.min}
-                      onChange={(e) =>
-                        setFilterRate((prev) => ({ ...prev, min: Number.parseFloat(e.target.value) || 0 }))
-                      }
-                      className="w-full p-2 border rounded text-sm"
-                      placeholder="Min %"
-                    />
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={filterRate.max}
-                      onChange={(e) =>
-                        setFilterRate((prev) => ({ ...prev, max: Number.parseFloat(e.target.value) || 10 }))
-                      }
-                      className="w-full p-2 border rounded text-sm"
-                      placeholder="Max %"
+                  <div className="space-y-2">
+                    <Label>Lender</Label>
+                    <Input
+                      placeholder="Search lenders..."
+                      value={filterLender}
+                      onChange={(e) => setFilterLender(e.target.value)}
                     />
                   </div>
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Loan Term</label>
-                  <select
-                    value={filterTerm}
-                    onChange={(e) => setFilterTerm(e.target.value)}
-                    className="w-full p-2 border rounded text-sm"
-                  >
-                    <option value="">All Terms</option>
-                    <option value="15">15 Years</option>
-                    <option value="30">30 Years</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Lender Name</label>
-                  <input
-                    type="text"
-                    value={filterLender}
-                    onChange={(e) => setFilterLender(e.target.value)}
-                    className="w-full p-2 border rounded text-sm"
-                    placeholder="Search lenders..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center">
-                    <SortAsc className="h-4 w-4 mr-1" />
-                    Sort By
-                  </label>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full p-2 border rounded text-sm"
-                  >
-                    <option value="rate">Lowest Interest Rate</option>
-                    <option value="newest">Newest Offers</option>
-                    <option value="expiration">Soonest Expiration</option>
-                  </select>
-                </div>
-
-                <div className="flex items-end">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setFilterRate({ min: 0, max: 20 })
-                      setFilterTerm("0")
-                      setFilterLender("")
-                      setShowInactive(true)
-                      setNoFilter(true)
-                    }}
-                    className="w-full"
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
-        {/* Mortgage Offers */}
-        <section className="w-full py-16 md:py-24">
+        {/* Offers Grid */}
+        <section className="w-full py-16">
           <div className="container px-4 md:px-6">
-            {loading === true ?
-              <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                {[...Array(6)].map((_, index) => (
-                  <LenderCardSkeleton key={index} />
+            {loading ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                  <LenderCardSkeleton key={i} />
                 ))}
-              </div> :
-              offers.length === 0 ? (
-                <div className="text-center py-12">
-                  <h3 className="text-xl font-semibold mb-2">No offers match your criteria</h3>
-                  <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setFilterRate({ min: 0, max: 20 })
-                      setFilterTerm("0")
-                      setFilterLender("")
-                      setShowInactive(true)
-                      setNoFilter(true)
-                    }}
+              </div>
+            ) : offers.length === 0 ? (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold mb-2">No offers match your criteria</h3>
+                <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFilterRate({ min: 0, max: 20 })
+                    setFilterTerm("0")
+                    setFilterLender("")
+                    setShowInactive(true)
+                  }}
+                >
+                  Reset Filters
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                {offers.map((offer) => (
+                  <Card
+                    key={offer.id}
+                    className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg ${!offer.status ? "opacity-60 bg-gray-50" : ""
+                      }`}
                   >
-                    Reset Filters
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                  {offers.map((offer) => (
-                    <Card
-                      key={offer.id}
-                      className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg ${!offer.status ? "opacity-60 bg-gray-50" : ""
-                        }`}
-                    >
-                      {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
-                        {!offer.status ? (
+                    {/* Status Badge */}
+                    <div className="absolute top-4 right-4">
+                      {!offer.status ? (
+                        <></>
+                      ) : new Date(offer.expiration_date) < new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) ? (
+                        <Badge variant="destructive">Expires Soon</Badge>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
 
-                          <></>
-                        ) : new Date(offer.expiration_date) < new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) ? (
-                          <Badge variant="destructive">Expires Soon</Badge>
-                        ) : (
-
-                          <></>
-                        )}
+                    <CardHeader className="pb-4">
+                      {/* Lender Info */}
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg">{offer.lender_name}</CardTitle>
+                        </div>
                       </div>
 
-                      <CardHeader className="pb-4">
-                        {/* Lender Info */}
-                        <div className="flex items-center space-x-3 mb-4">
-
-                          <div className="flex-1">
-                            <CardTitle className="text-lg">{offer.lender_name}</CardTitle>
-
-                          </div>
+                      {/* Rate Information */}
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="text-center p-3 bg-green-50 rounded-lg">
+                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.interest_rate}%</div>
+                          <div className="text-sm text-gray-600">Interest Rate</div>
                         </div>
-
-                        {/* Rate Information */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="text-center p-3 bg-green-50 rounded-lg">
-                            <div className="text-2xl font-bold text-[#8cc63f]">{offer.interest_rate}%</div>
-                            <div className="text-sm text-gray-600">Interest Rate</div>
-                          </div>
-                          <div className="text-center p-3 bg-blue-50 rounded-lg">
-                            <div className="text-2xl font-bold text-[#8cc63f]">{offer.apr}%</div>
-                            <div className="text-sm text-gray-600">APR</div>
-                          </div>
+                        <div className="text-center p-3 bg-blue-50 rounded-lg">
+                          <div className="text-2xl font-bold text-[#8cc63f]">{offer.apr}%</div>
+                          <div className="text-sm text-gray-600">APR</div>
                         </div>
+                      </div>
 
-                        {/* Loan Details */}
-                        <div className="space-y-2 text-sm">
+                      {/* Loan Details */}
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Loan Term:</span>
+                          <span className="font-medium">{offer.loan_term} years</span>
+                        </div>
+                        {offer.eligibility && (
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Loan Term:</span>
-                            <span className="font-medium">{offer.loan_term} years</span>
+                            <span className="text-gray-600">eligibility:</span>
+                            <span className="font-medium">{offer.eligibility}</span>
                           </div>
-                          {offer.eligibility && (
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">eligibility:</span>
-                              <span className="font-medium">{offer.eligibility}</span>
-                            </div>
-                          )}
+                        )}
 
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Expires:</span>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Expires:</span>
                             <span className="font-medium flex items-center">
                               <Calendar className="h-4 w-4 mr-1" />
                               {new Date(offer.expiration_date).toLocaleDateString()}
@@ -459,8 +471,8 @@ export default function MarketplacePage() {
           </div>
         </section>
 
-        {/* Trust & Security */}
-        <section className="w-full py-16 bg-gray-50">
+        {/* Trust Indicators */}
+        <section className="w-full py-16 bg-gradient-to-r from-green-50 to-blue-50 animate-fade-in-up">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Why Choose Our Marketplace</h2>
@@ -537,9 +549,9 @@ export default function MarketplacePage() {
       </main>
 
       {/* Pre-Qualification Modal */}
-      <PreQualificationModal 
-        isOpen={showPreQualModal} 
-        onClose={() => setShowPreQualModal(false)} 
+      <PreQualificationModal
+        isOpen={showPreQualModal}
+        onClose={() => setShowPreQualModal(false)}
       />
     </div>
   )
