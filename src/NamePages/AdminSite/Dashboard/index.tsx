@@ -1,11 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import {
-  getTopOffers,
-  getClicksOverTime,
-  getOfferStatusCounts,
-  getLeadsBySource,
-} from '@/lib/actions/analytics'
+import { analyticsApi } from '@/utils/api'
 import TopOffersTable from '@/components/AdminComponents/TopOffersTable'
 import LeadsBySource from './Charts/LeadsBySource'
 import StatsCards from './Charts/StatsCard'
@@ -35,10 +30,10 @@ const Dashboard: React.FC = () => {
       setError(null)
       try {
         const [offers, clicks, status, leads] = await Promise.all([
-          getTopOffers(),
-          getClicksOverTime(timeframe),
-          getOfferStatusCounts(),
-          getLeadsBySource(),
+          analyticsApi.getTopOffers(),
+          analyticsApi.getClicksOverTime(timeframe),
+          analyticsApi.getOfferStatusCounts(),
+          analyticsApi.getLeadsBySource(),
         ])
 
         // Set top offers

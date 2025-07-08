@@ -25,7 +25,8 @@ import {
   AlertCircle,
   Search,
 } from "lucide-react"
-import { getOffers, logApplyNowClick } from "@/lib/actions/lenderOffers"
+import { logApplyNowClick } from "@/lib/actions/lenderOffers"
+import { lenderOffersApi } from "@/utils/api"
 import LenderCardSkeleton from "@/components/ui/LenderCardSkeleton"
 import toast from "react-hot-toast"
 import { Offer } from "@/utils/types"
@@ -98,7 +99,7 @@ export default function MarketplacePage() {
           filters.status = true
         }
 
-        let data = await getOffers(filters);
+        let data = await lenderOffersApi.getOffers(filters);
         
         console.log('Filters applied:', filters);
         console.log('Data received:', data);

@@ -48,9 +48,11 @@ import {
   DollarSign,
   Home,
   CreditCard,
+  Trash2,
 } from 'lucide-react'
 import { getPreQualificationLeads, updatePreQualificationStatus } from '@/lib/actions/preQualification'
 import toast from 'react-hot-toast'
+import { prequalificationApi } from '@/utils/api'
 
 interface PreQualificationLead {
   id: string
@@ -105,8 +107,11 @@ export default function PreQualificationLeads() {
   const loadLeads = async () => {
     try {
       setLoading(true)
-      const result = await getPreQualificationLeads(currentPage, limit, statusFilter === 'all' ? undefined : statusFilter)
-      
+      const result = await prequalificationApi.getLeads({
+        page: currentPage,
+        limit,
+        status: statusFilter === 'all' ? undefined : statusFilter,
+      })
       if (result.success) {
         setLeads(result.data)
         setTotalPages(result.pagination.totalPages)
@@ -228,6 +233,28 @@ export default function PreQualificationLeads() {
     lead.phone.includes(searchTerm) ||
     lead.loan_amount.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  // Delete handler
+  const handleDelete = async (leadId: string) => {
+    try {
+      await prequalificationApi.deleteLead(leadId)
+      toast.success('Lead deleted successfully')
+      setTimeout(async () => {
+        const result = await prequalificationApi.refreshLeads({
+          page: currentPage,
+          limit,
+          status: statusFilter === 'all' ? undefined : statusFilter,
+        })
+        if (result.success) {
+          setLeads(result.data)
+          setTotalPages(result.pagination.totalPages)
+          setTotalLeads(result.pagination.total)
+        }
+      }, 100)
+    } catch (error) {
+      toast.error('Failed to delete lead')
+    }
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -553,6 +580,14 @@ export default function PreQualificationLeads() {
                                 </div>
                               </DialogContent>
                             </Dialog>
+
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDelete(lead.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>

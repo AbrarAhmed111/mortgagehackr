@@ -3,8 +3,8 @@
 // Cache for storing query results
 const queryCache = new Map<string, { data: any; timestamp: number; ttl: number }>()
 
-// Cache TTL in milliseconds (5 minutes)
-const CACHE_TTL = 5 * 60 * 1000
+// Cache TTL in milliseconds (30 seconds instead of 5 minutes)
+const CACHE_TTL = 30 * 1000
 
 export const cacheUtils = {
   // Get cached data if valid
@@ -33,6 +33,11 @@ export const cacheUtils = {
   // Invalidate cache
   invalidate: (key: string) => {
     queryCache.delete(key)
+  },
+  
+  // Invalidate multiple related caches
+  invalidateMultiple: (keys: string[]) => {
+    keys.forEach(key => queryCache.delete(key))
   },
   
   // Clear all cache

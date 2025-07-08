@@ -2,13 +2,7 @@
 import { useState, useEffect } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
 import { FiPlus } from 'react-icons/fi'
-import {
-  createOffer,
-  deleteOffer,
-  getOffersWithLink,
-  toggleOfferStatus,
-  updateLenderOffer,
-} from '@/lib/actions/lenderOffers'
+import { lenderOffersApi } from '@/utils/api'
 import { StatusDropdown } from './Modals/StatusUpdateDropdown'
 import { AddOfferModal } from './Modals/AddOfferModal'
 import { UpdateOfferModal } from './Modals/UpdateOfferModal'
@@ -58,7 +52,8 @@ const LendersOfferManagement: React.FC = () => {
   const loadOffers = async () => {
     try {
       setLoading(true)
-      const data = await getOffersWithLink()
+      // Use refresh function to ensure fresh data
+      const data = await lenderOffersApi.refreshOffers()
       setOffers(data)
     } catch (error) {
       console.error('Error loading offers:', error)
@@ -151,14 +146,18 @@ const LendersOfferManagement: React.FC = () => {
     status: 'active' | 'inactive'
   }) => {
     try {
-      const result = await createOffer(offerData)
+      const result = await lenderOffersApi.createOffer(offerData)
       if (result?.error) {
         console.error('Error creating offer:', result.error)
         return
       }
       toast.success('Offer Added successfully')
 
-      await loadOffers()
+      // Small delay to ensure cache invalidation is complete
+      setTimeout(async () => {
+        await loadOffers()
+      }, 100)
+      
       setIsAddModalOpen(false)
     } catch (error) {
       console.error('Error adding offer:', error)
@@ -182,24 +181,16 @@ const LendersOfferManagement: React.FC = () => {
     status: 'active' | 'inactive'
   }) => {
     try {
-      const result = await updateLenderOffer({
-        id: updatedData.id,
-        lender_name: updatedData.lenderName,
-        interest_rate: updatedData.interestRate,
-        apr: updatedData.apr,
-        loan_term: updatedData.loanTerm,
-        eligibility: updatedData.eligibility,
-        cta_link: updatedData.ctaLink,
-        expiration_date: updatedData.expirationDate,
-        status: updatedData.status === 'active',
-      })
-
-      if (result?.status === 200) {
-        toast.success('Offer updated successfully')
+      const result = await lenderOffersApi.updateOffer(updatedData)
+      toast.success('Offer updated successfully')
+      
+      // Small delay to ensure cache invalidation is complete
+      setTimeout(async () => {
         await loadOffers()
-        setIsUpdateModalOpen(false)
-        setSelectedOffer(null)
-      }
+      }, 100)
+      
+      setIsUpdateModalOpen(false)
+      setSelectedOffer(null)
     } catch (error: any) {
       console.error('Error updating offer:', error)
       toast.error(error?.message || 'Failed to update offer')
@@ -213,19 +204,19 @@ const LendersOfferManagement: React.FC = () => {
 
   const handleDeleteConfirm = async (offerId: string) => {
     try {
-      const result = await deleteOffer(offerId)
-      if (result.error) {
-        console.error('Error deleting offer:', result.error)
-        return
-      }
-
+      const result = await lenderOffersApi.deleteOffer(offerId)
       toast.success('Offer Deleted successfully')
-
-      await loadOffers()
+      
+      // Small delay to ensure cache invalidation is complete
+      setTimeout(async () => {
+        await loadOffers()
+      }, 100)
+      
       setIsDeleteModalOpen(false)
       setSelectedOffer(null)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting offer:', error)
+      toast.error(error?.message || 'Failed to delete offer')
     }
   }
 
@@ -234,22 +225,16 @@ const LendersOfferManagement: React.FC = () => {
     newStatus: 'active' | 'inactive',
   ) => {
     try {
-      const result = await toggleOfferStatus(offerId, newStatus)
-      if (result.error) {
-        console.error('Error updating status:', result.error)
-        return
-      }
-
-      setOffers(prevOffers =>
-        prevOffers.map(offer =>
-          offer.id === offerId
-            ? { ...offer, status: newStatus === 'active' }
-            : offer,
-        ),
-      )
+      const result = await lenderOffersApi.toggleOfferStatus(offerId, newStatus)
+      // Small delay to ensure cache invalidation is complete
+      setTimeout(async () => {
+        await loadOffers()
+      }, 100)
+      
       toast.success('Status updated successfully')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating status:', error)
+      toast.error(error?.message || 'Failed to update status')
     }
   }
 

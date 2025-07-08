@@ -2,7 +2,7 @@
 import { useState, JSX, useEffect, useCallback } from 'react'
 import { DataTable } from '@/components/AdminComponents/DataTable'
 import { FiFilter } from 'react-icons/fi'
-import { getAnalyzerDealsList } from '@/lib/actions/analyzerLeads'
+import { dealAnalyzerApi } from '@/utils/api'
 import LeadsFilter from './Filter'
 import DeleteLeadModal from './Modal'
 import CSVExport from '@/components/AdminComponents/ExportCSV'
@@ -75,24 +75,17 @@ const LeadsAnalyzer: React.FC = () => {
   const fetchLeads = async (page: number = 1) => {
     setLoading(true)
     setError(null)
-
     try {
-      const result = await getAnalyzerDealsList({
+      const result = await dealAnalyzerApi.getLeads({
         page,
         limit: pagination.limit,
-        result_type:
-          dealResultFilter !== 'All'
-            ? (dealResultFilter as DealResultType)
-            : undefined,
-        source:
-          sourceFilter !== 'All' ? (sourceFilter as DealSourceType) : undefined,
+        result_type: dealResultFilter !== 'All' ? dealResultFilter : undefined,
+        source: sourceFilter !== 'All' ? sourceFilter : undefined,
       })
-      console.log('result', result)
       if (result.error) {
         setError(result.error)
         return
       }
-
       if (result.success && result.data) {
         setLeads(result.data)
         setFilteredLeads(result.data)
@@ -202,14 +195,31 @@ const LeadsAnalyzer: React.FC = () => {
     setShowDeleteModal(true)
   }
 
-  const handleDeleteSuccess = () => {
-    // Optimistic update - remove from both leads and filteredLeads
+  const handleDeleteSuccess = async () => {
     setLeads(prev => prev.filter(lead => lead.id !== leadToDelete?.id))
     setFilteredLeads(prev => prev.filter(lead => lead.id !== leadToDelete?.id))
     setShowDeleteModal(false)
     setLeadToDelete(null)
-    // Refresh data to ensure consistency
-    setTimeout(() => fetchLeads(pagination.page), 500)
+    // Refresh data to ensure consistency (with a small delay for cache invalidation)
+    setTimeout(async () => {
+      await dealAnalyzerApi.refreshLeads({
+        page: pagination.page,
+        limit: pagination.limit,
+        result_type: dealResultFilter !== 'All' ? dealResultFilter : undefined,
+        source: sourceFilter !== 'All' ? sourceFilter : undefined,
+      }).then(result => {
+        if (result.success && result.data) {
+          setLeads(result.data)
+          setFilteredLeads(result.data)
+          setPagination({
+            ...pagination,
+            page: result.pagination.page,
+            total: result.pagination.total,
+            totalPages: Math.ceil(result.pagination.total / pagination.limit),
+          })
+        }
+      })
+    }, 100)
   }
 
   const clearFilters = () => {
