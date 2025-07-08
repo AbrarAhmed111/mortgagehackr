@@ -129,6 +129,21 @@ const DealAnalyzer = () => {
   const resultsRef = useRef<HTMLDivElement | null>(null)
   const emailFormRef = useRef<HTMLDivElement | null>(null)
 
+  const formatCurrencyInput = (value: string) => {
+    if (!value) return ''
+    const num = parseFloat(value.replace(/[^0-9.]/g, ''))
+    return num.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+  }
+
+  const handleCurrencyInput = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '')
+    handleInputChange('loanAmount', numericValue)
+  }
   const getIpAddress = async () => {
     try {
       const res = await fetch('https://api.ipify.org?format=json', {
@@ -169,19 +184,19 @@ const DealAnalyzer = () => {
 
   const validateForm = () => {
     const errors: Partial<FormData> = {}
-    
+
     if (!formData.loanStartDate) {
       errors.loanStartDate = 'Loan start date is required'
     }
-    
+
     if (!formData.loanAmount || Number(formData.loanAmount) <= 0) {
       errors.loanAmount = 'Valid loan amount is required'
     }
-    
+
     if (!formData.interestRate || Number(formData.interestRate) <= 0 || Number(formData.interestRate) > 20) {
       errors.interestRate = 'Valid interest rate is required (0-20%)'
     }
-    
+
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -205,7 +220,7 @@ const DealAnalyzer = () => {
       // Check if data is still valid
       if (storedQuickAnalysis.expiry && Date.now() < storedQuickAnalysis.expiry) {
         const quickData = storedQuickAnalysis.data
-        
+
         if (quickData && quickData.fromHomePage === true) {
           // Set form data
           setFormData({
@@ -214,17 +229,17 @@ const DealAnalyzer = () => {
             interestRate: quickData.interestRate || '',
             loanTerm: quickData.loanTerm || '30',
           })
-          
+
           // Set IP if available
-        if (quickData.userIp) {
-          setUserIp(quickData.userIp)
-          setIpFetched(true)
-        }
+          if (quickData.userIp) {
+            setUserIp(quickData.userIp)
+            setIpFetched(true)
+          }
 
           // Auto-submit after a short delay
-        setTimeout(() => {
-          handleAutoSubmit(quickData)
-        }, 500)
+          setTimeout(() => {
+            handleAutoSubmit(quickData)
+          }, 500)
 
           // Clean up quick analysis data
           removeFromLocalStorage('quickAnalysisData')
@@ -239,17 +254,17 @@ const DealAnalyzer = () => {
     const storedResult = getFromLocalStorage('analyzer_result')
     if (storedResult) {
       if (storedResult.expiry && storedResult.data) {
-      const currentTime = Date.now()
+        const currentTime = Date.now()
         const timeLeft = storedResult.expiry - currentTime
 
-      console.log('Current time:', currentTime)
+        console.log('Current time:', currentTime)
         console.log('Expiry time:', storedResult.expiry)
-      console.log('Time left (minutes):', timeLeft / (1000 * 60))
+        console.log('Time left (minutes):', timeLeft / (1000 * 60))
 
         if (currentTime < storedResult.expiry) {
           setResult(storedResult.data)
           console.log('Stored analysis result restored')
-      } else {
+        } else {
           console.log('Stored result expired, cleaning up...')
           removeFromLocalStorage('analyzer_result')
           removeFromLocalStorage('analyzer_lead_id')
@@ -265,7 +280,7 @@ const DealAnalyzer = () => {
   const handleAutoSubmit = async (quickData: any) => {
     // Clear any existing analysis data before auto-submitting
     clearAnalysisData()
-    
+
     setIsAnalyzing(true)
     setAnalysisProgress(0)
 
@@ -316,7 +331,7 @@ const DealAnalyzer = () => {
         if (response.error.toLowerCase().includes('rate limit')) {
           toast.error("You've reached the analysis limit. Please try again in an hour or contact support for assistance.")
         } else {
-        toast.error(response.error)
+          toast.error(response.error)
         }
         setIsAnalyzing(false)
         setAnalysisProgress(0)
@@ -362,7 +377,7 @@ const DealAnalyzer = () => {
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setHasInteracted(true)
-    
+
     // Clear error when user starts typing
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: undefined }))
@@ -383,7 +398,7 @@ const DealAnalyzer = () => {
 
   const validateField = (field: keyof FormData) => {
     const errors: Partial<FormData> = {}
-    
+
     switch (field) {
       case 'loanStartDate':
         if (!formData.loanStartDate) {
@@ -401,13 +416,13 @@ const DealAnalyzer = () => {
         }
         break
     }
-    
+
     setFormErrors(prev => ({ ...prev, ...errors }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors in the form')
       // Focus on first error field
@@ -430,9 +445,9 @@ const DealAnalyzer = () => {
     setTimeout(() => {
       const loadingSection = document.getElementById('loading-section')
       if (loadingSection) {
-        loadingSection.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
+        loadingSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
         })
       }
     }, 100)
@@ -484,7 +499,7 @@ const DealAnalyzer = () => {
         if (response.error.toLowerCase().includes('rate limit')) {
           toast.error("You've reached the analysis limit. Please try again in an hour or contact support for assistance.")
         } else {
-        toast.error(response.error)
+          toast.error(response.error)
         }
         setIsAnalyzing(false)
         setIsSubmitting(false)
@@ -549,7 +564,7 @@ const DealAnalyzer = () => {
       return
     }
 
-      setLoading(true)
+    setLoading(true)
 
     try {
       const response = await submitAnalyzerEmail({
@@ -558,7 +573,7 @@ const DealAnalyzer = () => {
       })
 
       if (response.success) {
-      setEmailSubmitted(true)
+        setEmailSubmitted(true)
         // Clear localStorage after successful email submission
         clearAnalysisData()
         toast.success('Email submitted successfully! We\'ll be in touch soon.')
@@ -629,7 +644,7 @@ const DealAnalyzer = () => {
       return true
     } catch (error) {
       console.error(`Failed to save ${key} to localStorage:`, error)
-      
+
       // Handle quota exceeded error
       if (error instanceof Error && error.name === 'QuotaExceededError') {
         console.log('localStorage quota exceeded, cleaning up old data...')
@@ -644,7 +659,7 @@ const DealAnalyzer = () => {
           return false
         }
       }
-      
+
       return false
     }
   }
@@ -735,7 +750,7 @@ const DealAnalyzer = () => {
       <a href="#results-section" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50">
         Skip to results
       </a>
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative w-full py-16 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
@@ -817,174 +832,190 @@ const DealAnalyzer = () => {
                     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                       <fieldset>
                         <legend className="sr-only">Mortgage Analysis Form</legend>
-                      {/* Loan Start Date */}
-                      <div className="space-y-3">
-                        <Label htmlFor="loanStartDate" className="text-sm font-medium">Loan Start Date <span className="text-red-500">*</span></Label>
-                        <Input
-                          id="loanStartDate"
-                          type="month"
-                          value={formData.loanStartDate}
-                          onChange={e => handleInputChange('loanStartDate', e.target.value)}
-                          onFocus={() => handleInputFocus('loanStartDate')}
-                          onBlur={() => handleInputBlur('loanStartDate')}
-                          className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 ${formErrors.loanStartDate ? 'border-red-500 ring-red-200' : focusField === 'loanStartDate' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
-                          required
-                          aria-describedby={formErrors.loanStartDate ? 'loanStartDate-error' : undefined}
-                          aria-invalid={!!formErrors.loanStartDate}
-                          autoComplete="off"
-                        />
-                        {formErrors.loanStartDate && (
-                          <p id="loanStartDate-error" className="text-sm text-red-600 flex items-center font-medium mt-1" role="alert">
-                            <AlertCircle className="h-4 w-4 mr-1" />
-                            {formErrors.loanStartDate}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Loan Amount */}
-                      <div className="space-y-3">
-                        <Label htmlFor="loanAmount" className="text-sm font-medium">Loan Amount <span className="text-red-500">*</span></Label>
-                        <div className="relative">
+                        {/* Loan Start Date */}
+                        <div className="space-y-3">
+                          <Label htmlFor="loanStartDate" className="text-sm font-medium">Loan Start Date <span className="text-red-500">*</span></Label>
                           <Input
-                            id="loanAmount"
-                            type="number"
-                            inputMode="decimal"
-                            min="1"
-                            step="any"
-                            value={formData.loanAmount}
-                            onChange={e => handleInputChange('loanAmount', e.target.value)}
-                            onFocus={() => handleInputFocus('loanAmount')}
-                            onBlur={() => handleInputBlur('loanAmount')}
-                            className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 pr-12 ${formErrors.loanAmount ? 'border-red-500 ring-red-200' : focusField === 'loanAmount' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
+                            id="loanStartDate"
+                            type="month"
+                            value={formData.loanStartDate}
+                            onChange={e => handleInputChange('loanStartDate', e.target.value)}
+                            onFocus={() => handleInputFocus('loanStartDate')}
+                            onBlur={() => handleInputBlur('loanStartDate')}
+                            className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 ${formErrors.loanStartDate ? 'border-red-500 ring-red-200' : focusField === 'loanStartDate' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
                             required
-                            aria-describedby={formErrors.loanAmount ? 'loanAmount-error' : undefined}
-                            aria-invalid={!!formErrors.loanAmount}
+                            aria-describedby={formErrors.loanStartDate ? 'loanStartDate-error' : undefined}
+                            aria-invalid={!!formErrors.loanStartDate}
                             autoComplete="off"
                           />
-                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium pointer-events-none">$</span>
+                          {formErrors.loanStartDate && (
+                            <p id="loanStartDate-error" className="text-sm text-red-600 flex items-center font-medium mt-1" role="alert">
+                              <AlertCircle className="h-4 w-4 mr-1" />
+                              {formErrors.loanStartDate}
+                            </p>
+                          )}
                         </div>
-                        {formErrors.loanAmount && (
-                          <p id="loanAmount-error" className="text-sm text-red-600 flex items-center font-medium mt-1" role="alert">
-                            <AlertCircle className="h-4 w-4 mr-1" />
-                            {formErrors.loanAmount}
-                          </p>
-                        )}
-                      </div>
 
-                      {/* Interest Rate */}
-                      <div className="space-y-3">
-                        <Label htmlFor="interestRate" className="text-sm font-medium">Interest Rate <span className="text-red-500">*</span></Label>
-                        <div className="relative">
-                          <Input
-                            id="interestRate"
-                            type="number"
-                            inputMode="decimal"
-                            min="0.01"
-                            max="20"
-                            step="any"
-                            value={formData.interestRate}
-                            onChange={e => handleInputChange('interestRate', e.target.value)}
-                            onFocus={() => handleInputFocus('interestRate')}
-                            onBlur={() => handleInputBlur('interestRate')}
-                            className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 pr-12 ${formErrors.interestRate ? 'border-red-500 ring-red-200' : focusField === 'interestRate' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
-                            required
-                            aria-describedby={formErrors.interestRate ? 'interestRate-error' : undefined}
-                            aria-invalid={!!formErrors.interestRate}
-                            autoComplete="off"
-                          />
-                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium pointer-events-none">%</span>
+                        {/* Loan Amount */}
+                        <div className="space-y-3">
+                          <Label htmlFor="loanAmount" className="text-sm font-medium">Loan Amount <span className="text-red-500">*</span></Label>
+                          <div className="relative">
+                            <Input
+                              id="loanAmount"
+                              type="text"
+                              inputMode="decimal"
+                              min="1"
+                              step="any"
+                              value={formData.loanAmount ? formatCurrencyInput(formData.loanAmount) : ''}
+                              // onChange={e => handleInputChange('loanAmount', e.target.value)}
+                              onChange={e => handleCurrencyInput(e.target.value)}
+                              onFocus={() => handleInputFocus('loanAmount')}
+                              onBlur={() => handleInputBlur('loanAmount')}
+
+                              className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 pr-12 ${formErrors.loanAmount ? 'border-red-500 ring-red-200' : focusField === 'loanAmount' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
+                              required
+                              aria-describedby={formErrors.loanAmount ? 'loanAmount-error' : undefined}
+                              aria-invalid={!!formErrors.loanAmount}
+                              autoComplete="off"
+                            />
+                            {/* <Input
+                              id="loanAmount"
+                              type="text"
+                              inputMode="decimal"
+                              value={formatWithCommas(formData.loanAmount)}
+                              onChange={e => handleLoanAmountChange(e.target.value)}
+                              onFocus={() => handleInputFocus('loanAmount')}
+                              onBlur={() => handleInputBlur('loanAmount')}
+                              className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 pr-12 ${formErrors.loanAmount ? 'border-red-500 ring-red-200' : focusField === 'loanAmount' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
+                              required
+                              aria-describedby={formErrors.loanAmount ? 'loanAmount-error' : undefined}
+                              aria-invalid={!!formErrors.loanAmount}
+                              autoComplete="off"
+                            /> */}
+                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium pointer-events-none">$</span>
+                          </div>
+                          {formErrors.loanAmount && (
+                            <p id="loanAmount-error" className="text-sm text-red-600 flex items-center font-medium mt-1" role="alert">
+                              <AlertCircle className="h-4 w-4 mr-1" />
+                              {formErrors.loanAmount}
+                            </p>
+                          )}
                         </div>
-                        {formErrors.interestRate && (
-                          <p id="interestRate-error" className="text-sm text-red-600 flex items-center font-medium mt-1" role="alert">
-                            <AlertCircle className="h-4 w-4 mr-1" />
-                            {formErrors.interestRate}
-                          </p>
-                        )}
-                      </div>
 
-                      {/* Loan Term */}
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium">Loan Term <span className="text-red-500">*</span></Label>
-                        <RadioGroup
-                          value={formData.loanTerm}
-                          onValueChange={(value: string) => handleInputChange('loanTerm', value)}
-                          className="flex space-x-4"
-                          aria-label="Loan Term"
+                        {/* Interest Rate */}
+                        <div className="space-y-3">
+                          <Label htmlFor="interestRate" className="text-sm font-medium">Interest Rate <span className="text-red-500">*</span></Label>
+                          <div className="relative">
+                            <Input
+                              id="interestRate"
+                              type="number"
+                              inputMode="decimal"
+                              min="0.01"
+                              max="20"
+                              step="any"
+                              value={formData.interestRate}
+                              onChange={e => handleInputChange('interestRate', e.target.value)}
+                              onFocus={() => handleInputFocus('interestRate')}
+                              onBlur={() => handleInputBlur('interestRate')}
+                              className={`h-12 px-4 border-2 rounded-lg w-full transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 pr-12 ${formErrors.interestRate ? 'border-red-500 ring-red-200' : focusField === 'interestRate' ? 'border-blue-500 ring-blue-200' : 'border-gray-300'} bg-white text-base`}
+                              required
+                              aria-describedby={formErrors.interestRate ? 'interestRate-error' : undefined}
+                              aria-invalid={!!formErrors.interestRate}
+                              autoComplete="off"
+                            />
+                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium pointer-events-none">%</span>
+                          </div>
+                          {formErrors.interestRate && (
+                            <p id="interestRate-error" className="text-sm text-red-600 flex items-center font-medium mt-1" role="alert">
+                              <AlertCircle className="h-4 w-4 mr-1" />
+                              {formErrors.interestRate}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Loan Term */}
+                        <div className="space-y-3">
+                          <Label className="text-sm font-medium">Loan Term <span className="text-red-500">*</span></Label>
+                          <RadioGroup
+                            value={formData.loanTerm}
+                            onValueChange={(value: string) => handleInputChange('loanTerm', value)}
+                            className="flex space-x-4"
+                            aria-label="Loan Term"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="15" id="term-15" />
+                              <Label htmlFor="term-15" className="cursor-pointer">15 years</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="30" id="term-30" />
+                              <Label htmlFor="term-30" className="cursor-pointer">30 years</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {/* Summary Preview */}
+                        {isFormValid && (
+                          <div className="p-4 mt-5 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="font-medium text-blue-900 mb-3 flex items-center">
+                              <Calculator className="h-4 w-4 mr-2" />
+                              Analysis Summary
+                            </h4>
+                            <div className="grid gap-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Loan Amount:</span>
+                                <span className="font-medium">{formData.loanAmount ? formatCurrency(formData.loanAmount) : 'Not specified'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Interest Rate:</span>
+                                <span className="font-medium">{formData.interestRate ? `${formData.interestRate}%` : 'Not specified'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Loan Term:</span>
+                                <span className="font-medium">{formData.loanTerm} years</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Start Date:</span>
+                                <span className="font-medium">{formData.loanStartDate ? new Date(formData.loanStartDate + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Not specified'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Submit Button */}
+                        <Button
+                          type="submit"
+                          className="w-full h-14 mt-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-lg font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={!isFormValid || isAnalyzing || isSubmitting}
+                          aria-describedby={!isFormValid ? 'form-validation-error' : undefined}
                         >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="15" id="term-15" />
-                            <Label htmlFor="term-15" className="cursor-pointer">15 years</Label>
-                        </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="30" id="term-30" />
-                            <Label htmlFor="term-30" className="cursor-pointer">30 years</Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
+                          {isAnalyzing ? (
+                            <>
+                              <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
+                              <span>Analyzing your mortgage...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="mr-2  h-5 w-5" aria-hidden="true" />
+                              <span>Analyze My Deal</span>
+                            </>
+                          )}
+                        </Button>
 
-                      {/* Summary Preview */}
-                      {isFormValid && (
-                        <div className="p-4 mt-5 bg-blue-50 rounded-lg border border-blue-200">
-                          <h4 className="font-medium text-blue-900 mb-3 flex items-center">
-                            <Calculator className="h-4 w-4 mr-2" />
-                            Analysis Summary
-                          </h4>
-                          <div className="grid gap-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Loan Amount:</span>
-                              <span className="font-medium">{formData.loanAmount ? formatCurrency(formData.loanAmount) : 'Not specified'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Interest Rate:</span>
-                              <span className="font-medium">{formData.interestRate ? `${formData.interestRate}%` : 'Not specified'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Loan Term:</span>
-                              <span className="font-medium">{formData.loanTerm} years</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Start Date:</span>
-                              <span className="font-medium">{formData.loanStartDate ? new Date(formData.loanStartDate + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Not specified'}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Submit Button */}
-                      <Button
-                        type="submit"
-                        className="w-full h-14 mt-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-lg font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!isFormValid || isAnalyzing || isSubmitting}
-                        aria-describedby={!isFormValid ? 'form-validation-error' : undefined}
-                      >
-                        {isAnalyzing ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
-                            <span>Analyzing your mortgage...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Zap className="mr-2  h-5 w-5" aria-hidden="true" />
-                            <span>Analyze My Deal</span>
-                          </>
-                        )}
-                      </Button>
-                      
-                      {!isFormValid && (
-                        <p id="form-validation-error" className="text-sm text-gray-500 text-center mt-2">
-                          Please fill in all required fields to continue
-                        </p>
-                      )}
-
-                      {/* Progress Bar */}
-                      {isAnalyzing && (
-                        <div className="space-y-2">
-                          <Progress value={analysisProgress} className="h-2" />
-                          <p className="text-sm text-gray-500 text-center">
-                            Analyzing your mortgage data...
+                        {!isFormValid && (
+                          <p id="form-validation-error" className="text-sm text-gray-500 text-center mt-2">
+                            Please fill in all required fields to continue
                           </p>
-                        </div>
-                      )}
+                        )}
+
+                        {/* Progress Bar */}
+                        {isAnalyzing && (
+                          <div className="space-y-2">
+                            <Progress value={analysisProgress} className="h-2" />
+                            <p className="text-sm text-gray-500 text-center">
+                              Analyzing your mortgage data...
+                            </p>
+                          </div>
+                        )}
                       </fieldset>
                     </form>
 
@@ -1051,7 +1082,7 @@ const DealAnalyzer = () => {
                     {/* Rate Comparison */}
                     <div className="bg-white/80 rounded-lg p-6 border">
                       <div className="grid gap-6 md:grid-cols-2">
-                    <div className="text-center">
+                        <div className="text-center">
                           <div className="text-3xl font-bold text-blue-600 mb-2">
                             {Number(formData.interestRate).toFixed(2)}%
                           </div>
@@ -1065,10 +1096,9 @@ const DealAnalyzer = () => {
                         </div>
                       </div>
                       <div className="mt-4 text-center">
-                        <div className={`text-lg font-semibold ${
-                          result.rateComparison <= 0 ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {result.rateComparison <= 0 ? '↓' : '↑'} {Math.abs(result.rateComparison).toFixed(2)}% 
+                        <div className={`text-lg font-semibold ${result.rateComparison <= 0 ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                          {result.rateComparison <= 0 ? '↓' : '↑'} {Math.abs(result.rateComparison).toFixed(2)}%
                           {result.rateComparison <= 0 ? ' below' : ' above'} average
                         </div>
                       </div>
@@ -1088,18 +1118,18 @@ const DealAnalyzer = () => {
                     <div className="text-center space-y-4">
                       {result.dealType === 'great' && (
                         <div className="space-y-3">
-                        <Button
+                          <Button
                             onClick={() => {
                               setShowEmailForm(true)
                               scrollToEmailForm()
                             }}
                             className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 h-14 px-8 text-lg"
-                          size="lg"
-                        >
-                          <Home className="mr-2 h-5 w-5" />
-                          Explore HELOC Offers
+                            size="lg"
+                          >
+                            <Home className="mr-2 h-5 w-5" />
+                            Explore HELOC Offers
                             <ChevronRight className="ml-2 h-5 w-5" />
-                        </Button>
+                          </Button>
                           <p className="text-sm text-gray-600">
                             Tap into your home equity with competitive HELOC rates
                           </p>
@@ -1107,14 +1137,14 @@ const DealAnalyzer = () => {
                       )}
                       {result.dealType === 'fair' && (
                         <div className="space-y-3">
-                        <Button
+                          <Button
                             className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 h-14 px-8 text-lg"
-                          size="lg"
-                        >
-                          <TrendingUp className="mr-2 h-5 w-5" />
-                          Learn About Refinancing
+                            size="lg"
+                          >
+                            <TrendingUp className="mr-2 h-5 w-5" />
+                            Learn About Refinancing
                             <ChevronRight className="ml-2 h-5 w-5" />
-                        </Button>
+                          </Button>
                           <p className="text-sm text-gray-600">
                             Discover if refinancing could save you money
                           </p>
@@ -1122,19 +1152,19 @@ const DealAnalyzer = () => {
                       )}
                       {result.dealType === 'poor' && (
                         <div className="space-y-3">
-                        <Button
-                          onClick={() => setShowEmailForm(true)}
+                          <Button
+                            onClick={() => setShowEmailForm(true)}
                             className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 h-14 px-8 text-lg"
-                          size="lg"
-                        >
-                          {loading ? (
+                            size="lg"
+                          >
+                            {loading ? (
                               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          ) : (
+                            ) : (
                               <Mail className="mr-2 h-5 w-5" />
-                          )}
+                            )}
                             Get Help With Refinance
                             <ChevronRight className="ml-2 h-5 w-5" />
-                        </Button>
+                          </Button>
                           <p className="text-sm text-gray-600">
                             Connect with experts who can help you refinance
                           </p>
@@ -1215,7 +1245,7 @@ const DealAnalyzer = () => {
                         ) : (
                           <>
                             {result?.dealType === 'great' ? 'Get Offers' : 'Get Help'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                            <ArrowRight className="ml-2 h-4 w-4" />
                           </>
                         )}
                       </Button>

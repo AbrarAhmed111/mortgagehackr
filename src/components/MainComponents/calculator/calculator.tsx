@@ -477,9 +477,6 @@ export default function CalculatorsPage() {
           <div className="container px-4 md:px-6">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">More Financial Tools</h2>
-              <p className="text-xl text-gray-600">
-                Explore our complete suite of mortgage and financial calculators.
-              </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">

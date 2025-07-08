@@ -25,7 +25,7 @@ export default function Footer() {
                 <Clock className="h-8 w-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
               </div>
               <h3 className="font-semibold text-slate-900 text-lg">Instant Results</h3>
-              <p className="text-sm text-slate-600 max-w-xs">Get your loan analysis in seconds, not hours with our AI-powered tools</p>
+              <p className="text-sm text-slate-600 max-w-xs">Get your loan analysis in seconds, not hours with Mortgagehacker</p>
             </div>
             <div className="flex flex-col items-center space-y-4 group">
               <div className="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors duration-300">
@@ -45,16 +45,16 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center space-x-2">
               <Link href="/" className="flex items-center group">
-                <Image 
-                  src={logo} 
-                  alt="MortgageHackr Logo" 
-                  className="w-60 transition-transform duration-300 group-hover:scale-105" 
+                <Image
+                  src={logo}
+                  alt="MortgageHackr Logo"
+                  className="w-60 transition-transform duration-300 group-hover:scale-105"
                 />
               </Link>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
               Professional loan analysis tools to help you make smarter financial decisions. Get accurate calculations
-              and expert insights in minutes with our AI-powered platform.
+              and expert insights in minutes with Mortgagehacker.
             </p>
             <div className="space-y-3">
               <div className="flex items-center space-x-2 text-sm text-slate-600 hover:text-[#73a334] transition-colors duration-300">
@@ -163,8 +163,8 @@ export default function Footer() {
                 <div>Sat: 9AM-5PM EST</div>
               </div>
             </div>
-            
-          
+
+
           </div>
         </div>
 

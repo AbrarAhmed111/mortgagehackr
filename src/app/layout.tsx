@@ -19,8 +19,8 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "MortgageHackr - Smart Loan Analysis & Comparison",
   description:
-    "Get personalized loan insights, compare rates, and make informed financial decisions with our AI-powered analysis tools.",
-    generator: 'v0.dev'
+    "Get personalized loan insights, compare rates, and make informed financial decisions with our Mortgagehackr analysis tools.",
+  generator: 'v0.dev'
 }
 
 
@@ -33,11 +33,11 @@ export default function RootLayout({
     <Providers>
       <html lang="en">
         <head>
-  
+
         </head>
-        
+
         <body suppressHydrationWarning className="antialiased w-full">
-           <Script
+          <Script
             src="https://www.google.com/recaptcha/api.js?render=6Ldj4mcrAAAAAPIuUu-iHyLx47OjtixMGn_YxFVR"
             strategy="afterInteractive"
           />
