@@ -90,11 +90,11 @@ const HomePage = () => {
 
   // Validate form in real-time
   useEffect(() => {
-    const isValid = formData.loanStartDate && 
-                   formData.loanAmount && 
-                   formData.interestRate &&
-                   parseFloat(formData.loanAmount) > 0 &&
-                   parseFloat(formData.interestRate) > 0
+    const isValid = formData.loanStartDate &&
+      formData.loanAmount &&
+      formData.interestRate &&
+      parseFloat(formData.loanAmount) > 0 &&
+      parseFloat(formData.interestRate) > 0
     setIsFormValid(isValid)
   }, [formData])
 
@@ -126,7 +126,7 @@ const HomePage = () => {
       }))
 
       toast.success('Redirecting to analysis...')
-      
+
       // Simulate loading for better UX
       setTimeout(() => {
         router.push('/deal-analyzer')
@@ -162,7 +162,7 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute top-10 left-10 w-20 h-20 bg-green-400/20 rounded-full animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
-          
+
           <div className="container relative px-4 md:px-6">
             <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="flex flex-col space-y-6">
@@ -172,7 +172,7 @@ const HomePage = () => {
                     className="w-fit bg-green-500 text-white border-0 animate-fade-in"
                   >
                     <Sparkles className="w-3 h-3 mr-1" />
-                    AI-Powered Analysis • No Credit Impact
+                    Mortgagehacker • No Credit Impact
                   </Badge>
                   <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl animate-fade-in-up">
                     Where smart loans meet{' '}
@@ -180,12 +180,12 @@ const HomePage = () => {
                   </h1>
                   <p className="text-xl text-blue-100 max-w-[600px] animate-fade-in-up delay-200">
                     Get personalized loan insights, compare rates, and make
-                    informed financial decisions. Our AI-powered analysis helps
+                    informed financial decisions. Mortgagehackr helps
                     you find the best loan options without affecting your credit
                     score.
                   </p>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-300">
                   <Link href="/deal-analyzer">
                     <Button
@@ -209,7 +209,7 @@ const HomePage = () => {
                     </Button>
                   </Link>
                 </div>
-                
+
                 <div className="flex items-center space-x-6 text-sm text-blue-100 animate-fade-in-up delay-400">
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-400" />
@@ -225,7 +225,7 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-center lg:justify-end">
                 <div className="relative">
                   <div className="w-80 h-96 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-sm">
@@ -233,7 +233,7 @@ const HomePage = () => {
                       <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                         <BarChart2 className="h-8 w-8 text-white" />
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">Smart Analysis</h3>
+                      <h3 className="text-xl font-semibold mb-2">Mortgagehackr provides insight in seconds</h3>
                       <p className="text-blue-100 text-sm">
                         AI-powered insights in seconds
                       </p>
@@ -373,7 +373,7 @@ const HomePage = () => {
                     Smart Deal Analyzer
                   </h2>
                   <p className="text-lg text-gray-600">
-                    Our AI-powered analyzer evaluates your loan terms and finds
+                    Mortgagehackr unique Analyzer evaluates your loan terms and finds
                     better options. Just provide basic information and get
                     personalized recommendations in seconds.
                   </p>
@@ -542,7 +542,7 @@ const HomePage = () => {
                 <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
                   <TrendingUp className="h-8 w-8 text-[#8cc63f] group-hover:scale-110 transition-transform" />
                 </div>
-                <h3 className="text-xl font-semibold">AI-Powered Insights</h3>
+                <h3 className="text-xl font-semibold">Hackr insights</h3>
                 <p className="text-gray-600">
                   Our advanced algorithms analyze thousands of loan options to
                   find the best deals for your situation.
@@ -724,7 +724,7 @@ const HomePage = () => {
           </div>
         </section>
       </main>
-    </div>
+    </div >
   )
 }
 
