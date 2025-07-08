@@ -5,7 +5,7 @@ import { FiPlus } from 'react-icons/fi'
 import ProfileIcon from '@/assets/Images/image.png'
 import { AddBlogModal } from '@/components/AdminComponents/Modals/AddBlogModal'
 import { DeleteBlogModal } from '@/components/AdminComponents/Modals/DeleteBlogModal'
-import { getAllBlogs } from '@/lib/actions/blogs'
+import { blogsApi } from '@/utils/api'
 import toast from 'react-hot-toast'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
 import { Blog, BlogsColumn } from '@/utils/types'
@@ -24,10 +24,12 @@ const BlogsManagement: React.FC = () => {
     getBlogs()
   }, [currentPage])
 
-  const getBlogs = async () => {
+  const getBlogs = async (refresh = false) => {
     setLoading(true)
     try {
-      const response = await getAllBlogs(currentPage, itemsPerPage)
+      const response = refresh
+        ? await blogsApi.refreshBlogs({ page: currentPage, limit: itemsPerPage })
+        : await blogsApi.getBlogs({ page: currentPage, limit: itemsPerPage })
       const blogsData = response.data
       const transformedBlogs: Blog[] = blogsData?.map((blog: any) => ({
         id: blog.id,
@@ -37,9 +39,8 @@ const BlogsManagement: React.FC = () => {
         profileImage: blog.profile_image || ProfileIcon,
         publishDate: blog.created_at || new Date().toISOString(),
       }))
-
       setBlogs(transformedBlogs)
-      setTotalCount(response.total)
+      setTotalCount(response.pagination?.total || 0)
     } catch (error) {
       console.error('Error loading blogs:', error)
       toast.error('Failed to load blogs')
@@ -97,7 +98,7 @@ const BlogsManagement: React.FC = () => {
     if (blogs.length === 1 && currentPage > 1 && currentPage === totalPages) {
       setCurrentPage(currentPage - 1)
     } else {
-      await getBlogs()
+      await getBlogs(true)
     }
     toast.success('Blog deleted successfully')
   }

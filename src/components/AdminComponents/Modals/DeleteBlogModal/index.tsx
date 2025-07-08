@@ -1,8 +1,9 @@
 'use client'
 import { Blog } from '@/utils/types'
 import { useState } from 'react'
-import { deleteBlogById } from '@/lib/actions/blogs'
+import { blogsApi } from '@/utils/api'
 import { BiLoaderCircle } from 'react-icons/bi'
+import toast from 'react-hot-toast'
 
 type DeleteBlogModalProps = {
   isOpen: boolean
@@ -25,14 +26,10 @@ export function DeleteBlogModal({
 
     setLoading(true)
     try {
-      const result = await deleteBlogById(blogData.id)
-      if (result.success) {
-        onDeleteSuccess()
-      } else {
-        console.error('Error deleting blog:', result.error)
-      }
+      await blogsApi.deleteBlog(blogData.id)
+      onDeleteSuccess()
     } catch (error) {
-      console.error('Error deleting blog:', error)
+      toast.error('Failed to delete blog')
     } finally {
       setLoading(false)
     }

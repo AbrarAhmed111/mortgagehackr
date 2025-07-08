@@ -260,3 +260,27 @@ export const prequalificationApi = {
     return response.json()
   },
 }
+
+// Blogs API functions
+export const blogsApi = {
+  // Get paginated blogs (with cache busting)
+  getBlogs: async (params: { page?: number; limit?: number; _t?: number } = {}) => {
+    const search = new URLSearchParams()
+    if (params.page) search.append('page', params.page.toString())
+    if (params.limit) search.append('limit', params.limit.toString())
+    if (params._t) search.append('_t', params._t.toString())
+    const response = await fetch(`/api/blogs?${search.toString()}`)
+    if (!response.ok) throw new Error('Failed to fetch blogs')
+    return response.json()
+  },
+  // Force refresh (bypass cache)
+  refreshBlogs: async (params: { page?: number; limit?: number } = {}) => {
+    return blogsApi.getBlogs({ ...params, _t: Date.now() })
+  },
+  // Delete a blog
+  deleteBlog: async (id: string) => {
+    const response = await fetch(`/api/blogs?id=${id}`, { method: 'DELETE' })
+    if (!response.ok) throw new Error('Failed to delete blog')
+    return response.json()
+  },
+}
