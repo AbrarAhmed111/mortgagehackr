@@ -284,3 +284,16 @@ export const blogsApi = {
     return response.json()
   },
 }
+
+export const contactLeadsApi = {
+  async get(page = 1, limit = 10) {
+    const res = await fetch(`/api/contact-leads?page=${page}&limit=${limit}`)
+    if (!res.ok) throw new Error('Failed to fetch contact leads')
+    return res.json()
+  },
+  async delete(id: string) {
+    const res = await fetch(`/api/contact-leads?id=${id}`, { method: 'DELETE' })
+    if (!res.ok) throw new Error('Failed to delete contact lead')
+    return res.json()
+  },
+}

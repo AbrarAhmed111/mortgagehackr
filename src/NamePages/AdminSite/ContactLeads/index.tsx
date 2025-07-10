@@ -1,12 +1,14 @@
 'use client'
 import { useState, JSX, useEffect } from 'react'
+import { contactLeadsApi } from '@/utils/api'
 import { DataTable } from '@/components/AdminComponents/DataTable'
 import CSVExport from '@/components/AdminComponents/ExportCSV'
-import { getContactLeads } from '@/lib/actions/contactLeads'
 import { DataTableSkeleton } from '@/components/AdminComponents/Skeleton/DataTableSkeleton'
 import { contactLeadCSVColumns } from '@/utils'
+import { DeleteContactLeadModal } from '@/components/AdminComponents/Modals/DeleteContactLeadModal'
 
 interface ContactLeads {
+  id: string
   name: string
   email: string
   message: string
@@ -25,13 +27,16 @@ const ContactLeads: React.FC = () => {
   const [error, setError] = useState('')
   const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
+  const [refreshKey, setRefreshKey] = useState(Date.now())
   const itemsPerPage = 10
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedLead, setSelectedLead] = useState<ContactLeads | null>(null)
 
   const fetchLeads = async (page = 1) => {
     try {
       setLoading(true)
-      const result = await getContactLeads(page, itemsPerPage)
-
+      const result = await contactLeadsApi.get(page, itemsPerPage)
       if (result.data) {
         setLeads(result.data)
         setTotal(result.total)
@@ -54,7 +59,21 @@ const ContactLeads: React.FC = () => {
 
   useEffect(() => {
     fetchLeads(currentPage)
-  }, [currentPage])
+    // eslint-disable-next-line
+  }, [currentPage, refreshKey])
+
+  const handleDelete = (lead: ContactLeads) => {
+    setSelectedLead(lead)
+    setModalOpen(true)
+  }
+
+  const handleDeleteSuccess = () => {
+    setModalOpen(false)
+    setSelectedLead(null)
+    setTimeout(() => {
+      setRefreshKey(Date.now())
+    }, 300)
+  }
 
   const columns: LeadsColumn<ContactLeads>[] = [
     {
@@ -125,12 +144,19 @@ const ContactLeads: React.FC = () => {
           currentPage={currentPage}
           totalCount={total}
           onPageChange={handlePageChange}
+          onDelete={handleDelete}
         />
       ) : (
         <div className="flex justify-center items-center h-64">
           <div className="text-lg text-gray-500">No leads data available.</div>
         </div>
       )}
+      <DeleteContactLeadModal
+        isOpen={modalOpen}
+        onClose={() => { setModalOpen(false); setSelectedLead(null) }}
+        onDeleteSuccess={handleDeleteSuccess}
+        leadData={selectedLead}
+      />
     </div>
   )
 }
