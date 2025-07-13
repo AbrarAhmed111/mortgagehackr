@@ -250,27 +250,32 @@ const DealAnalyzer = () => {
       }
     }
 
-    // Handle stored analysis result
+    // Handle stored analysis result (with versioning and validation)
+    const STORAGE_VERSION = 2;
     const storedResult = getFromLocalStorage('analyzer_result')
     if (storedResult) {
+      // If version is missing or old, clear it
+      if (!storedResult.version || storedResult.version < STORAGE_VERSION) {
+        removeFromLocalStorage('analyzer_result')
+        removeFromLocalStorage('analyzer_lead_id')
+        return
+      }
       if (storedResult.expiry && storedResult.data) {
         const currentTime = Date.now()
-        const timeLeft = storedResult.expiry - currentTime
-
-        console.log('Current time:', currentTime)
-        console.log('Expiry time:', storedResult.expiry)
-        console.log('Time left (minutes):', timeLeft / (1000 * 60))
-
         if (currentTime < storedResult.expiry) {
-          setResult(storedResult.data)
-          console.log('Stored analysis result restored')
+          // Defensive: Only restore if dealType is valid
+          if (["great","fair","poor"].includes(storedResult.data.dealType)) {
+            setResult(storedResult.data)
+            console.log('[Frontend] Restored from localStorage:', storedResult.data);
+          } else {
+            removeFromLocalStorage('analyzer_result')
+            removeFromLocalStorage('analyzer_lead_id')
+          }
         } else {
-          console.log('Stored result expired, cleaning up...')
           removeFromLocalStorage('analyzer_result')
           removeFromLocalStorage('analyzer_lead_id')
         }
       } else {
-        console.log('Invalid stored result format, cleaning up...')
         removeFromLocalStorage('analyzer_result')
         removeFromLocalStorage('analyzer_lead_id')
       }
@@ -339,32 +344,43 @@ const DealAnalyzer = () => {
       }
 
       if (response.success) {
-        const analysisResult = analyzeRate(
-          quickData.loanStartDate,
-          Number.parseFloat(quickData.interestRate),
-          Number.parseInt(quickData.loanTerm),
-        )
-
-        analysisResult.leadId = response.id
-
-        setResult(analysisResult)
-
+        // Use backend result_type for dealType
+        const dealType = (response.result_type || '').toLowerCase();
+        console.log('[API response] result_type:', response.result_type, '-> dealType:', dealType);
+        const analysisResult: AnalysisResult = {
+          dealType: dealType as 'great' | 'fair' | 'poor',
+          rateComparison: Number.parseFloat(quickData.interestRate) - response.fredRate,
+          historicalAverage: response.fredRate,
+          explanation: '',
+          recommendation: '',
+          leadId: response.id,
+        };
+        if (dealType === 'great') {
+          analysisResult.explanation = `Your rate is excellent compared to the historical average of ${response.fredRate.toFixed(2)}%.`;
+          analysisResult.recommendation = 'Consider exploring HELOC options to leverage your great rate.';
+        } else if (dealType === 'fair') {
+          analysisResult.explanation = `Your rate is fair compared to the historical average of ${response.fredRate.toFixed(2)}%.`;
+          analysisResult.recommendation = 'Your rate is competitive. Learn about refinancing options to potentially improve your terms.';
+        } else {
+          analysisResult.explanation = `Your rate is above the historical average of ${response.fredRate.toFixed(2)}%. You may be overpaying.`;
+          analysisResult.recommendation = 'Consider refinancing to get a better rate and save money over the life of your loan.';
+        }
+        setResult(analysisResult);
+        console.log('[Frontend] setResult:', analysisResult);
         const resultData = {
           data: analysisResult,
           expiry: Date.now() + 30 * 60 * 1000, // 30 minutes
-        }
-
-        localStorage.setItem('analyzer_result', JSON.stringify(resultData))
-        localStorage.setItem('analyzer_lead_id', response.id)
-
-        setAnalysisProgress(100)
+          version: 2,
+        };
+        localStorage.setItem('analyzer_result', JSON.stringify(resultData));
+        localStorage.setItem('analyzer_lead_id', response.id);
+        setAnalysisProgress(100);
         setTimeout(() => {
-          setIsAnalyzing(false)
-          setAnalysisProgress(0)
-        }, 500)
-
-        toast.success('Analysis complete!')
-        scrollToResults()
+          setIsAnalyzing(false);
+          setAnalysisProgress(0);
+        }, 500);
+        toast.success('Analysis complete!');
+        scrollToResults();
       }
     } catch (error) {
       console.error('Error submitting analysis:', error)
@@ -508,32 +524,44 @@ const DealAnalyzer = () => {
       }
 
       if (response.success) {
-        const analysisResult = analyzeRate(
-          formData.loanStartDate,
-          Number.parseFloat(formData.interestRate),
-          Number.parseInt(formData.loanTerm),
-        )
-
-        analysisResult.leadId = response.id
-
-        setResult(analysisResult)
-
+        // Use backend result_type for dealType
+        const dealType = (response.result_type || '').toLowerCase();
+        console.log('[API response] result_type:', response.result_type, '-> dealType:', dealType);
+        const analysisResult: AnalysisResult = {
+          dealType: dealType as 'great' | 'fair' | 'poor',
+          rateComparison: Number.parseFloat(formData.interestRate) - response.fredRate,
+          historicalAverage: response.fredRate,
+          explanation: '',
+          recommendation: '',
+          leadId: response.id,
+        };
+        if (dealType === 'great') {
+          analysisResult.explanation = `Your rate is excellent compared to the historical average of ${response.fredRate.toFixed(2)}%.`;
+          analysisResult.recommendation = 'Consider exploring HELOC options to leverage your great rate.';
+        } else if (dealType === 'fair') {
+          analysisResult.explanation = `Your rate is fair compared to the historical average of ${response.fredRate.toFixed(2)}%.`;
+          analysisResult.recommendation = 'Your rate is competitive. Learn about refinancing options to potentially improve your terms.';
+        } else {
+          analysisResult.explanation = `Your rate is above the historical average of ${response.fredRate.toFixed(2)}%. You may be overpaying.`;
+          analysisResult.recommendation = 'Consider refinancing to get a better rate and save money over the life of your loan.';
+        }
+        setResult(analysisResult);
+        console.log('[Frontend] setResult:', analysisResult);
         const resultData = {
           data: analysisResult,
           expiry: Date.now() + 30 * 60 * 1000, // 30 minutes
-        }
-
-        localStorage.setItem('analyzer_result', JSON.stringify(resultData))
-        localStorage.setItem('analyzer_lead_id', response.id)
-
-        setAnalysisProgress(100)
+          version: 2,
+        };
+        localStorage.setItem('analyzer_result', JSON.stringify(resultData));
+        localStorage.setItem('analyzer_lead_id', response.id);
+        setAnalysisProgress(100);
         setTimeout(() => {
-          setIsAnalyzing(false)
-          setAnalysisProgress(0)
-        }, 500)
-
-        toast.success('Analysis complete!')
-        scrollToResults()
+          setIsAnalyzing(false);
+          setIsSubmitting(false);
+          setAnalysisProgress(0);
+        }, 500);
+        toast.success('Analysis complete!');
+        scrollToResults();
       }
     } catch (error) {
       console.error('Error submitting analysis:', error)
@@ -1062,6 +1090,8 @@ const DealAnalyzer = () => {
 
         {/* Result Area */}
         {result && (
+          // Log result before rendering
+          console.log('[Frontend] Rendering result:', result),
           <section id="results-section" ref={resultsRef} className="w-full py-16 bg-gradient-to-br from-gray-50 to-blue-50">
             <div className="container px-4 md:px-6">
               <div className="max-w-3xl mx-auto">
@@ -1138,6 +1168,10 @@ const DealAnalyzer = () => {
                       {result.dealType === 'fair' && (
                         <div className="space-y-3">
                           <Button
+                            onClick={() => {
+                              setShowEmailForm(true)
+                              scrollToEmailForm()
+                            }}
                             className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 h-14 px-8 text-lg"
                             size="lg"
                           >
@@ -1206,11 +1240,15 @@ const DealAnalyzer = () => {
                     <CardTitle className="text-2xl font-bold">
                       {result?.dealType === 'great'
                         ? 'Get Exclusive Offers'
+                        : result?.dealType === 'fair'
+                        ? 'Get Refinancing Info'
                         : 'Get Expert Help'}
                     </CardTitle>
                     <p className="text-gray-600">
                       {result?.dealType === 'great'
                         ? 'Enter your email to receive personalized HELOC offers'
+                        : result?.dealType === 'fair'
+                        ? 'Enter your email to get refinancing information and personalized recommendations'
                         : 'Enter your email to get personalized refinancing assistance'}
                     </p>
                   </CardHeader>
@@ -1219,7 +1257,7 @@ const DealAnalyzer = () => {
                       <div className="space-y-2">
                         <Label htmlFor="email" className="text-sm font-medium">
                           Email Address
-                          {result?.dealType === 'poor' && <span className="text-red-500 ml-1">*</span>}
+                          {(result?.dealType === 'poor' || result?.dealType === 'fair') && <span className="text-red-500 ml-1">*</span>}
                         </Label>
                         <Input
                           id="email"
@@ -1228,11 +1266,11 @@ const DealAnalyzer = () => {
                           onChange={e => setEmail(e.target.value)}
                           className="transition-all duration-200 focus:border-blue-500"
                           placeholder="your@email.com"
-                          required={result?.dealType === 'poor'}
+                          required={result?.dealType === 'poor' || result?.dealType === 'fair'}
                           disabled={loading}
-                          aria-describedby={result?.dealType === 'poor' ? 'email-required' : undefined}
+                          aria-describedby={(result?.dealType === 'poor' || result?.dealType === 'fair') ? 'email-required' : undefined}
                         />
-                        {result?.dealType === 'poor' && (
+                        {(result?.dealType === 'poor' || result?.dealType === 'fair') && (
                           <p id="email-required" className="text-sm text-gray-500">
                             Email is required to get refinancing assistance
                           </p>
@@ -1247,7 +1285,7 @@ const DealAnalyzer = () => {
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
                           <>
-                            {result?.dealType === 'great' ? 'Get Offers' : 'Get Help'}
+                            {result?.dealType === 'great' ? 'Get Offers' : result?.dealType === 'fair' ? 'Get Info' : 'Get Help'}
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </>
                         )}

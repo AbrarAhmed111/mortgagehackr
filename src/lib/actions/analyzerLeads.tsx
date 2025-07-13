@@ -19,11 +19,13 @@ const SaveAnalyzerLeadSchema = z.object({
 });
 
 export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSchema>) {
+  console.log('[saveAnalyzerLead] input:', input);
   const supabase = await createClient()
   const parsed = SaveAnalyzerLeadSchema.safeParse(input)
 
   if (!parsed.success) {
     const firstError = parsed.error.errors[0]?.message || 'Invalid input'
+    console.log('[saveAnalyzerLead] validation error:', firstError);
     return { error: firstError }
   }
 
@@ -37,20 +39,21 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     loan_start_year > currentYear ||
     (loan_start_year === currentYear && loan_start_month > currentMonth)
   ) {
+    console.log('[saveAnalyzerLead] Loan start date is in the future.');
     return { error: 'Loan start date must be from a past month (not current or future).' }
   }
 
   if (rest.loan_amount > 9999999999.99) {
-  return { error: 'Loan amount exceeds supported limit.' }
-}
-
+    console.log('[saveAnalyzerLead] Loan amount exceeds supported limit.');
+    return { error: 'Loan amount exceeds supported limit.' }
+  }
 
   const startDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-01`
   const endDate = `${loan_start_year}-${String(loan_start_month).padStart(2, '0')}-28`
   const seriesId = loan_term === 30 ? 'MORTGAGE30US' : 'MORTGAGE15US'
   const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&observation_start=${startDate}&observation_end=${endDate}`
 
-    let fredRate = null
+  let fredRate = null
 
   try {
     const controller = new AbortController()
@@ -60,28 +63,30 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     clearTimeout(timeout)
 
     const fredData = await response.json()
+    console.log('[saveAnalyzerLead] FRED API response:', fredData);
 
     const observations = fredData?.observations || []
     const firstValid = observations.find((o: any) => o.value && o.value !== ".")
 
     if (!firstValid) {
-      console.error('No valid rate found in FRED data:', fredData)
+      console.error('[saveAnalyzerLead] No valid rate found in FRED data:', fredData)
       return { error: 'No historical interest rate found for this month. Try an earlier month.' }
     }
 
     fredRate = parseFloat(firstValid.value)
+    console.log('[saveAnalyzerLead] fredRate:', fredRate);
 
   } catch (error: any) {
     if (error.name === 'AbortError') {
-      console.error('FRED API fetch aborted due to timeout.')
+      console.error('[saveAnalyzerLead] FRED API fetch aborted due to timeout.')
       return { error: 'FRED API timed out. Please try again later.' }
     }
-    console.error('FRED API error:', error)
+    console.error('[saveAnalyzerLead] FRED API error:', error)
     return { error: 'Failed to fetch historical rate from FRED.' }
   }
 
-
   const rateDiff = interest_rate - fredRate
+  console.log('[saveAnalyzerLead] rateDiff:', rateDiff);
 
   let result_type: 'Great' | 'Fair' | 'Poor'
 
@@ -92,8 +97,10 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
   } else {
     result_type = 'Poor'
   }
+  console.log('[saveAnalyzerLead] result_type:', result_type);
 
   if (source === 'HELOC' && result_type !== 'Great') {
+    console.log('[saveAnalyzerLead] HELOC leads must be rated Great.');
     return { error: 'HELOC leads must be rated Great.' }
   }
 
@@ -132,11 +139,12 @@ export async function saveAnalyzerLead(input: z.infer<typeof SaveAnalyzerLeadSch
     .single()
 
   if (insertError || !data?.id) {
-    console.error('Insert error:', insertError)
+    console.error('[saveAnalyzerLead] Insert error:', insertError)
     return { error: 'Failed to store lead.' }
   }
   cacheUtils.invalidate('analyzerLeads')
   cacheUtils.invalidate('leadsBySource')
+  console.log('[saveAnalyzerLead] Success:', { id: data.id, result_type, fredRate });
   return { success: true, id: data.id, result_type, fredRate }
 }
 
@@ -148,11 +156,12 @@ const EmailSchema = z.object({
 })
 
 export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
+  console.log('[submitAnalyzerEmail] input:', input);
   const supabase = await createClient()
   const parsed = EmailSchema.safeParse(input)
 
   if (!parsed.success) {
-    console.error('Email submission validation failed:', parsed.error.errors)
+    console.error('[submitAnalyzerEmail] Email submission validation failed:', parsed.error.errors)
     return { error: `Invalid input: ${parsed.error.errors[0]?.message || 'Validation failed'}` }
   }
 
@@ -166,9 +175,10 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
     .single()
 
   if (fetchError || !lead) {
-    console.error('Analyzer lead not found:', fetchError)
+    console.error('[submitAnalyzerEmail] Analyzer lead not found:', fetchError)
     return { error: 'Analyzer record not found.' }
   }
+  console.log('[submitAnalyzerEmail] lead:', lead);
 
   // Update email in DB
   const { error: updateError } = await supabase
@@ -177,7 +187,7 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
     .eq('id', analyzer_id)
 
   if (updateError) {
-    console.error('Email update failed:', updateError)
+    console.error('[submitAnalyzerEmail] Email update failed:', updateError)
     return { error: 'Failed to update email.' }
   }
   cacheUtils.invalidate('analyzerLeads')
@@ -191,22 +201,63 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
     },
   })
 
-  const adminHtml = `
-    <h2>New ${lead.source} Submission (Email Follow-up)</h2>
-    <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Rating:</strong> ${lead.result_type}</p>
-    <p><strong>Loan:</strong> $${lead.loan_amount.toLocaleString()} at ${lead.interest_rate}%</p>
-    <p><strong>Term:</strong> ${lead.loan_term} years</p>
-    <p><strong>Start:</strong> ${lead.loan_start_month}/${lead.loan_start_year}</p>
-    <p><strong>IP:</strong> ${lead.ip_address || 'Not Provided'}</p>
-  `
+  let adminHtml = ''
+  let userHtml = ''
+  const resultType = (lead.result_type || '').toLowerCase();
+  console.log('[submitAnalyzerEmail] resultType:', resultType);
 
-  const userHtml = `
-    <h2>Thanks for using Mortgage Deal Analyzer</h2>
-    <p>Your result was: <strong>${lead.result_type}</strong>.</p>
-    <p>We'll reach out if needed. Thank you!</p>
-    <p>– MortgageHackr Team</p>
-  `
+  if (resultType === 'great') {
+    adminHtml = `
+      <h2>New ${lead.source} Submission (Email Follow-up)</h2>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Rating:</strong> Great</p>
+      <p><strong>Loan:</strong> $${lead.loan_amount.toLocaleString()} at ${lead.interest_rate}%</p>
+      <p><strong>Term:</strong> ${lead.loan_term} years</p>
+      <p><strong>Start:</strong> ${lead.loan_start_month}/${lead.loan_start_year}</p>
+      <p><strong>IP:</strong> ${lead.ip_address || 'Not Provided'}</p>
+      <p><strong>Note:</strong> User is eligible for HELOC/exclusive offers.</p>
+    `;
+    userHtml = `
+      <h2>Thanks for using Mortgage Deal Analyzer</h2>
+      <p>Your result was: <strong>Great</strong>.</p>
+      <p>You're eligible for exclusive HELOC offers. We'll reach out with more details soon!</p>
+      <p>– MortgageHackr Team</p>
+    `;
+  } else if (resultType === 'fair') {
+    adminHtml = `
+      <h2>New ${lead.source} Submission (Email Follow-up)</h2>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Rating:</strong> Fair</p>
+      <p><strong>Loan:</strong> $${lead.loan_amount.toLocaleString()} at ${lead.interest_rate}%</p>
+      <p><strong>Term:</strong> ${lead.loan_term} years</p>
+      <p><strong>Start:</strong> ${lead.loan_start_month}/${lead.loan_start_year}</p>
+      <p><strong>IP:</strong> ${lead.ip_address || 'Not Provided'}</p>
+      <p><strong>Note:</strong> User is interested in refinancing options. Please follow up with tailored advice.</p>
+    `;
+    userHtml = `
+      <h2>Thanks for using Mortgage Deal Analyzer</h2>
+      <p>Your result was: <strong>Fair</strong>.</p>
+      <p>Our experts will review your information and reach out with refinancing options and personalized recommendations.</p>
+      <p>– MortgageHackr Team</p>
+    `;
+  } else if (resultType === 'poor') {
+    adminHtml = `
+      <h2>New ${lead.source} Submission (Email Follow-up)</h2>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Rating:</strong> Poor</p>
+      <p><strong>Loan:</strong> $${lead.loan_amount.toLocaleString()} at ${lead.interest_rate}%</p>
+      <p><strong>Term:</strong> ${lead.loan_term} years</p>
+      <p><strong>Start:</strong> ${lead.loan_start_month}/${lead.loan_start_year}</p>
+      <p><strong>IP:</strong> ${lead.ip_address || 'Not Provided'}</p>
+      <p><strong>Note:</strong> User needs urgent refinancing help. Please prioritize this lead.</p>
+    `;
+    userHtml = `
+      <h2>Thanks for using Mortgage Deal Analyzer</h2>
+      <p>Your result was: <strong>Poor</strong>.</p>
+      <p>It looks like you could benefit from refinancing. Our team will contact you soon to help you get a better rate.</p>
+      <p>– MortgageHackr Team</p>
+    `;
+  }
 
   try {
     await transporter.sendMail({
@@ -215,6 +266,7 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
       subject: `New ${lead.source} Lead (${lead.result_type}) – Email Submitted`,
       html: adminHtml,
     })
+    console.log('[submitAnalyzerEmail] Sent admin email.');
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -222,10 +274,11 @@ export async function submitAnalyzerEmail(input: z.infer<typeof EmailSchema>) {
       subject: 'We received your submission – MortgageHackr',
       html: userHtml,
     })
+    console.log('[submitAnalyzerEmail] Sent user email.');
 
     return { success: true }
   } catch (err) {
-    console.error('Email sending failed:', err)
+    console.error('[submitAnalyzerEmail] Email sending failed:', err)
     return { error: 'Email update succeeded but email failed to send.' }
   }
 }
@@ -248,11 +301,13 @@ export async function getAnalyzerDealsList({
   result_type,
   source,
 }: Params = {}) {
+  console.log('[getAnalyzerDealsList] params:', { page, limit, result_type, source });
   const monitor = performanceMonitor.start('getAnalyzerDealsList')
   const cacheKey = cacheUtils.generateKey('analyzerLeads', { page, limit, result_type, source })
   const cached = cacheUtils.get(cacheKey)
   if (cached) {
     monitor.end()
+    console.log('[getAnalyzerDealsList] cache hit');
     return cached
   }
   const supabase = await createClient()
@@ -277,7 +332,7 @@ export async function getAnalyzerDealsList({
   const { data, count, error } = await query
 
   if (error) {
-    console.error('Failed to fetch analyzer deals:', error)
+    console.error('[getAnalyzerDealsList] Failed to fetch analyzer deals:', error)
     return { error: 'Failed to fetch data' }
   }
 
@@ -293,6 +348,7 @@ export async function getAnalyzerDealsList({
   }
   cacheUtils.set(cacheKey, result, 2 * 60 * 1000)
   monitor.end()
+  console.log('[getAnalyzerDealsList] result:', result);
   return result
 }
 
@@ -303,6 +359,7 @@ const DeleteAnalyzerLeadSchema = z.object({
 })
 
 export async function deleteAnalyzerLead(input: z.infer<typeof DeleteAnalyzerLeadSchema>) {
+  console.log('[deleteAnalyzerLead] input:', input);
   const supabase = await createClient()
   const parsed = DeleteAnalyzerLeadSchema.safeParse(input)
 
@@ -316,9 +373,10 @@ export async function deleteAnalyzerLead(input: z.infer<typeof DeleteAnalyzerLea
     .eq('id', id)
 
   if (error) {
-    console.error('Failed to delete analyzer lead:', error)
+    console.error('[deleteAnalyzerLead] Failed to delete analyzer lead:', error)
     return { error: 'Failed to delete analyzer lead.' }
   }
   cacheUtils.invalidate('analyzerLeads')
+  console.log('[deleteAnalyzerLead] Success:', id);
   return { success: true }
 }
