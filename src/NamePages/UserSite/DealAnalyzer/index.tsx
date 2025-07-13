@@ -1136,7 +1136,19 @@ const DealAnalyzer = () => {
                         </div>
                       )}
                       {result.dealType === 'fair' && (
-                        <></>
+                        <div className="space-y-3">
+                          <Button
+                            className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 h-14 px-8 text-lg"
+                            size="lg"
+                          >
+                            <TrendingUp className="mr-2 h-5 w-5" />
+                            Learn About Refinancing
+                            <ChevronRight className="ml-2 h-5 w-5" />
+                          </Button>
+                          <p className="text-sm text-gray-600">
+                            Discover if refinancing could save you money
+                          </p>
+                        </div>
                       )}
                       {result.dealType === 'poor' && (
                         <div className="space-y-3">
