@@ -1153,7 +1153,10 @@ const DealAnalyzer = () => {
                       {result.dealType === 'poor' && (
                         <div className="space-y-3">
                           <Button
-                            onClick={() => setShowEmailForm(true)}
+                            onClick={() => {
+                              setShowEmailForm(true)
+                              scrollToEmailForm()
+                            }}
                             className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 h-14 px-8 text-lg"
                             size="lg"
                           >
@@ -1192,7 +1195,7 @@ const DealAnalyzer = () => {
 
         {/* Email Form */}
         {showEmailForm && !emailSubmitted && (
-          <section className="w-full py-16 bg-white">
+          <section ref={emailFormRef} className="w-full py-16 bg-white">
             <div className="container px-4 md:px-6">
               <div className="max-w-xl mx-auto">
                 <Card className="shadow-xl border-0">
