@@ -52,9 +52,10 @@ export default function Footer() {
                 />
               </Link>
             </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Professional loan analysis tools to help you make smarter financial decisions. Get accurate calculations
-              and expert insights in minutes with Mortgagehacker.
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              MortgageHackr is operated by a licensed Mortgage Loan Originator (NMLS #2703631). Licensed in CA, FL, WY, UT, NE, MN, and KY.<br /><br />
+              This site is intended to provide general mortgage information and connect homeowners with a licensed mortgage professional where permitted by law. We do not sell, rent, or share your personal information or submitted leads with third parties. All information is used solely to provide mortgage-related guidance.<br /><br />
+              This is not a commitment to lend. All loans subject to credit approval and underwriting guidelines. MortgageHackr is not affiliated with any government agency. Licensing information available upon request.
             </p>
             <div className="space-y-3">
               <div className="flex items-center space-x-2 text-sm text-slate-600 hover:text-[#73a334] transition-colors duration-300">
