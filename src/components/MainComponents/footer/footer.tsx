@@ -48,7 +48,7 @@ export default function Footer() {
                 <Image
                   src={logo}
                   alt="MortgageHackr Logo"
-                  className="w-60 transition-transform duration-300 group-hover:scale-105"
+                  className="w-64 transition-transform duration-300 group-hover:scale-105"
                 />
               </Link>
             </div>
@@ -100,7 +100,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/calculators" className="text-slate-600 hover:text-[#73a334] transition-colors duration-300 flex items-center group">
-                  <span>Calculators</span>
+                  <span>Calculator</span>
                   <ArrowRight className="ml-2 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Link>
               </li>

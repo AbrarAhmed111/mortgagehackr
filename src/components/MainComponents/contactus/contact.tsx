@@ -319,7 +319,7 @@ export default function ContactPage() {
                     <Link href="/calculators">
                       <Button variant="outline" className="w-full justify-start">
                         <HelpCircle className="mr-2 h-4 w-4" />
-                        Use Our Calculators
+                        Use Our Calculator
                       </Button>
                     </Link>
                   </div>

@@ -97,7 +97,7 @@ export default function FAQPage() {
                                 Frequently Asked Questions
                             </h1>
                             <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
-                                Find answers to common questions about our mortgage marketplace, loan calculators, and services.
+                                Find answers to common questions about our mortgage marketplace, loan Calculator, and services.
                             </p>
                         </div>
                     </div>
@@ -300,7 +300,7 @@ export default function FAQPage() {
                                             <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
                                                 <Calculator className="h-8 w-8 text-orange-600" />
                                             </div>
-                                            <CardTitle className="text-lg">Calculators</CardTitle>
+                                            <CardTitle className="text-lg">Calculator</CardTitle>
                                         </CardHeader>
                                         <CardContent>
                                             <p className="text-sm text-gray-600 mb-4">Calculate payments and costs</p>

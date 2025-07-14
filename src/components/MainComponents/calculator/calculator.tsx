@@ -184,13 +184,13 @@ export default function CalculatorsPage() {
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
               <Badge variant="secondary" className="bg-green-500 text-white border-0 animate-fade-in">
-                <Sparkles className="w-3 h-3 mr-1" /> Financial Calculators
+                <Sparkles className="w-3 h-3 mr-1" /> Financial Calculator
               </Badge>
               <h1 className="text-4xl relative z-10 capitalize font-bold tracking-tight sm:text-5xl animate-fade-in-up">
-                Powerful calculators for every financial decision
+                Powerful Calculator for every financial decision
               </h1>
               <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
-                From loan payments to savings goals, our comprehensive suite of calculators helps you plan your
+                From loan payments to savings goals, our comprehensive suite of Calculator helps you plan your
                 financial future with confidence.
               </p>
             </div>

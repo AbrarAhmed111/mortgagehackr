@@ -23,7 +23,7 @@ export default function Header() {
     { label: "Home", path: "/" },
     { label: "Marketplace", path: "/marketplace" },
     { label: "Deal Analyzer", path: "/deal-analyzer" },
-    { label: "Calculators", path: "/calculators" },
+    { label: "Calculator", path: "/calculators" },
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
   ]
@@ -40,7 +40,7 @@ export default function Header() {
             <Image 
               src={logo} 
               alt="MortgageHackr Logo" 
-              className="w-48 sm:w-60 transition-transform duration-300 group-hover:scale-105" 
+              className="w-48 sm:w-64 transition-transform duration-300 group-hover:scale-105" 
             />
           </Link>
 
