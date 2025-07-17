@@ -362,18 +362,48 @@ export default function CalculatorsPage() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center">
                           <span className="text-gray-600">Property Tax (monthly)</span>
-                          <span className="font-medium">{formatCurrency(propertyTax / 12)}</span>
+                          <div className="relative w-32">
+                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="propertyTax"
+                              type="number"
+                              value={propertyTax}
+                              onChange={(e) => setPropertyTax(Number(e.target.value))}
+                              className="pl-10 pr-2 text-right"
+                              min={0}
+                            />
+                          </div>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center">
                           <span className="text-gray-600">Insurance (monthly)</span>
-                          <span className="font-medium">{formatCurrency(insurance / 12)}</span>
+                          <div className="relative w-32">
+                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="insurance"
+                              type="number"
+                              value={insurance}
+                              onChange={(e) => setInsurance(Number(e.target.value))}
+                              className="pl-10 pr-2 text-right"
+                              min={0}
+                            />
+                          </div>
                         </div>
                         {isPMIRequired && (
-                          <div className="flex justify-between">
+                          <div className="flex justify-between items-center">
                             <span className="text-gray-600">PMI (monthly)</span>
-                            <span className="font-medium">{formatCurrency(pmi / 12)}</span>
+                            <div className="relative w-32">
+                              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                              <Input
+                                id="pmi"
+                                type="number"
+                                value={pmi}
+                                onChange={(e) => setPmi(Number(e.target.value))}
+                                className="pl-10 pr-2 text-right"
+                                min={0}
+                              />
+                            </div>
                           </div>
                         )}
                         <div className="border-t pt-3">

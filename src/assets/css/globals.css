@@ -105,6 +105,9 @@ body {
   }
 } */
 
+html {
+  scroll-behavior: smooth;
+}
 /* ol: Ordered list */
 .htmlStructure ol {
   display: block;

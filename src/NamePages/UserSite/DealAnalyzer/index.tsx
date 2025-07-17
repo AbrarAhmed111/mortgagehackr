@@ -796,15 +796,15 @@ const DealAnalyzer = () => {
                   <Sparkles className="w-3 h-3 mr-1" /> Deal Analyzer
                 </Badge>
               </div>
-              <h1 className="text-4xl font-bold text-white relative z-10 tracking-tight sm:text-5xl animate-fade-in-up">
+              <a href="#dealAnalyzer"><h1 className="text-4xl font-bold text-white relative z-10 tracking-tight sm:text-5xl animate-fade-in-up">
                 Is Your Mortgage a Good Deal?
-              </h1>
+              </h1></a>
               <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
                 Compare your rate against historical averages and get personalized recommendations.
               </p>
-              <div className="flex items-center justify-center space-x-2 text-sm text-blue-200 animate-fade-in-up delay-300">
+              <div className="flex items-center justify-center space-x-2 text-[11px] text-blue-200 animate-fade-in-up delay-300">
                 <Shield className="h-4 w-4" />
-                <span>Data sourced from FRED (Federal Reserve Economic Data)</span>
+                <span >Data sourced from FRED (Federal Reserve Economic Data)</span>
               </div>
             </div>
           </div>
@@ -841,7 +841,7 @@ const DealAnalyzer = () => {
 
         {/* Input Form */}
         {!result && !isAnalyzing && (
-          <section className="w-full py-16 md:py-24">
+          <section id='dealAnalyzer' className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6">
               <div className="max-w-2xl mx-auto">
                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
