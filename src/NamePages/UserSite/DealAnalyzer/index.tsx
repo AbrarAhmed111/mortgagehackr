@@ -789,7 +789,7 @@ const DealAnalyzer = () => {
             <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
               <div className="flex relative z-10  items-center justify-center space-x-2">
                 <Calculator className="h-8 w-8" />
-                 <a href="#dealAnalyzer">
+                 <a href="#results-section">
 
                 <Badge
                   variant="secondary"
@@ -845,7 +845,7 @@ const DealAnalyzer = () => {
 
         {/* Input Form */}
         {!result && !isAnalyzing && (
-          <section id='dealAnalyzer' className="w-full py-16 md:py-24">
+          <section id='results-section' className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6">
               <div className="max-w-2xl mx-auto">
                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
@@ -1069,7 +1069,7 @@ const DealAnalyzer = () => {
 
         {/* Loading State */}
         {isAnalyzing && !result && (
-          <section className="w-full py-16 md:py-24">
+          <section id='results-section' className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6">
               <div className="max-w-2xl mx-auto">
                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
@@ -1108,9 +1108,7 @@ const DealAnalyzer = () => {
                     <CardTitle className="text-3xl font-bold mb-2">
                       Analysis Complete
                     </CardTitle>
-                    <p className="text-gray-600">
-                      Here's what we found about your mortgage
-                    </p>
+                   
                   </CardHeader>
                   <CardContent className="space-y-8">
                     {/* Rate Comparison */}
@@ -1140,9 +1138,7 @@ const DealAnalyzer = () => {
 
                     {/* Explanation */}
                     <div className="text-center space-y-4">
-                      <p className="text-lg text-gray-700 leading-relaxed">
-                        {result.explanation}
-                      </p>
+                   
                       <div className="bg-white/60 rounded-lg p-4 border">
                         <p className="text-gray-700 font-medium">{result.recommendation}</p>
                       </div>
