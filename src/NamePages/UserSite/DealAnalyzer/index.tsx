@@ -789,16 +789,20 @@ const DealAnalyzer = () => {
             <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
               <div className="flex items-center justify-center space-x-2">
                 <Calculator className="h-8 w-8" />
+                 <a href="#dealAnalyzer">
+
                 <Badge
                   variant="secondary"
                   className="bg-green-500 text-white border-0 animate-fade-in"
                 >
                   <Sparkles className="w-3 h-3 mr-1" /> Deal Analyzer
                 </Badge>
+                 </a>
+
               </div>
-              <a href="#dealAnalyzer"><h1 className="text-4xl font-bold text-white relative z-10 tracking-tight sm:text-5xl animate-fade-in-up">
+             <h1 className="text-4xl font-bold text-white relative z-10 tracking-tight sm:text-5xl animate-fade-in-up">
                 Is Your Mortgage a Good Deal?
-              </h1></a>
+              </h1>
               <p className="text-xl text-blue-100 animate-fade-in-up delay-200">
                 Compare your rate against historical averages and get personalized recommendations.
               </p>
