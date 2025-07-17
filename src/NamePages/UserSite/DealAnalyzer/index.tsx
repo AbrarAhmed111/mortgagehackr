@@ -787,13 +787,13 @@ const DealAnalyzer = () => {
           <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-400/20 rounded-full animate-pulse delay-1000"></div>
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center space-y-6 animate-fade-in-up">
-              <div className="flex items-center justify-center space-x-2">
+              <div className="flex relative z-10  items-center justify-center space-x-2">
                 <Calculator className="h-8 w-8" />
                  <a href="#dealAnalyzer">
 
                 <Badge
                   variant="secondary"
-                  className="bg-green-500 text-white border-0 animate-fade-in"
+                  className="bg-green-500  text-white border-0 animate-fade-in"
                 >
                   <Sparkles className="w-3 h-3 mr-1" /> Deal Analyzer
                 </Badge>
